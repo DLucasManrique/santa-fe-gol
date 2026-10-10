@@ -241,7 +241,7 @@ function genEvents(m,rng){
 }
 const byMin=(a,b)=>a.min-b.min;
 function buildMatches(){
-  const rng=mulberry32(20261008);cl
+  const rng=mulberry32(20261008);
   /* Rueda única: 22 equipos, todos contra todos, 21 fechas. */
   const roundPairs=r=>{
     const arr=Array.from({length:22},(_,i)=>i);
