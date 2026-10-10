@@ -1,0 +1,1606 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Santa Fe GOL</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout concept: columna móvil de 430px, hoja crema con tarjetas blancas, héroes verde bosque y detalles dorados. */
+:root{
+  --bg:#F8F6F0;--surface:#FFFFFF;--surface2:#F0EDE2;--ink:#17241D;--mute:#5F6E63;--line:#E3DECF;
+  --pri:#1A3B2B;--onpri:#F8F6F0;--hero:#1A3B2B;--prisoft:#E2EBE4;--brand:#1A3B2B;
+  --gold:#85500A;--goldbg:#F7E7C3;--goldfill:#E3A32B;
+  --live:#B8321E;--livebg:#FBE2DC;--ok:#25703F;--okbg:#DCEEE2;--bad:#A8301F;--badbg:#F7DDD8;
+  --water:#CFE2E8;--park:#DCE8D4;--street:#FFFFFF;--shade:rgba(23,36,29,.10);--stage:#E8E4D6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1813;--surface:#16251E;--surface2:#1D2F26;--ink:#EDF0E6;--mute:#9AAB9F;--line:#27392F;
+    --pri:#2B6A4B;--onpri:#F4F8F2;--hero:#173A2A;--prisoft:#1F3A2D;--brand:#8FD0A9;
+    --gold:#EDB955;--goldbg:#3A2F14;--goldfill:#E3A32B;
+    --live:#FF8470;--livebg:#40201A;--ok:#7BD39C;--okbg:#1B3A29;--bad:#FF9585;--badbg:#40201C;
+    --water:#1B3A44;--park:#183222;--street:#22362C;--shade:rgba(0,0,0,.4);--stage:#09100C;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1813;--surface:#16251E;--surface2:#1D2F26;--ink:#EDF0E6;--mute:#9AAB9F;--line:#27392F;
+  --pri:#2B6A4B;--onpri:#F4F8F2;--hero:#173A2A;--prisoft:#1F3A2D;--brand:#8FD0A9;
+  --gold:#EDB955;--goldbg:#3A2F14;--goldfill:#E3A32B;
+  --live:#FF8470;--livebg:#40201A;--ok:#7BD39C;--okbg:#1B3A29;--bad:#FF9585;--badbg:#40201C;
+  --water:#1B3A44;--park:#183222;--street:#22362C;--shade:rgba(0,0,0,.4);--stage:#09100C;
+  color-scheme:dark;
+}
+*{-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{background:var(--stage);color:var(--ink);font-family:'Figtree',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px;line-height:1.4}
+h1,h2,h3,.disp{font-family:'Bricolage Grotesque','Figtree',system-ui,sans-serif;letter-spacing:-.012em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0;text-align:inherit}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:8px}
+.hero :focus-visible{outline-color:#fff}
+.tnum{font-variant-numeric:tabular-nums}
+.app{max-width:430px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative;padding-bottom:104px;box-shadow:0 0 0 1px var(--line),0 24px 60px var(--shade)}
+.demobar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;height:38px;display:flex;align-items:center;gap:8px;padding:0 10px 0 16px;background:#111c16;color:#E9EFE6;font-size:12px}
+.demobar .tag{font-weight:700;letter-spacing:.08em;color:#E3A32B}
+.demobar .cur{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.85}
+.demobtn{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;background:#E3A32B;color:#1b1405;font-weight:700;font-size:12px}
+.demopanel{position:absolute;right:8px;top:44px;width:min(372px,calc(100% - 16px));max-height:min(78vh,640px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:10px;z-index:70}
+.demoitem{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:12px}
+.demoitem:hover{background:var(--surface2)}
+.demoitem.on{background:var(--prisoft);color:var(--brand)}
+.demoitem .code{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--mute);width:56px;flex:none}
+.demoitem.on .code{color:var(--brand)}
+.topbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 38px);z-index:30;background:var(--bg);border-bottom:1px solid transparent}
+.icobtn{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--line);flex:none;position:relative}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px}
+.card-soft{background:var(--surface2);border-radius:16px}
+.hero{background:var(--hero);color:var(--onpri);border-radius:24px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;border-radius:14px;font-weight:700;font-size:15px;transition:transform .12s,opacity .12s;text-align:center;min-height:46px}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-pri{background:var(--pri);color:var(--onpri)}
+.btn-ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-gold{background:var(--goldfill);color:#1d1405}
+.btn-bad{background:var(--badbg);color:var(--bad)}
+.btn-sm{padding:8px 12px;min-height:36px;font-size:13.5px;border-radius:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--surface2);color:var(--ink);white-space:nowrap}
+.chip-gold{background:var(--goldbg);color:var(--gold)}
+.chip-ok{background:var(--okbg);color:var(--ok)}
+.chip-live{background:var(--livebg);color:var(--live)}
+.chip-bad{background:var(--badbg);color:var(--bad)}
+.chip-pri{background:var(--prisoft);color:var(--brand)}
+.lbl{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--mute);letter-spacing:.02em}
+.inp{display:flex;align-items:center;gap:10px;padding:0 14px;min-height:50px;border-radius:14px;background:var(--surface);border:1.5px solid var(--line)}
+.inp:focus-within{border-color:var(--brand)}
+.inp input,.inp select,.inp textarea{flex:1;min-width:0;background:transparent;border:0;outline:0;padding:12px 0}
+.inp select{cursor:pointer}
+.inp-err{border-color:var(--bad)}
+.err{display:block;margin-top:6px;font-size:12.5px;color:var(--bad);font-weight:600}
+.alert{display:flex;gap:10px;padding:12px 14px;border-radius:14px;font-size:14px;font-weight:600}
+.alert-bad{background:var(--badbg);color:var(--bad)}
+.alert-ok{background:var(--okbg);color:var(--ok)}
+.alert-gold{background:var(--goldbg);color:var(--gold)}
+.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.pillnav{display:flex;gap:6px;overflow-x:auto;padding:2px 0;scrollbar-width:none}
+.pillnav::-webkit-scrollbar{display:none}
+.pill{flex:none;padding:8px 14px;border-radius:999px;font-weight:700;font-size:13.5px;background:var(--surface);border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+.pill.on{background:var(--pri);color:var(--onpri);border-color:var(--pri)}
+.seg{display:flex;padding:4px;border-radius:14px;background:var(--surface2);gap:4px}
+.seg button{flex:1;padding:9px 8px;border-radius:11px;font-weight:700;font-size:13.5px;color:var(--mute);text-align:center}
+.seg button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px var(--shade)}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:40;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:6px 6px calc(8px + env(safe-area-inset-bottom,0px))}
+.bnav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border-radius:12px;font-size:11.5px;font-weight:700;color:var(--mute)}
+.bnav button.on{color:var(--brand)}
+.bnav button.on .ico{background:var(--prisoft)}
+.bnav .ico{width:48px;height:28px;border-radius:999px;display:flex;align-items:center;justify-content:center}
+.crest{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:#fff;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;flex:none;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--line);letter-spacing:-.02em}
+.avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-weight:800;font-family:'Bricolage Grotesque',system-ui,sans-serif;flex:none;overflow:hidden;background:var(--prisoft);color:var(--brand)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.dot-live{width:8px;height:8px;border-radius:99px;background:#FF6B52;box-shadow:0 0 0 0 rgba(255,107,82,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(255,107,82,0)}100%{box-shadow:0 0 0 0 rgba(255,107,82,0)}}
+.cy,.cr{display:inline-block;width:11px;height:15px;border-radius:2px;flex:none}
+.cy{background:#F2C230}.cr{background:#D83A2A}
+.row{display:flex;align-items:center;gap:12px}
+.sw{width:46px;height:28px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:99px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+.sw[aria-checked="true"]{background:var(--pri)}
+.sw[aria-checked="true"]::after{transform:translateX(18px)}
+.toasts{position:fixed;top:calc(env(safe-area-inset-top,0px) + 46px);left:50%;transform:translateX(-50%);width:calc(100% - 20px);max-width:410px;z-index:80;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{pointer-events:auto;animation:slidein .28s ease-out;border-radius:18px;box-shadow:0 12px 34px rgba(0,0,0,.3)}
+@keyframes slidein{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.bubble{max-width:82%;padding:10px 13px;border-radius:18px;font-size:14.5px;line-height:1.35}
+.bubble-me{background:var(--pri);color:var(--onpri);border-bottom-right-radius:6px}
+.bubble-them{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:99px;background:var(--mute);margin:0 2px;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25}30%{opacity:1}}
+.pin{position:absolute;transform:translate(-50%,-100%);transition:transform .15s}
+.pin.on{transform:translate(-50%,-100%) scale(1.25);z-index:5}
+.route{stroke-dasharray:6 6;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-12}}
+input[type=range]{accent-color:var(--brand);width:100%}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+table.t{width:100%;border-collapse:collapse}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+  bg:'var(--bg)',surface:'var(--surface)',surface2:'var(--surface2)',ink:'var(--ink)',mute:'var(--mute)',line:'var(--line)',
+  pri:'var(--pri)',onpri:'var(--onpri)',brand:'var(--brand)',prisoft:'var(--prisoft)',
+  gold:'var(--gold)',goldbg:'var(--goldbg)',live:'var(--live)',livebg:'var(--livebg)',ok:'var(--ok)',okbg:'var(--okbg)',bad:'var(--bad)',badbg:'var(--badbg)'
+}}}};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<div id="root"></div>
+<script>
+/* ============================================================
+   Santa Fe GOL · base de datos simulada en memoria
+   ============================================================ */
+const {useState,useEffect,useMemo,useReducer,useRef,useContext,createContext,useCallback} = React;
+const html = htm.bind(React.createElement);
+const cx = (...a)=>a.filter(Boolean).join(' ');
+const uid = ()=>Math.random().toString(36).slice(2,10);
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/* ---------- fechas ---------- */
+const MONTHS=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const MSH=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const DOW=['dom','lun','mar','mié','jue','vie','sáb'];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const pd=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const fmtShort=s=>{const d=pd(s);return `${d.getDate()} ${MSH[d.getMonth()]}`};
+const fmtLong=s=>{const d=pd(s);return `${DOW[d.getDay()]} ${d.getDate()} ${MSH[d.getMonth()]}`};
+const monthLabel=s=>{const d=pd(s);return `${cap(MONTHS[d.getMonth()])} ${d.getFullYear()}`};
+const TODAY='2026-10-08';
+const ago=ts=>{const m=Math.round((Date.now()-ts)/60000);if(m<1)return 'ahora';if(m<60)return `hace ${m} min`;return `hace ${Math.round(m/60)} h`};
+const nowHM=()=>new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+/* ---------- aleatorio con semilla (resultados reproducibles) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const poisson=(rng,l)=>{const L=Math.exp(-l);let k=0,p=1;do{k++;p*=rng()}while(p>L);return k-1};
+const hash=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+/* ---------- equipos y canchas ---------- */
+const TEAMS=[
+ {id:'dc',name:'Colón de San Justo',init:'CSJ',color:'#D71920',str:1.8,logo:'https://lsf.ar/est/escudos/e_Colon%20de%20San%20Justo.jpg'},
+ {id:'an',name:'Sanjustino',init:'SAN',color:'#0B5FA5',str:1.7,logo:'https://lsf.ar/est/escudos/e_Sanjustino.jpg'},
+ {id:'uo',name:'La Perla del Oeste',init:'LPO',color:'#1E5B3A',str:1.6,logo:'https://lsf.ar/est/escudos/6881d942b676e_e_La%20Perla.jpg'},
+ {id:'er',name:'Sportivo Guadalupe',init:'SG',color:'#E31E24',str:1.5,logo:'https://lsf.ar/est/escudos/e_Sportivo%20Guadalupe.jpg'},
+ {id:'lt',name:'La Salle Jobson',init:'LSJ',color:'#005B96',str:1.5,logo:'https://lsf.ar/est/escudos/6881db4e8625d_la%20salle%20jobson.jpg'},
+ {id:'sl',name:'Náutico El Quillá',init:'NEQ',color:'#007A5E',str:1.4,logo:'https://lsf.ar/est/escudos/e_Nautico%20El%20Quilla.jpg'},
+ {id:'dr',name:'Unión',init:'UNI',color:'#006B3F',str:1.4,logo:'https://lsf.ar/est/escudos/e_Union.jpg'},
+ {id:'ju',name:'Juventud Unida',init:'JUV',color:'#2E7D32',str:1.3,logo:'https://lsf.ar/est/escudos/e_Juventud%20Unida.jpg'},
+ {id:'cr',name:'Ciclón Racing',init:'CR',color:'#0066A1',str:1.3,logo:'https://lsf.ar/est/escudos/e_Ciclon%20Racing.jpg'},
+ {id:'no',name:'Nobleza',init:'NOB',color:'#8B1E3F',str:1.2,logo:'https://lsf.ar/est/escudos/e_Nobleza.jpg'},
+ {id:'co',name:'Colón',init:'COL',color:'#E31E24',str:1.8,logo:'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Escudo_Colon_Con_Estrella.png/500px-Escudo_Colon_Con_Estrella.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail'},
+ {id:'cos',name:'Cosmos FC',init:'COS',color:'#222222',str:1.2,logo:'https://lsf.ar/est/escudos/6a041cf434cb9_e_Cosmos.jpg'},
+ {id:'at',name:'Ateneo Inmaculada',init:'ATE',color:'#1D4E89',str:1.2,logo:'https://lsf.ar/est/escudos/6881d8c028129_ateneo.jpg'},
+ {id:'gy',name:'Gimnasia y Esgrima',init:'GE',color:'#1F5A3A',str:1.3,logo:'https://lsf.ar/est/escudos/e_Gimnasia%20y%20Esgrima.jpg'},
+ {id:'cn',name:'Ciclón Norte',init:'CN',color:'#F2C300',str:1.1,logo:'https://lsf.ar/est/escudos/e_Ciclon%20Norte.jpg'},
+ {id:'in',name:'Independiente',init:'IND',color:'#D71920',str:1.1,logo:'https://lsf.ar/est/escudos/e_Independiente.jpg'},
+ {id:'unl',name:'UNL',init:'UNL',color:'#8A1538',str:1.0,logo:'https://lsf.ar/est/escudos/6881d99db8678_UNL.jpeg'},
+ {id:'na',name:'Nacional',init:'NAC',color:'#005B96',str:1.0,logo:'https://lsf.ar/est/escudos/e_Nacional.jpg'},
+ {id:'new',name:"Newell's Old Boys",init:'NEW',color:'#D71920',str:1.1,logo:'https://lsf.ar/est/escudos/e_Newells.jpg'},
+ {id:'ac',name:'Academia Cabrera',init:'ACA',color:'#4A4A4A',str:0.9,logo:'https://lsf.ar/est/escudos/6881d96c36577_e_Academia%20AC.png'},
+ {id:'lf',name:'Las Flores II',init:'LF2',color:'#7B1FA2',str:0.9,logo:'https://lsf.ar/est/escudos/6881d85da51b9_e_Las%20Flores.jpg'},
+ {id:'dsr',name:'Deportivo Santa Rosa',init:'DSR',color:'#00897B',str:0.8,logo:'https://lsf.ar/est/escudos/6881d3942a949_e_Santa%20Rosa.jpg'},
+];
+const T=Object.fromEntries(TEAMS.map(t=>[t.id,t]));
+const VENUES={
+ dc:{name:'Estadio Municipal Don Aldo',address:'Av. Freyre 2350, Santa Fe capital',cap:8500,lat:-31.6246,lng:-60.7012,surface:'Césped natural',parking:'Estacionamiento sobre Av. Freyre'},
+ an:{name:'Cancha Norte del Parque',address:'Av. Blas Parera 3140, Santa Fe capital',cap:5200,lat:-31.5920,lng:-60.7110,surface:'Césped natural',parking:'Playa al costado de la tribuna'},
+ uo:{name:'Estadio Oeste Mitre',address:'Bv. Pellegrini 4420, Santa Fe capital',cap:6000,lat:-31.6310,lng:-60.7420,surface:'Césped sintético',parking:'Calles laterales'},
+ er:{name:'La Fortaleza Roja',address:'Calle San Luis 2985, Santa Fe capital',cap:4300,lat:-31.6540,lng:-60.6950,surface:'Césped natural',parking:'Sin playa propia'},
+ lt:{name:'Coliseo de los Tigres',address:'Av. Aristóbulo del Valle 5600, Santa Fe capital',cap:7100,lat:-31.5800,lng:-60.6980,surface:'Césped natural',parking:'Playa con 200 lugares'},
+ sl:{name:'Estadio Litoral Costanera',address:'Costanera Este 1200, Santa Fe capital',cap:3800,lat:-31.6420,lng:-60.6620,surface:'Césped sintético',parking:'Sobre la costanera'},
+ dr:{name:'Campo del Río',address:'Ruta 168, km 2, Santa Fe',cap:2900,lat:-31.6750,lng:-60.6700,surface:'Césped natural',parking:'Predio abierto'},
+ ju:{name:'Cancha Juventud',address:'Calle Mendoza 3420, Santa Fe capital',cap:2500,lat:-31.6120,lng:-60.7230,surface:'Tierra y césped',parking:'Calles laterales'},
+};
+const PLAZA={name:'Plaza 25 de Mayo (ubicación simulada)',lat:-31.6333,lng:-60.7000};
+TEAMS.forEach((t,i)=>{if(!VENUES[t.id])VENUES[t.id]={name:'Cancha '+t.name,address:'Santa Fe, Santa Fe',cap:2500+((i*731)%4500),lat:-31.60-((i%8)*.008),lng:-60.68-((i%7)*.009),surface:'Césped natural',parking:'Calles laterales'};});
+/* ---------- jugadores de los clubes ---------- */
+// [nombre, posición, peso de gol]
+const ROSTERS={
+ dc:[['Matías Benítez','Delantero',5],['Tomás Aguirre','Mediocampista',3],['Hernán Soria','Defensor',1],['Lautaro Vega','Mediocampista',2],['Iván Cardozo','Arquero',0]],
+ an:[['Lucas Ferreyra','Delantero',5],['Ramiro Paz','Mediocampista',3],['Diego Salinas','Defensor',1],['Gastón Rojas','Mediocampista',2],['Pablo Ledesma','Arquero',0]],
+ uo:[['Nicolás Quiroga','Delantero',5],['Sebastián Mena','Mediocampista',3],['Cristian Bustos','Defensor',1],['Axel Domínguez','Delantero',2],['Walter Ibáñez','Arquero',0]],
+ er:[['Franco Sosa','Delantero',5],['Dylan Herrera','Mediocampista',3],['Matías Coria','Defensor',1],['Brian Escobar','Mediocampista',2],['Marcos Fleitas','Arquero',0]],
+ lt:[['Julián Cabrera','Delantero',5],['Facundo Aranda','Mediocampista',3],['Nahuel Pereyra','Defensor',1],['Kevin Godoy','Delantero',2],['Rodrigo Maidana','Arquero',0]],
+ sl:[['Agustín Molina','Delantero',5],['Leonel Báez','Mediocampista',3],['Esteban Cuello','Defensor',1],['Santiago Roldán','Mediocampista',2],['Darío Ocampo','Arquero',0]],
+ dr:[['Bruno Giménez','Delantero',5],['Alan Correa','Mediocampista',3],['Gabriel Toledo','Defensor',1],['Joel Sánchez','Delantero',2],['Mariano Pintos','Arquero',0]],
+ ju:[['Emanuel Ríos','Delantero',5],['Thiago Navarro','Mediocampista',3],['Octavio Silva','Defensor',1],['Ariel Campos','Mediocampista',2],['Enzo Barrios','Arquero',0]],
+};
+const NUMS=[9,10,4,8,1];
+const PLAYERS=[];
+Object.entries(ROSTERS).forEach(([tid,list])=>list.forEach((p,i)=>PLAYERS.push({id:tid+i,teamId:tid,name:p[0],pos:p[1],w:p[2],num:NUMS[i],age:19+hash(tid+i)%15})));
+TEAMS.forEach((t,i)=>{if(!ROSTERS[t.id])ROSTERS[t.id]=[['Jugador '+t.init+' 1','Delantero',5],['Jugador '+t.init+' 2','Mediocampista',3],['Jugador '+t.init+' 3','Defensor',1],['Jugador '+t.init+' 4','Mediocampista',2],['Jugador '+t.init+' 5','Arquero',0]];});
+PLAYERS.length=0;Object.entries(ROSTERS).forEach(([tid,list])=>list.forEach((p,i)=>PLAYERS.push({id:tid+i,teamId:tid,name:p[0],pos:p[1],w:p[2],num:NUMS[i],age:19+hash(tid+i)%15})));
+const PLAYER=Object.fromEntries(PLAYERS.map(p=>[p.id,p]));
+/* ---------- partidos (fixture + historial) ---------- */
+function weightedPick(rng,tid,kind){
+  const L=ROSTERS[tid];
+  const ws=L.map(p=>kind==='goal'?p[2]:(p[1]==='Arquero'?0.3:p[1]==='Defensor'?3:p[1]==='Mediocampista'?3:2));
+  let x=rng()*ws.reduce((a,b)=>a+b,0);
+  for(let i=0;i<L.length;i++){x-=ws[i];if(x<=0)return tid+i}
+  return tid+'0';
+}
+function genEvents(m,rng){
+  const sh=T[m.home].str,sa=T[m.away].str;
+  const gh=Math.min(5,poisson(rng,Math.max(.3,.5+.45*sh-.2*sa+.2)));
+  const ga=Math.min(5,poisson(rng,Math.max(.3,.5+.45*sa-.2*sh)));
+  const ev=[];
+  for(let i=0;i<gh;i++)ev.push({min:1+Math.floor(rng()*90),type:'goal',team:m.home,player:weightedPick(rng,m.home,'goal')});
+  for(let i=0;i<ga;i++)ev.push({min:1+Math.floor(rng()*90),type:'goal',team:m.away,player:weightedPick(rng,m.away,'goal')});
+  [m.home,m.away].forEach(tid=>{
+    const ny=(rng()<.42?1:0)+(rng()<.2?1:0)+(rng()<.06?1:0);
+    for(let i=0;i<ny;i++)ev.push({min:3+Math.floor(rng()*87),type:'yellow',team:tid,player:weightedPick(rng,tid,'card')});
+    if(rng()<.025)ev.push({min:30+Math.floor(rng()*60),type:'red',team:tid,player:weightedPick(rng,tid,'card')});
+  });
+  return ev.sort((a,b)=>a.min-b.min);
+}
+const byMin=(a,b)=>a.min-b.min;
+function buildMatches(){
+  const rng=mulberry32(20261008);cl
+  /* Rueda única: 22 equipos, todos contra todos, 21 fechas. */
+  const roundPairs=r=>{
+    const arr=Array.from({length:22},(_,i)=>i);
+    for(let x=0;x<r;x++){arr.splice(1,0,arr.pop())}
+    const pairs=[];
+    for(let i=0;i<11;i++)pairs.push([TEAMS[arr[i]].id,TEAMS[arr[21-i]].id]);
+    return pairs;
+  };
+  const round=r=>roundPairs(r);
+  const base=new Date(2026,6,9);
+  const dateOf=f=>iso(addDays(base,(f-1)*7));
+  const times=['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
+  const mk=(f,i,h,a,extra)=>({id:`f${f}m${i}`,fecha:f,date:dateOf(f),time:times[i],home:h,away:a,status:'scheduled',events:[],...extra});
+  const out=[];
+  /* Fechas 1 a 13: ya disputadas. */
+  for(let f=1;f<=13;f++){
+    round(f-1).forEach(([a,b],i)=>{
+      let h=a,aw=b;
+      if((f+i)%2===0){h=b;aw=a}
+      const m=mk(f,i,h,aw,{status:'finished'});
+      m.events=genEvents(m,rng);
+      out.push(m);
+    });
+  }
+  /* Fecha 14 (hoy). */
+  const r13=round(13);
+  out.push(mk(14,0,r13[0][0],r13[0][1],{time:'14:30',status:'suspended',suspension:{
+    reason:'Campo de juego anegado por la lluvia de la madrugada. El árbitro y la comisión de cancha decidieron no iniciar el partido.',
+    proposals:[{date:'2026-10-14',time:'20:00'},{date:'2026-10-17',time:'16:00'},{date:'2026-10-21',time:'20:30'}],done:false}}));
+  out.push(mk(14,1,r13[1][0],r13[1][1],{id:'LIVE',time:'16:00',status:'live',minute:67,events:[
+    {min:12,type:'goal',team:r13[1][0],player:r13[1][0]+'0'},
+    {min:25,type:'yellow',team:r13[1][1],player:r13[1][1]+'2'},
+    {min:33,type:'goal',team:r13[1][1],player:r13[1][1]+'0'},
+    {min:49,type:'goal',team:r13[1][0],player:r13[1][0]+'1'},
+    {min:58,type:'yellow',team:r13[1][0],player:r13[1][0]+'3'},
+    {min:64,type:'yellow',team:r13[1][1],player:r13[1][1]+'1'}]}));
+  out.push(mk(14,2,r13[2][0],r13[2][1],{time:'15:30',status:'finished',events:[
+    {min:34,type:'goal',team:r13[2][0],player:r13[2][0]+'0'},{min:61,type:'yellow',team:r13[2][1],player:r13[2][1]+'1'},{min:71,type:'goal',team:r13[2][1],player:r13[2][1]+'0'}]}));
+  for(let i=3;i<11;i++){
+    const [a,b]=r13[i];
+    out.push(mk(14,i,(i%2===0)?a:b,(i%2===0)?b:a,{}));
+  }
+  /* Fechas 15 a 21: segunda parte de la rueda. */
+  for(let f=15;f<=21;f++){
+    round(f-1).forEach(([a,b],i)=>{
+      const sw=(f+i)%2===0;
+      out.push(mk(f,i,sw?a:b,sw?b:a,{}));
+    });
+  }
+  /* Ajustes manuales para mantener ejemplos de tarjetas/suspensiones. */
+  const find=(f,t)=>out.find(m=>m.fecha===f&&(m.home===t||m.away===t));
+  const strip=(pid,types)=>out.forEach(m=>{m.events=m.events.filter(e=>!(e.player===pid&&types.includes(e.type)))});
+  const put=(f,t,ev)=>{const m=find(f,t);if(m){m.events.push(ev);m.events.sort(byMin)}};
+  strip('uo0',['yellow','red']);put(13,'uo',{min:78,type:'red',team:'uo',player:'uo0'});
+  strip('lt0',['yellow','red']);[[2,40],[5,55],[8,62],[11,30]].forEach(([f,min])=>put(f,'lt',{min,type:'yellow',team:'lt',player:'lt0'}));
+  strip('er2',['yellow','red']);[[3,44],[6,71],[9,38],[12,66],[14,52]].forEach(([f,min])=>put(f,'er',{min,type:'yellow',team:'er',player:'er2'}));
+  return out;
+}
+const LIVE_SCRIPT={
+  72:{type:'goal',team:'no',player:'no0'},
+  78:{type:'red',team:'no',player:'no2'},
+  81:{type:'goal',team:'ju',player:'ju0'},
+  86:{type:'yellow',team:'ju',player:'ju2'},
+};
+/* ---------- selectores ---------- */
+const scoreOf=m=>{let h=0,a=0;m.events.forEach(e=>{if(e.type==='goal'){e.team===m.home?h++:a++}});return [h,a]};
+const nextMatch=(matches,tid)=>matches.filter(m=>(m.home===tid||m.away===tid)&&(m.status==='scheduled'||m.status==='suspended')).sort((a,b)=>a.fecha-b.fecha)[0];
+function computeTable(matches){
+  const rows=Object.fromEntries(TEAMS.map(t=>[t.id,{id:t.id,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0,form:[]}]));
+  matches.filter(m=>m.status==='finished').sort((a,b)=>a.fecha-b.fecha).forEach(m=>{
+    const [h,a]=scoreOf(m);const H=rows[m.home],A=rows[m.away];
+    H.pj++;A.pj++;H.gf+=h;H.gc+=a;A.gf+=a;A.gc+=h;
+    if(h>a){H.pg++;A.pp++;H.pts+=3;H.form.push('G');A.form.push('P')}
+    else if(h<a){A.pg++;H.pp++;A.pts+=3;H.form.push('P');A.form.push('G')}
+    else{H.pe++;A.pe++;H.pts++;A.pts++;H.form.push('E');A.form.push('E')}
+  });
+  const list=Object.values(rows).map(r=>({...r,dif:r.gf-r.gc,form:r.form.slice(-5)}));
+  list.sort((x,y)=>y.pts-x.pts||y.dif-x.dif||y.gf-x.gf||T[x.id].name.localeCompare(T[y.id].name));
+  return list.map((r,i)=>({...r,pos:i+1}));
+}
+function computePlayers(matches){
+  const by={};
+  PLAYERS.forEach(p=>by[p.id]={...p,goals:0,yellow:0,red:0,pj:0,cards:[],gbf:Array(22).fill(0)});
+  const played=matches.filter(m=>m.status==='finished'||m.status==='live');
+  const cnt={};
+  played.forEach(m=>{
+    [m.home,m.away].forEach(t=>cnt[t]=(cnt[t]||0)+1);
+    m.events.forEach(e=>{
+      const p=by[e.player];if(!p)return;
+      if(e.type==='goal'){p.goals++;p.gbf[m.fecha-1]++}
+      else{p[e.type]++;p.cards.push({fecha:m.fecha,min:e.min,type:e.type,rival:e.team===m.home?m.away:m.home,date:m.date})}
+    });
+  });
+  const lastP={},nextM={};
+  TEAMS.forEach(t=>{
+    const tm=matches.filter(m=>m.home===t.id||m.away===t.id);
+    lastP[t.id]=tm.filter(m=>m.status==='finished'||m.status==='live').sort((a,b)=>b.fecha-a.fecha)[0];
+    nextM[t.id]=tm.filter(m=>m.status==='scheduled'||m.status==='suspended').sort((a,b)=>a.fecha-b.fecha)[0];
+  });
+  Object.values(by).forEach(p=>{
+    p.pj=Math.max(0,(cnt[p.teamId]||0)-(hash(p.id)%4===0?1:0));
+    const lm=lastP[p.teamId],lf=lm?lm.fecha:0;
+    p.cards.sort((a,b)=>b.fecha-a.fecha||b.min-a.min);
+    const inLast=p.cards.filter(c=>c.fecha===lf);
+    const redLast=inLast.find(c=>c.type==='red');
+    const yLast=inLast.filter(c=>c.type==='yellow').length;
+    p.next=nextM[p.teamId];p.lastFecha=lf;p.susp=null;
+    if(redLast)p.susp={reason:`Tarjeta roja en la Fecha ${lf} (min. ${redLast.min})`,rule:'La roja directa se cumple con 1 fecha de suspensión.'};
+    else if(p.yellow>0&&p.yellow%5===0&&yLast>0)p.susp={reason:`Completó ${p.yellow} amarillas (la última en la Fecha ${lf})`,rule:'Cada 5 amarillas acumuladas se cumple 1 fecha de suspensión.'};
+    p.cycle=p.yellow===0?0:p.yellow%5===0?(p.susp&&p.susp.reason.startsWith('Completó')?5:0):p.yellow%5;
+  });
+  return by;
+}
+/* ---------- historial H2H (generado de forma reproducible) ---------- */
+function computeH2H(matches,aId,bId){
+  const season=matches.filter(m=>m.status==='finished'&&((m.home===aId&&m.away===bId)||(m.home===bId&&m.away===aId)))
+    .map(m=>{const [h,a]=scoreOf(m);return {date:m.date,home:m.home,away:m.away,h,a,comp:`Liga Local · Fecha ${m.fecha}`}});
+  const rng=mulberry32(hash([aId,bId].sort().join('-')));
+  const past=['2026-03-14','2025-10-19','2025-06-08','2024-11-23','2024-05-12','2023-09-30'].map((date,i)=>{
+    const h=i%2===0?aId:bId,aw=i%2===0?bId:aId;
+    const gh=Math.min(5,poisson(rng,Math.max(.4,.6+.4*T[h].str-.15*T[aw].str+.2)));
+    const ga=Math.min(5,poisson(rng,Math.max(.4,.6+.4*T[aw].str-.15*T[h].str)));
+    return {date,home:h,away:aw,h:gh,a:ga,comp:'Liga Local'};
+  });
+  const all=[...season,...past].sort((x,y)=>y.date.localeCompare(x.date));
+  const r={aW:0,bW:0,d:0,aG:0,bG:0,list:all};
+  all.forEach(x=>{
+    const ag=x.home===aId?x.h:x.a,bg=x.home===aId?x.a:x.h;
+    r.aG+=ag;r.bG+=bg;
+    if(ag>bg)r.aW++;else if(bg>ag)r.bW++;else r.d++;
+  });
+  return r;
+}
+/* ---------- usuarios, jugadores libres, chats ---------- */
+const USERS0=[
+ {id:'u1',name:'Valentina Ríos',email:'valentina@santafegol.ar',pw:'gol2026',phone:'342 555-0101',role:'Admin',avatar:null},
+ {id:'u2',name:'Carla Bianchi',email:'carla.bianchi@ejemplo.com',pw:'carla123',phone:'342 555-0112',role:'Hincha',avatar:null},
+ {id:'u3',name:'Martín Duarte',email:'martin.duarte@deportivocentral.ar',pw:'club1234',phone:'342 555-0123',role:'Club',avatar:null},
+ {id:'u4',name:'Lautaro Peña',email:'lautaro.pena@ejemplo.com',pw:'lauta123',phone:'342 555-0134',role:'Jugador libre',avatar:null},
+ {id:'u5',name:'Sofía Roldán',email:'sofia.roldan@ejemplo.com',pw:'sofi1234',phone:'342 555-0145',role:'Hincha',avatar:null},
+ {id:'u6',name:'Gerardo Acosta',email:'gerardo.acosta@unionoeste.ar',pw:'club5678',phone:'342 555-0156',role:'Club',avatar:null},
+ {id:'u7',name:'Agustina Maidana',email:'agustina.maidana@ejemplo.com',pw:'agus1234',phone:'342 555-0167',role:'Hincha',avatar:null},
+];
+const FREE0=[
+ {id:'fp1',name:'Gonzalo Acuña',pos:'Delantero',age:24,exp:6,level:'Liga local',note:'Juego de 9 y de segunda punta. Último club: Juventud Unida (reserva).',avail:['Fines de semana','Lun–Vie tarde'],zone:'Santa Fe capital',phone:'342 555-0142',email:'gonzalo.acuna@ejemplo.com',ts:Date.now()-2*3600e3},
+ {id:'fp2',name:'Ezequiel Bravo',pos:'Mediocampista',age:28,exp:10,level:'Liga local',note:'Volante central, buena salida con pelota. Capitán en mi último equipo.',avail:['Lun–Vie noche','Fines de semana'],zone:'Santo Tomé',phone:'342 555-0158',email:'ezequiel.bravo@ejemplo.com',ts:Date.now()-5*3600e3},
+ {id:'fp3',name:'Federico Luna',pos:'Defensor',age:31,exp:12,level:'Ligas del interior',note:'Central zurdo. Juego aéreo y marca. Disponible para pretemporada.',avail:['Lun–Vie tarde'],zone:'Santa Fe capital',phone:'342 555-0171',email:'federico.luna@ejemplo.com',ts:Date.now()-26*3600e3},
+ {id:'fp4',name:'Santino Ojeda',pos:'Arquero',age:22,exp:4,level:'Reserva',note:'Arquero de reserva, busco minutos en primera. Buen juego con los pies.',avail:['Fines de semana','Lun–Vie mañana'],zone:'Recreo',phone:'342 555-0183',email:'santino.ojeda@ejemplo.com',ts:Date.now()-30*3600e3},
+ {id:'fp5',name:'Mauro Villalba',pos:'Delantero',age:19,exp:2,level:'Reserva',note:'Extremo con velocidad. Vengo de las inferiores de un club de la liga.',avail:['Lun–Vie tarde','Fines de semana'],zone:'Sauce Viejo',phone:'342 555-0194',email:'mauro.villalba@ejemplo.com',ts:Date.now()-48*3600e3},
+ {id:'fp6',name:'Cristian Peralta',pos:'Mediocampista',age:35,exp:18,level:'Liga local',note:'Mediapunta con experiencia. Puedo sumar liderazgo en el vestuario.',avail:['Lun–Vie noche'],zone:'Esperanza',phone:'342 555-0105',email:'cristian.peralta@ejemplo.com',ts:Date.now()-72*3600e3},
+ {id:'fp7',name:'Joaquín Medina',pos:'Defensor',age:26,exp:8,level:'Liga local',note:'Lateral derecho. Recorrido largo y buen centro.',avail:['Fines de semana'],zone:'Santa Fe capital',phone:'342 555-0116',email:'joaquin.medina@ejemplo.com',ts:Date.now()-96*3600e3},
+ {id:'fp8',name:'Leandro Ibarra',pos:'Arquero',age:29,exp:9,level:'Ligas del interior',note:'Arquero titular durante cuatro temporadas. Busco nuevo desafío.',avail:['Lun–Vie mañana','Lun–Vie tarde'],zone:'Santo Tomé',phone:'342 555-0127',email:'leandro.ibarra@ejemplo.com',ts:Date.now()-120*3600e3},
+];
+const CHATS0={
+ fp1:[
+  {id:'c1',from:'club',kind:'text',text:'Hola Gonzalo, vimos tu perfil en la bolsa de pases. ¿Seguís sin club?',t:'16:42'},
+  {id:'c2',from:'player',kind:'text',text:'¡Hola! Sí, sigo libre. Me interesa mucho el proyecto de Deportivo Central.',t:'16:50'},
+ ],
+ fp2:[{id:'c3',from:'club',kind:'text',text:'Ezequiel, ¿podés venir a una práctica esta semana?',t:'11:05'}],
+};
+/* ---------- estado inicial ---------- */
+function initState(){
+  const matches=buildMatches();
+  return {
+    screen:'home',hist:[],authed:true,userId:'u1',users:USERS0,
+    favorites:['dc','er'],matches,clock:true,
+    notifPrefs:{goalsFav:true,goalsAll:false,susp:true,cards:false,sound:true},
+    notifLog:[
+      {id:'n1',kind:'susp',title:'Partido suspendido',body:'Los Tigres FC vs Sportivo Litoral · campo anegado',ts:Date.now()-195*60000,matchId:'f14m0'},
+      {id:'n2',kind:'goal',title:'¡GOL de Deportivo Central!',body:'Matías Benítez 12\' · DC 1–0 AN',ts:Date.now()-75*60000,matchId:'LIVE'},
+    ],
+    notifSeen:Date.now()-10*60000,
+    toasts:[],roleLog:[],
+    freePlayers:FREE0,chats:CHATS0,
+    ui:{fixtureTab:'all',fixtureTeam:'',openFechas:[14,15],histTeam:'',h2hA:'dc',h2hB:'an',selPlayer:'dc0',selVenue:'dc',located:false,
+        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc'},
+  };
+}
+const INITIAL_LIVE=JSON.parse(JSON.stringify(buildMatches().find(m=>m.id==='LIVE')));
+/* ============================================================
+   Estado global (useReducer), contexto e iconos
+   ============================================================ */
+const BOOT=Date.now();
+function pushToast(s,toast){return {...s,toasts:[...s.toasts,{id:uid(),...toast}].slice(-3)}}
+function addEvent(s,matchId,ev){
+  const matches=s.matches.map(m=>m.id===matchId?{...m,events:[...m.events,ev].sort(byMin)}:m);
+  let next={...s,matches};
+  const m=matches.find(x=>x.id===matchId);
+  if(ev.type==='goal'){
+    const [h,a]=scoreOf(m);const pl=PLAYER[ev.player];
+    const title=`¡GOL de ${T[ev.team].name}!`;
+    const body=`${pl.name} ${ev.min}' · ${T[m.home].init} ${h}–${a} ${T[m.away].init}`;
+    next.notifLog=[{id:uid(),kind:'goal',title,body,ts:Date.now(),matchId,team:ev.team,sim:!!ev.sim},...s.notifLog];
+    const p=s.notifPrefs;
+    const fav=s.favorites.includes(m.home)||s.favorites.includes(m.away);
+    if(p.goalsAll||(p.goalsFav&&fav))next=pushToast(next,{kind:'goal',title,body,team:ev.team,matchId});
+  }else if(ev.type==='red'&&s.notifPrefs.cards){
+    const pl=PLAYER[ev.player];
+    next=pushToast(next,{kind:'warn',title:'Tarjeta roja',body:`${pl.name} (${T[ev.team].init}) fue expulsado en el min. ${ev.min}`});
+  }
+  return next;
+}
+function reducer(s,a){
+  switch(a.type){
+    case 'NAV':return {...s,screen:a.screen,hist:[...s.hist,s.screen].slice(-30),ui:a.ui?{...s.ui,...a.ui}:s.ui};
+    case 'BACK':{const h=[...s.hist];const prev=h.pop()||'home';return {...s,screen:prev,hist:h}}
+    case 'UI':return {...s,ui:{...s.ui,...a.patch}};
+    case 'LOGIN':return {...s,userId:a.userId,authed:true};
+    case 'LOGOUT':return {...s,authed:false};
+    case 'REGISTER':return {...s,users:[...s.users,a.user],userId:a.user.id,authed:true};
+    case 'UPDATE_USER':return {...s,users:s.users.map(u=>u.id===a.id?{...u,...a.patch}:u)};
+    case 'SET_FAVS':return {...s,favorites:a.ids};
+    case 'SET_ROLE':{
+      const u=s.users.find(x=>x.id===a.userId);if(!u||u.role===a.role)return s;
+      const by=s.users.find(x=>x.id===s.userId);
+      return {...s,users:s.users.map(x=>x.id===a.userId?{...x,role:a.role}:x),
+        roleLog:[{id:uid(),name:u.name,from:u.role,to:a.role,by:by?by.name:'Admin',ts:Date.now()},...s.roleLog]};
+    }
+    case 'TOAST':return pushToast(s,a.toast);
+    case 'TOAST_RM':return {...s,toasts:s.toasts.filter(t=>t.id!==a.id)};
+    case 'SEEN':return {...s,notifSeen:Date.now()};
+    case 'NOTIF_PREF':return {...s,notifPrefs:{...s.notifPrefs,[a.key]:!s.notifPrefs[a.key]}};
+    case 'CLOCK':return {...s,clock:!s.clock};
+    case 'EVENT':return addEvent(s,a.matchId,a.ev);
+    case 'TICK':{
+      if(!s.clock)return s;
+      const live=s.matches.find(m=>m.id==='LIVE');
+      if(!live||live.status!=='live')return s;
+      const minute=live.minute+1;
+      let next={...s,matches:s.matches.map(m=>m.id==='LIVE'?{...m,minute}:m)};
+      const sc=LIVE_SCRIPT[minute];
+      if(sc)next=addEvent(next,'LIVE',{min:minute,...sc});
+      if(minute>=90){
+        next={...next,matches:next.matches.map(m=>m.id==='LIVE'?{...m,status:'finished',minute:90}:m)};
+        const fm=next.matches.find(m=>m.id==='LIVE');const [h,aw]=scoreOf(fm);
+        next=pushToast(next,{kind:'info',title:'Final del partido',body:`${T[fm.home].name} ${h}–${aw} ${T[fm.away].name}`});
+      }
+      return next;
+    }
+    case 'RESET_LIVE':{
+      const fresh=JSON.parse(JSON.stringify(INITIAL_LIVE));
+      return {...s,matches:s.matches.map(m=>m.id==='LIVE'?fresh:m),notifLog:s.notifLog.filter(n=>!(n.matchId==='LIVE'&&n.kind==='goal'&&n.ts>BOOT))};
+    }
+    case 'SUSPEND':{
+      const m=s.matches.find(x=>x.id===a.id);if(!m)return s;
+      const proposals=[3,5,8].map((d,i)=>({date:iso(addDays(pd(m.date),d)),time:['20:00','16:00','20:30'][i]}));
+      let next={...s,matches:s.matches.map(x=>x.id===a.id?{...x,status:'suspended',suspension:{reason:a.reason,proposals,done:false}}:x),
+        notifLog:[{id:uid(),kind:'susp',title:'Partido suspendido',body:`${T[m.home].name} vs ${T[m.away].name} · ${a.short}`,ts:Date.now(),matchId:m.id},...s.notifLog]};
+      if(s.notifPrefs.susp)next=pushToast(next,{kind:'warn',title:'Partido suspendido',body:`${T[m.home].name} vs ${T[m.away].name}`,matchId:m.id});
+      return next;
+    }
+    case 'REPROGRAM':{
+      const m=s.matches.find(x=>x.id===a.id);if(!m)return s;
+      let next={...s,matches:s.matches.map(x=>x.id===a.id?{...x,status:'scheduled',date:a.date,time:a.time,suspension:{...x.suspension,done:true,prev:{date:x.date,time:x.time}}}:x),
+        notifLog:[{id:uid(),kind:'info',title:'Partido reprogramado',body:`${T[m.home].init} vs ${T[m.away].init} · ${fmtLong(a.date)} ${a.time}`,ts:Date.now(),matchId:m.id},...s.notifLog]};
+      return pushToast(next,{kind:'success',title:'Partido reprogramado',body:`Nueva fecha: ${fmtLong(a.date)} a las ${a.time}`});
+    }
+    case 'UNDO_REPROGRAM':{
+      return {...s,matches:s.matches.map(x=>x.id===a.id&&x.suspension?{...x,status:'suspended',date:x.suspension.prev?x.suspension.prev.date:x.date,time:x.suspension.prev?x.suspension.prev.time:x.time,suspension:{...x.suspension,done:false}}:x)};
+    }
+    case 'FREE_UPSERT':{
+      const exists=s.freePlayers.some(p=>p.ownerId===a.player.ownerId);
+      return {...s,freePlayers:exists?s.freePlayers.map(p=>p.ownerId===a.player.ownerId?{...a.player,id:p.id}:p):[a.player,...s.freePlayers]};
+    }
+    case 'CHAT':{
+      const cur=s.chats[a.playerId]||[];
+      return {...s,chats:{...s.chats,[a.playerId]:[...cur,{id:uid(),t:nowHM(),...a.msg}]}};
+    }
+    default:return s;
+  }
+}
+const Ctx=createContext(null);
+const useApp=()=>useContext(Ctx);
+/* ---------- iconos (trazos estilo Lucide) ---------- */
+const ICONS={
+ home:'<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+ ball:'<circle cx="12" cy="12" r="10"/><path d="m12 7 4.5 3.3-1.7 5.2H9.2l-1.7-5.2z"/><path d="M12 2v5M16.5 10.3l5-1.7M14.8 15.5l3.2 4.2M9.2 15.5 6 19.7M7.5 10.3l-5-1.7"/>',
+ chart:'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+ user:'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ bell:'<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/>',
+ mail:'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+ lock:'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ eye:'<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+ eyeoff:'<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+ right:'<path d="m9 18 6-6-6-6"/>',
+ down:'<path d="m6 9 6 6 6-6"/>',
+ up:'<path d="m18 15-6-6-6 6"/>',
+ arrowLeft:'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ pin:'<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+ nav:'<polygon points="3 11 22 2 13 21 11 13 3 11"/>',
+ camera:'<path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/>',
+ phone:'<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>',
+ star:'<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+ shield:'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+ send:'<path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+ alert:'<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+ plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+ swap:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+ logout:'<path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>',
+ pencil:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/>',
+ heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+ calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+ history:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+ cloud:'<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/>',
+ info:'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+ car:'<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+ bus:'<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>',
+ walk:'<circle cx="13" cy="4" r="1.5"/><path d="m9 21 2-6 2.5 2V21"/><path d="m11 15 1-5 3 2 2 1"/><path d="m8 12 2-3 2-1"/>',
+ external:'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+ lockopen:'<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+ sliders:'<path d="M4 21v-7"/><path d="M4 10V3"/><path d="M12 21v-9"/><path d="M12 8V3"/><path d="M20 21v-5"/><path d="M20 12V3"/><path d="M2 14h4"/><path d="M10 8h4"/><path d="M18 16h4"/>',
+ target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+ refresh:'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+};
+function Icon({n,s=20,sw=2,className='',style}){
+  return html`<svg width=${s} height=${s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth=${sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className=${className} style=${style} dangerouslySetInnerHTML=${{__html:ICONS[n]||''}}></svg>`;
+}
+/* ============================================================
+   Componentes compartidos
+   ============================================================ */
+function Logo({size=44}){
+  return html`<svg width=${size} height=${size} viewBox="0 0 48 48" aria-hidden="true">
+    <rect width="48" height="48" rx="14" fill="#E3A32B"/>
+    <circle cx="24" cy="24" r="14" fill="#1A3B2B"/>
+    <path d="m24 15.5 6.6 4.8-2.5 7.7h-8.2l-2.5-7.7z" fill="#E3A32B"/>
+    <path d="M24 10v5.5M30.6 20.3l5.2-1.7M28.1 28l3.3 4.4M19.9 28l-3.3 4.4M17.4 20.3l-5.2-1.7" stroke="#E3A32B" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
+  </svg>`;
+}
+function Crest({id,size=34}){
+  const t=T[id];
+  return t.logo?html`<span className="crest" title=${t.name} style=${{width:size,height:size,background:'#fff',fontSize:Math.round(size*.38),overflow:'hidden',display:'inline-flex',alignItems:'center',justifyContent:'center'}}><img src=${t.logo} alt=${'Escudo de '+t.name} style=${{width:'100%',height:'100%',objectFit:'contain'}} onError=${e=>{e.currentTarget.style.display='none';e.currentTarget.parentElement.textContent=t.init}}/></span>`:html`<span className="crest" title=${t.name} style=${{width:size,height:size,background:t.color,fontSize:Math.round(size*.38)}}>${t.init}</span>`;
+}
+function initials(n){return n.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function Avatar({name,src,size=44}){
+  return html`<span className="avatar" style=${{width:size,height:size,fontSize:Math.round(size*.38)}}>
+    ${src?html`<img src=${src} alt=${'Foto de '+name}/>`:initials(name)}</span>`;
+}
+function Btn({v='pri',full,icon,children,className,sm,...p}){
+  return html`<button type="button" ...${p} className=${cx('btn','btn-'+v,sm&&'btn-sm',full&&'w-full',className)}>
+    ${icon?html`<${Icon} n=${icon} s=${sm?16:18}/>`:null}${children}</button>`;
+}
+function Field({label,icon,error,id,right,...p}){
+  return html`<div>
+    <label className="lbl" htmlFor=${id}>${label}</label>
+    <div className=${cx('inp',error&&'inp-err')}>
+      ${icon?html`<${Icon} n=${icon} s=${18} className="text-mute"/>`:null}
+      <input id=${id} ...${p} aria-invalid=${error?'true':'false'}/>
+      ${right}
+    </div>
+    ${error?html`<span className="err" role="alert">${error}</span>`:null}
+  </div>`;
+}
+function Toggle({on,onChange,label,sub,id}){
+  return html`<div className="row py-3">
+    <div className="min-w-0 flex-1"><div className="font-semibold text-[14.5px]" id=${id+'-l'}>${label}</div>${sub?html`<div className="text-[12.5px] text-mute">${sub}</div>`:null}</div>
+    <button role="switch" id=${id} aria-checked=${on?'true':'false'} aria-labelledby=${id+'-l'} className="sw" onClick=${onChange}></button>
+  </div>`;
+}
+function Seg({options,value,onChange,label}){
+  return html`<div className="seg" role="tablist" aria-label=${label}>
+    ${options.map(o=>html`<button key=${o.id} role="tab" aria-selected=${value===o.id?'true':'false'} className=${value===o.id?'on':''} onClick=${()=>onChange(o.id)}>${o.label}</button>`)}
+  </div>`;
+}
+function Empty({icon='info',title,children}){
+  return html`<div className="card p-6 text-center"><div className="mx-auto w-12 h-12 rounded-2xl card-soft flex items-center justify-center text-mute"><${Icon} n=${icon} s=${22}/></div>
+    <h3 className="mt-3 text-[17px] font-bold">${title}</h3><div className="mt-1 text-[14px] text-mute">${children}</div></div>`;
+}
+function SectionTitle({children,right}){
+  return html`<div className="flex items-end justify-between gap-3 mt-1"><h2 className="text-[18px] font-bold">${children}</h2>${right}</div>`;
+}
+function StatTile({label,value,tone}){
+  return html`<div className=${cx('rounded-2xl p-3 text-center',tone==='y'?'bg-goldbg text-gold':tone==='r'?'bg-badbg text-bad':'bg-prisoft text-brand')}>
+    <div className="disp text-[28px] font-extrabold leading-none tnum">${value}</div>
+    <div className="mt-1 text-[11.5px] font-bold uppercase tracking-wide opacity-90">${label}</div></div>`;
+}
+/* ---------- encabezado y páginas ---------- */
+function Top({title,sub,right,back=true}){
+  const {s,back:goBack}=useApp();
+  return html`<header className="topbar"><div className="flex items-center gap-3 px-4 py-3">
+    ${back&&s.hist.length>0?html`<button className="icobtn" aria-label="Volver" onClick=${goBack}><${Icon} n="arrowLeft"/></button>`:null}
+    <div className="min-w-0 flex-1"><h1 className="text-[22px] font-bold leading-tight">${title}</h1>${sub?html`<p className="text-[13px] text-mute">${sub}</p>`:null}</div>
+    ${right}
+  </div></header>`;
+}
+function Page({title,sub,right,back,nav,children}){
+  return html`<main><${Top} title=${title} sub=${sub} right=${right} back=${back}/>
+    <div className="px-4 pb-4 flex flex-col gap-4">${nav?html`<${SubNav} items=${nav}/>`:null}${children}</div></main>`;
+}
+function SubNav({items}){
+  const {s,go}=useApp();
+  return html`<nav className="pillnav" aria-label="Secciones">${items.map(([id,label])=>html`<button key=${id} className=${cx('pill',s.screen===id&&'on')} aria-current=${s.screen===id?'page':undefined} onClick=${()=>go(id)}>${label}</button>`)}</nav>`;
+}
+const NAV_MATCHES=[['cu07','En vivo'],['cu09','Fixture'],['cu10','Historial'],['cu11','Head to Head']];
+const NAV_PLAYERS=[['cu17','Goleadores'],['cu16','Ficha'],['cu18','Tarjetas'],['cu20','Bolsa de pases'],['cu19','Publicar perfil']];
+/* ---------- fila de partido ---------- */
+function MatchRow({m}){
+  const {go,s}=useApp();
+  const [h,a]=scoreOf(m);const st=m.status;
+  const label=st==='live'?html`<span className="chip chip-live"><span className="dot-live"></span>${m.minute}'</span>`
+    :st==='finished'?html`<span className="chip">Final</span>`
+    :st==='suspended'?html`<span className="chip chip-gold"><${Icon} n="cloud" s=${13}/>Suspendido</span>`
+    :html`<span className="chip chip-pri"><${Icon} n="clock" s=${13}/>${m.time}</span>`;
+  const mid=st==='scheduled'||st==='suspended'?html`<span className="text-mute font-bold">vs</span>`:html`<span className="disp text-[22px] font-extrabold tnum">${h}–${a}</span>`;
+  const click=st==='live'?()=>go('cu07'):st==='suspended'?()=>go('cu13',{suspId:m.id}):null;
+  return html`<div className="card p-3">
+    <div className="flex items-center justify-between gap-2 mb-2">
+      <span className="text-[12px] text-mute font-semibold">${m.date===TODAY?'Hoy':fmtLong(m.date)} · ${m.time} · Fecha ${m.fecha}</span>
+      ${label}
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="flex-1 min-w-0 flex items-center justify-end gap-2 text-right"><span className="font-bold text-[14px] leading-tight">${T[m.home].name}</span><${Crest} id=${m.home} size=${30}/></div>
+      <div className="w-[62px] text-center">${mid}</div>
+      <div className="flex-1 min-w-0 flex items-center gap-2"><${Crest} id=${m.away} size=${30}/><span className="font-bold text-[14px] leading-tight">${T[m.away].name}</span></div>
+    </div>
+    <div className="mt-2 flex items-center justify-between gap-2">
+      <button className="flex items-center gap-1.5 text-[12.5px] text-mute min-w-0" onClick=${()=>go('cu15',{selVenue:m.home})}><${Icon} n="pin" s=${14}/><span className="truncate">${VENUES[m.home].name}</span></button>
+      ${click?html`<button className="text-[12.5px] font-bold text-brand flex items-center gap-1" onClick=${click}>${st==='live'?'Ver en vivo':'Ver aviso'}<${Icon} n="right" s=${14}/></button>`:null}
+    </div>
+  </div>`;
+}
+/* ---------- mapa estilizado ---------- */
+const MB={minLat:-31.69,maxLat:-31.57,minLng:-60.78,maxLng:-60.63};
+const proj=(lat,lng)=>({x:(lng-MB.minLng)/(MB.maxLng-MB.minLng)*100,y:(MB.maxLat-lat)/(MB.maxLat-MB.minLat)*100});
+function MapView({sel,onSel,origin,showAll=true}){
+  const ptsAll=TEAMS.map(t=>({id:t.id,...proj(VENUES[t.id].lat,VENUES[t.id].lng)}));
+  const o=origin?proj(origin.lat,origin.lng):null;
+  const d=sel?proj(VENUES[sel].lat,VENUES[sel].lng):null;
+  const sx=v=>v*4,sy=v=>v*3;
+  return html`<div className="relative w-full overflow-hidden rounded-[20px] border border-line" style=${{aspectRatio:'4 / 3',background:'var(--surface2)'}}>
+    <svg viewBox="0 0 400 300" className="absolute inset-0 w-full h-full" role="img" aria-label="Mapa esquemático de las canchas de la liga">
+      <rect width="400" height="300" fill="var(--surface2)"/>
+      <path d="M318 0H400V300H292C318 246 276 206 296 152C316 100 296 48 318 0Z" fill="var(--water)"/>
+      <ellipse cx="236" cy="52" rx="34" ry="16" fill="var(--water)"/>
+      <rect x="120" y="120" width="52" height="38" rx="10" fill="var(--park)"/>
+      <rect x="40" y="206" width="64" height="44" rx="12" fill="var(--park)"/>
+      <rect x="196" y="214" width="44" height="30" rx="10" fill="var(--park)"/>
+      <g stroke="var(--street)" strokeWidth="7" strokeLinecap="round" fill="none">
+        <path d="M0 70H300"/><path d="M0 128H290"/><path d="M0 188H280"/><path d="M0 246H270"/>
+        <path d="M60 0V300"/><path d="M118 0V300"/><path d="M180 0V300"/><path d="M240 0V280"/>
+        <path d="M0 270 260 20" strokeWidth="9"/>
+      </g>
+      <text x="338" y="170" fontSize="11" fill="var(--mute)" transform="rotate(-90 338 170)" textAnchor="middle" letterSpacing="3">RÍO PARANÁ</text>
+      <text x="236" y="56" fontSize="9" fill="var(--mute)" textAnchor="middle">Laguna</text>
+      ${o&&d?html`<path className="route" d=${`M${sx(o.x)} ${sy(o.y)} L${sx(o.x)} ${sy(d.y)} L${sx(d.x)} ${sy(d.y)}`} fill="none" stroke="var(--brand)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>`:null}
+      ${o?html`<g><circle cx=${sx(o.x)} cy=${sy(o.y)} r="12" fill="#2A6FDB" opacity=".22"/><circle cx=${sx(o.x)} cy=${sy(o.y)} r="6" fill="#2A6FDB" stroke="#fff" strokeWidth="2.5"/></g>`:null}
+    </svg>
+    ${(showAll?ptsAll:ptsAll.filter(p=>p.id===sel)).map(p=>html`<button key=${p.id} className=${cx('pin',sel===p.id&&'on')} style=${{left:p.x+'%',top:p.y+'%'}} aria-label=${'Cancha de '+T[p.id].name} aria-pressed=${sel===p.id?'true':'false'} onClick=${onSel?()=>onSel(p.id):undefined}>
+      <svg width="34" height="42" viewBox="0 0 34 42" aria-hidden="true"><path d="M17 41C17 41 2 27 2 15a15 15 0 0 1 30 0c0 12-15 26-15 26Z" fill=${T[p.id].color} stroke="#fff" strokeWidth="2.5"/><text x="17" y="19.5" textAnchor="middle" fontSize="11" fontWeight="800" fill="#fff" fontFamily="Figtree,sans-serif">${T[p.id].init}</text></svg>
+    </button>`)}
+  </div>`;
+}
+function haversine(a,b){
+  const R=6371,r=x=>x*Math.PI/180;
+  const dLat=r(b.lat-a.lat),dLng=r(b.lng-a.lng);
+  const x=Math.sin(dLat/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dLng/2)**2;
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+/* ---------- navegación inferior, demo y avisos ---------- */
+const CUS=[
+ ['cu01','CU_001','Registro de usuario'],['cu02','CU_002','Login de usuario'],['cu03','CU_003','Recupero de contraseña'],
+ ['cu04','CU_004','Edición de perfil básico'],['cu05','CU_005','Selección de equipos favoritos'],['cu06','CU_006','Gestión de roles y permisos'],
+ ['cu07','CU_007','Resultados en vivo'],['cu08','CU_008','Tabla de posiciones'],['cu09','CU_009','Fixture'],
+ ['cu10','CU_010','Historial de resultados'],['cu11','CU_011','Historial Head to Head'],['cu12','CU_012','Notificación push de gol'],
+ ['cu13','CU_013','Suspensión de partido'],['cu14','CU_014','Ubicación de canchas'],['cu15','CU_015','Cómo llegar a la cancha'],
+ ['cu16','CU_016','Estadísticas de jugador'],['cu17','CU_017','Tabla de goleadores'],['cu18','CU_018','Tarjetas y suspensiones'],
+ ['cu19','CU_019','Publicar jugador libre'],['cu20','CU_020','Buscar jugadores libres'],['cu21','CU_021','Contacto club-jugador'],
+];
+const AUTH_SCREENS=['cu01','cu02','cu03'];
+const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',
+  cu16:'players',cu17:'players',cu18:'players',cu19:'players',cu20:'players',cu21:'players',profile:'profile',cu04:'profile',cu05:'profile',cu06:'profile'};
+function BottomNav(){
+  const {s,go}=useApp();
+  const g=NAV_GROUP[s.screen];
+  const items=[['home','Inicio','home','home'],['matches','Partidos','ball','cu07'],['table','Posiciones','chart','cu08'],['players','Jugadores','users','cu17'],['profile','Perfil','user','profile']];
+  return html`<nav className="bnav" aria-label="Navegación principal">${items.map(([k,l,ic,dest])=>html`<button key=${k} className=${g===k?'on':''} aria-current=${g===k?'page':undefined} onClick=${()=>go(dest)}>
+    <span className="ico"><${Icon} n=${ic} s=${21}/></span>${l}</button>`)}</nav>`;
+}
+function DemoBar(){
+  const {s,go}=useApp();
+  const [open,setOpen]=useState(false);
+  const [theme,setTheme]=useState('auto');
+  const cur=CUS.find(c=>c[0]===s.screen);
+  const applyTheme=v=>{
+    setTheme(v);
+    try{const r=document.documentElement;if(v==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',v)}catch(e){}
+  };
+  useEffect(()=>{
+    if(!open)return;
+    const k=e=>{if(e.key==='Escape')setOpen(false)};
+    window.addEventListener('keydown',k);return()=>window.removeEventListener('keydown',k);
+  },[open]);
+  return html`<div className="demobar">
+    <span className="tag">DEMO</span>
+    <span className="cur">${cur?cur[1]+' · '+cur[2]:s.screen==='home'?'Inicio':'Perfil'}</span>
+    <button className="demobtn" aria-expanded=${open?'true':'false'} aria-haspopup="true" onClick=${()=>setOpen(!open)}><${Icon} n=${open?'x':'sliders'} s=${14}/>21 pantallas</button>
+    ${open?html`<div className="fixed inset-0 z-[60]" onClick=${()=>setOpen(false)} aria-hidden="true"></div>`:null}
+    ${open?html`<div className="demopanel" role="menu" aria-label="Saltar a un caso de uso">
+      <div className="flex gap-2 mb-2">
+        <button style=${{flex:1,textAlign:'center'}} className=${cx('pill',s.screen==='home'&&'on')} onClick=${()=>{go('home');setOpen(false)}}>Inicio</button>
+        <button style=${{flex:1,textAlign:'center'}} className=${cx('pill',s.screen==='profile'&&'on')} onClick=${()=>{go('profile');setOpen(false)}}>Mi perfil</button>
+      </div>
+      ${CUS.map(([id,code,title])=>html`<button key=${id} role="menuitem" className=${cx('demoitem',s.screen===id&&'on')} onClick=${()=>{go(id);setOpen(false)}}>
+        <span className="code">${code}</span><span className="text-[14px] font-semibold flex-1">${title}</span>${s.screen===id?html`<${Icon} n="check" s=${16}/>`:null}</button>`)}
+      <div className="mt-2 pt-2 border-t border-line flex items-center gap-2">
+        <span className="text-[12px] font-bold text-mute px-1">Tema</span>
+        <div className="seg flex-1">${[['auto','Auto'],['light','Claro'],['dark','Oscuro']].map(([k,l])=>html`<button key=${k} className=${theme===k?'on':''} onClick=${()=>applyTheme(k)}>${l}</button>`)}</div>
+      </div>
+    </div>`:null}
+  </div>`;
+}
+function ToastItem({t}){
+  const {dispatch,go}=useApp();
+  useEffect(()=>{const id=setTimeout(()=>dispatch({type:'TOAST_RM',id:t.id}),t.kind==='goal'?7000:4800);return()=>clearTimeout(id)},[t.id]);
+  const close=e=>{e.stopPropagation();dispatch({type:'TOAST_RM',id:t.id})};
+  if(t.kind==='goal'){
+    return html`<div className="toast p-3 flex items-center gap-3" style=${{background:'#101a15',color:'#F1F5EE',cursor:'pointer'}} role="status" onClick=${()=>{dispatch({type:'TOAST_RM',id:t.id});go('cu07')}}>
+      <${Crest} id=${t.team} size=${42}/>
+      <div className="min-w-0 flex-1"><div className="text-[11px] font-bold tracking-wider" style=${{color:'#E3A32B'}}>SANTA FE GOL · AHORA</div>
+        <div className="font-bold text-[15px] leading-tight">${t.title}</div><div className="text-[13px] opacity-85 leading-snug">${t.body}</div></div>
+      <button aria-label="Cerrar aviso" className="p-1 opacity-70" onClick=${close}><${Icon} n="x" s=${16}/></button></div>`;
+  }
+  const tone=t.kind==='warn'?'alert-gold':t.kind==='success'?'alert-ok':'';
+  const ic=t.kind==='warn'?'alert':t.kind==='success'?'check':'info';
+  return html`<div className=${cx('toast alert items-start',tone)} style=${tone?{}:{background:'var(--surface)',border:'1px solid var(--line)'}} role="status">
+    <${Icon} n=${ic} s=${20}/><div className="min-w-0 flex-1"><div className="font-bold">${t.title}</div>${t.body?html`<div className="text-[13px] font-medium opacity-90">${t.body}</div>`:null}</div>
+    <button aria-label="Cerrar aviso" className="p-1 opacity-70" onClick=${close}><${Icon} n="x" s=${16}/></button></div>`;
+}
+function Toasts(){
+  const {s}=useApp();
+  return html`<div className="toasts" aria-live="polite">${s.toasts.map(t=>html`<${ToastItem} key=${t.id} t=${t}/>`)}</div>`;
+}
+/* ============================================================
+   Cuenta: CU_001 a CU_006, inicio y perfil
+   ============================================================ */
+function AuthShell({title,sub,children,foot}){
+  return html`<main>
+    <div className="hero px-5 pt-7 pb-12" style=${{borderRadius:'0 0 30px 30px'}}>
+      <div className="flex items-center gap-3"><${Logo}/><div><div className="disp text-[22px] font-extrabold leading-none">Santa Fe GOL</div><div className="text-[12.5px] opacity-80 mt-1">Liga Local · fútbol regional</div></div></div>
+      <h1 className="mt-7 text-[30px] font-bold leading-[1.08]">${title}</h1>
+      <p className="mt-2 text-[14.5px] opacity-85">${sub}</p>
+    </div>
+    <div className="px-4 -mt-7 pb-6"><div className="card p-5 flex flex-col gap-4">${children}</div>${foot}</div>
+  </main>`;
+}
+/* CU_001 · Registro */
+function Register(){
+  const {s,dispatch,go}=useApp();
+  const [f,setF]=useState({name:'',email:'',pw:'',type:'Hincha'});
+  const [show,setShow]=useState(false);
+  const [sub,setSub]=useState(false);
+  const set=k=>e=>setF({...f,[k]:e.target.value});
+  const errs={};
+  const nm=f.name.trim();
+  if(nm.length<3)errs.name='Ingresá tu nombre completo.';else if(!/\s/.test(nm))errs.name='Falta tu apellido.';
+  if(!EMAIL.test(f.email))errs.email='Escribí un email válido, por ejemplo nombre@correo.com.';
+  else if(s.users.some(u=>u.email.toLowerCase()===f.email.toLowerCase()))errs.email='Ese email ya tiene una cuenta. Probá iniciar sesión.';
+  if(f.pw.length<6)errs.pw='Usá al menos 6 caracteres.';
+  const strength=(f.pw.length>=8)+(/[A-Z]/.test(f.pw))+(/\d/.test(f.pw))+(/[^A-Za-z0-9]/.test(f.pw));
+  const types=[['Hincha','heart','Sigo a mi equipo'],['Club','shield','Represento a un club'],['Jugador libre','user','Busco equipo']];
+  const submit=e=>{
+    e.preventDefault();setSub(true);
+    if(Object.keys(errs).length)return;
+    const user={id:'u'+uid(),name:nm,email:f.email.trim(),pw:f.pw,phone:'',role:f.type,avatar:null};
+    dispatch({type:'REGISTER',user});
+    dispatch({type:'TOAST',toast:{kind:'success',title:'Cuenta creada',body:`Bienvenido/a, ${nm.split(' ')[0]}. Ya sos parte de Santa Fe GOL.`}});
+    go(f.type==='Jugador libre'?'cu19':f.type==='Hincha'?'cu05':'home');
+  };
+  return html`<${AuthShell} title="Creá tu cuenta" sub="Seguí a tu club, mirá los goles en vivo y encontrá equipo." foot=${html`<p className="text-center text-[14px] mt-4 text-mute">¿Ya tenés cuenta? <button className="font-bold text-brand underline" onClick=${()=>go('cu02')}>Iniciá sesión</button></p>`}>
+    <form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
+      <${Field} id="reg-name" label="Nombre completo" icon="user" value=${f.name} onChange=${set('name')} placeholder="Ej. Julieta Fernández" autoComplete="name" error=${sub?errs.name:''}/>
+      <${Field} id="reg-email" label="Email" icon="mail" type="email" value=${f.email} onChange=${set('email')} placeholder="nombre@correo.com" autoComplete="email" error=${sub?errs.email:''}/>
+      <div>
+        <${Field} id="reg-pw" label="Contraseña" icon="lock" type=${show?'text':'password'} value=${f.pw} onChange=${set('pw')} placeholder="Mínimo 6 caracteres" autoComplete="new-password" error=${sub?errs.pw:''}
+          right=${html`<button type="button" aria-label=${show?'Ocultar contraseña':'Mostrar contraseña'} onClick=${()=>setShow(!show)} className="text-mute"><${Icon} n=${show?'eyeoff':'eye'} s=${18}/></button>`}/>
+        <div className="flex gap-1.5 mt-2" aria-hidden="true">${[0,1,2,3].map(i=>html`<span key=${i} className="h-1.5 flex-1 rounded-full" style=${{background:f.pw&&i<Math.max(strength,1)?(strength>=3?'var(--ok)':strength===2?'var(--goldfill)':'var(--bad)'):'var(--line)'}}></span>`)}</div>
+      </div>
+      <fieldset>
+        <legend className="lbl">Tipo de usuario</legend>
+        <div className="grid grid-cols-3 gap-2">${types.map(([t,ic,sub2])=>html`<button type="button" key=${t} aria-pressed=${f.type===t?'true':'false'} onClick=${()=>setF({...f,type:t})}
+          className=${cx('rounded-2xl border-2 p-3 flex flex-col items-center gap-1 text-center',f.type===t?'border-pri bg-prisoft text-brand':'border-line bg-surface')}>
+          <${Icon} n=${ic} s=${22}/><span className="font-bold text-[13.5px] leading-tight">${t}</span><span className="text-[11px] text-mute leading-tight">${sub2}</span></button>`)}</div>
+      </fieldset>
+      <${Btn} type="submit" full icon="check">Crear cuenta<//>
+    </form>
+  <//>`;
+}
+/* CU_002 · Login */
+function Login(){
+  const {s,dispatch,go}=useApp();
+  const [email,setEmail]=useState('');
+  const [pw,setPw]=useState('');
+  const [show,setShow]=useState(false);
+  const [tries,setTries]=useState(0);
+  const [bad,setBad]=useState(false);
+  const submit=e=>{
+    e.preventDefault();
+    const u=s.users.find(x=>x.email.toLowerCase()===email.trim().toLowerCase()&&x.pw===pw);
+    if(!u){setBad(true);setTries(t=>t+1);return}
+    setBad(false);dispatch({type:'LOGIN',userId:u.id});
+    dispatch({type:'TOAST',toast:{kind:'success',title:`Hola, ${u.name.split(' ')[0]}`,body:'Iniciaste sesión correctamente.'}});
+    go('home');
+  };
+  return html`<${AuthShell} title="Ingresá a tu cuenta" sub="Resultados, tabla y avisos de tu equipo en un solo lugar." foot=${html`<p className="text-center text-[14px] mt-4 text-mute">¿Primera vez? <button className="font-bold text-brand underline" onClick=${()=>go('cu01')}>Creá tu cuenta</button></p>`}>
+    <form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
+      ${bad?html`<div key=${tries} className="alert alert-bad shake" role="alert"><${Icon} n="alert" s=${20}/><div><div>Credenciales incorrectas</div><div className="font-medium text-[13px]">Revisá tu email y tu contraseña e intentá de nuevo.${tries>=3?' Si no la recordás, recuperala abajo.':''}</div></div></div>`:null}
+      <${Field} id="log-email" label="Email" icon="mail" type="email" value=${email} onChange=${e=>setEmail(e.target.value)} placeholder="nombre@correo.com" autoComplete="email" error=${bad?' ':''}/>
+      <${Field} id="log-pw" label="Contraseña" icon="lock" type=${show?'text':'password'} value=${pw} onChange=${e=>setPw(e.target.value)} placeholder="Tu contraseña" autoComplete="current-password" error=${bad?' ':''}
+        right=${html`<button type="button" aria-label=${show?'Ocultar contraseña':'Mostrar contraseña'} onClick=${()=>setShow(!show)} className="text-mute"><${Icon} n=${show?'eyeoff':'eye'} s=${18}/></button>`}/>
+      <button type="button" className=${cx('text-[14px] font-bold text-brand text-right underline',tries>=3&&'animate-pulse')} onClick=${()=>go('cu03')}>Olvidé mi contraseña</button>
+      <${Btn} type="submit" full icon="lockopen">Ingresar<//>
+    </form>
+    <div className="card-soft p-3 text-[13px]">
+      <div className="font-bold mb-1">Datos de prueba</div>
+      <div className="text-mute">valentina@santafegol.ar · gol2026 (Admin)</div>
+      <${Btn} v="ghost" sm className="mt-2" onClick=${()=>{setEmail('valentina@santafegol.ar');setPw('gol2026');setBad(false)}}>Completar datos<//>
+    </div>
+  <//>`;
+}
+/* CU_003 · Recupero de contraseña */
+function Recover(){
+  const {go}=useApp();
+  const [email,setEmail]=useState('');
+  const [sent,setSent]=useState(false);
+  const [err,setErr]=useState('');
+  const [cool,setCool]=useState(0);
+  useEffect(()=>{if(cool<=0)return;const id=setTimeout(()=>setCool(cool-1),1000);return()=>clearTimeout(id)},[cool]);
+  const submit=e=>{
+    e.preventDefault();
+    if(!EMAIL.test(email)){setErr('Escribí un email válido para enviarte el enlace.');return}
+    setErr('');setSent(true);setCool(30);
+  };
+  const [u,d]=email.split('@');
+  const masked=email?`${u.slice(0,2)}${'•'.repeat(Math.max(2,u.length-2))}@${d||''}`:'';
+  return html`<${AuthShell} title="Recuperá tu contraseña" sub="Te enviamos un enlace para que elijas una nueva." foot=${html`<p className="text-center text-[14px] mt-4"><button className="font-bold text-brand underline" onClick=${()=>go('cu02')}>Volver a iniciar sesión</button></p>`}>
+    ${sent?html`<div className="flex flex-col items-center text-center gap-3 py-2" role="status">
+      <span className="w-16 h-16 rounded-full bg-okbg text-ok flex items-center justify-center"><${Icon} n="mail" s=${30}/></span>
+      <h2 className="text-[21px] font-bold">Revisá tu correo</h2>
+      <p className="text-[14.5px] text-mute">Si ${masked} tiene una cuenta, vas a recibir un enlace para restablecer tu contraseña. Vence en 30 minutos.</p>
+      <div className="card-soft p-3 w-full text-[13px] text-left">¿No llegó? Mirá en spam o promociones y esperá unos segundos.</div>
+      <${Btn} v="ghost" full disabled=${cool>0} icon="refresh" onClick=${()=>setCool(30)}>${cool>0?`Reenviar en ${cool} s`:'Reenviar enlace'}<//>
+      <button className="text-[14px] font-bold text-brand underline" onClick=${()=>{setSent(false);setEmail('')}}>Usar otro email</button>
+    </div>`:html`<form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
+      <${Field} id="rec-email" label="Email de tu cuenta" icon="mail" type="email" value=${email} onChange=${e=>setEmail(e.target.value)} placeholder="nombre@correo.com" autoComplete="email" error=${err}/>
+      <${Btn} type="submit" full icon="send">Enviar enlace<//>
+    </form>`}
+  <//>`;
+}
+/* CU_004 · Edición de perfil */
+function EditProfile(){
+  const {s,dispatch,me}=useApp();
+  const [d,setD]=useState({name:me.name,phone:me.phone,email:me.email,avatar:me.avatar});
+  const [sub,setSub]=useState(false);
+  const [photoErr,setPhotoErr]=useState('');
+  const fileRef=useRef(null);
+  const set=k=>e=>setD({...d,[k]:e.target.value});
+  const errs={};
+  if(d.name.trim().length<3)errs.name='Ingresá tu nombre.';
+  if(!EMAIL.test(d.email))errs.email='Escribí un email válido.';
+  else if(s.users.some(u=>u.id!==me.id&&u.email.toLowerCase()===d.email.toLowerCase()))errs.email='Ese email ya lo usa otra cuenta.';
+  if(d.phone&&d.phone.replace(/\D/g,'').length<8)errs.phone='Ingresá al menos 8 dígitos.';
+  const dirty=d.name!==me.name||d.phone!==me.phone||d.email!==me.email||d.avatar!==me.avatar;
+  const onFile=e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    if(!/^image\//.test(f.type)){setPhotoErr('Elegí un archivo de imagen (JPG o PNG).');return}
+    if(f.size>2*1024*1024){setPhotoErr('La foto pesa más de 2 MB. Elegí una más liviana.');return}
+    setPhotoErr('');const r=new FileReader();r.onload=()=>setD(x=>({...x,avatar:r.result}));r.readAsDataURL(f);
+  };
+  const save=e=>{
+    e.preventDefault();setSub(true);if(Object.keys(errs).length)return;
+    dispatch({type:'UPDATE_USER',id:me.id,patch:{name:d.name.trim(),phone:d.phone.trim(),email:d.email.trim(),avatar:d.avatar}});
+    dispatch({type:'TOAST',toast:{kind:'success',title:'Perfil actualizado',body:'Guardamos tus cambios.'}});
+  };
+  return html`<${Page} title="Editar perfil" sub="Tus datos básicos">
+    <form className="flex flex-col gap-4" onSubmit=${save} noValidate>
+      <div className="card p-5 flex flex-col items-center gap-3">
+        <div className="relative"><${Avatar} name=${d.name||'?'} src=${d.avatar} size=${96}/>
+          <button type="button" aria-label="Cambiar foto" onClick=${()=>fileRef.current&&fileRef.current.click()} className="absolute -bottom-1 -right-1 w-10 h-10 rounded-full bg-pri text-onpri flex items-center justify-center border-4 border-surface"><${Icon} n="camera" s=${18}/></button></div>
+        <input ref=${fileRef} id="avatar-file" type="file" accept="image/*" className="sr-only" onChange=${onFile} aria-label="Elegir foto de perfil"/>
+        <div className="flex gap-2"><${Btn} v="ghost" sm icon="camera" onClick=${()=>fileRef.current&&fileRef.current.click()}>Subir foto<//>${d.avatar?html`<${Btn} v="ghost" sm onClick=${()=>setD({...d,avatar:null})}>Quitar<//>`:null}</div>
+        ${photoErr?html`<span className="err" role="alert">${photoErr}</span>`:null}
+        <span className=${cx('chip',me.role==='Admin'?'chip-gold':'chip-pri')}>${me.role}</span>
+      </div>
+      <div className="card p-5 flex flex-col gap-4">
+        <${Field} id="ep-name" label="Nombre" icon="user" value=${d.name} onChange=${set('name')} autoComplete="name" error=${sub?errs.name:''}/>
+        <${Field} id="ep-phone" label="Teléfono" icon="phone" type="tel" value=${d.phone} onChange=${set('phone')} placeholder="342 555-0000" autoComplete="tel" error=${sub?errs.phone:''}/>
+        <${Field} id="ep-email" label="Email" icon="mail" type="email" value=${d.email} onChange=${set('email')} autoComplete="email" error=${sub?errs.email:''}/>
+      </div>
+      <${Btn} type="submit" full icon="check" disabled=${!dirty}>Guardar cambios<//>
+      ${!dirty?html`<p className="text-center text-[13px] text-mute -mt-2">Editá un dato para habilitar el botón.</p>`:null}
+    </form>
+  <//>`;
+}
+/* CU_005 · Equipos favoritos */
+function Favorites(){
+  const {s,dispatch,go,d}=useApp();
+  const [sel,setSel]=useState(s.favorites);
+  const toggle=id=>setSel(sel.includes(id)?sel.filter(x=>x!==id):[...sel,id]);
+  const same=sel.length===s.favorites.length&&sel.every(x=>s.favorites.includes(x));
+  const confirm=()=>{
+    dispatch({type:'SET_FAVS',ids:sel});
+    dispatch({type:'TOAST',toast:{kind:'success',title:'Favoritos guardados',body:sel.length?`Vas a recibir avisos de ${sel.length} ${sel.length===1?'equipo':'equipos'}.`:'No seguís a ningún equipo por ahora.'}});
+    go('home');
+  };
+  return html`<${Page} title="Equipos favoritos" sub="Elegí los clubes que querés seguir">
+    <div className="flex items-center justify-between"><span className="text-[14px] text-mute"><b className="text-ink">${sel.length}</b> de ${TEAMS.length} seleccionados</span>
+      <div className="flex gap-2"><button className="text-[13.5px] font-bold text-brand underline" onClick=${()=>setSel(TEAMS.map(t=>t.id))}>Todos</button><button className="text-[13.5px] font-bold text-mute underline" onClick=${()=>setSel([])}>Ninguno</button></div></div>
+    <div className="flex flex-col gap-2">
+      ${d.table.map(r=>{const on=sel.includes(r.id);return html`<label key=${r.id} className="card p-3 flex items-center gap-3 cursor-pointer" style=${{border:`2px solid ${on?'var(--pri)':'transparent'}`,background:on?'var(--prisoft)':undefined}}>
+        <input type="checkbox" className="peer sr-only" checked=${on} onChange=${()=>toggle(r.id)}/>
+        <${Crest} id=${r.id} size=${44}/>
+        <div className="min-w-0 flex-1"><div className="font-bold text-[16px] leading-tight">${T[r.id].name}</div><div className="text-[12.5px] text-mute">#${r.pos} en la tabla · ${r.pts} pts</div></div>
+        <span className=${cx('w-7 h-7 rounded-lg border-2 flex items-center justify-center peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2',on?'bg-pri border-pri text-onpri':'border-line bg-surface')}>${on?html`<${Icon} n="check" s=${16} sw=${3}/>`:null}</span>
+      </label>`})}
+    </div>
+    <${Btn} full icon="star" onClick=${confirm} disabled=${same&&sel.length>0}>Confirmar selección (${sel.length})<//>
+  <//>`;
+}
+/* CU_006 · Roles y permisos */
+const ROLE_INFO={
+  Hincha:'Sigue equipos, recibe avisos y consulta estadísticas.',
+  Club:'Todo lo de Hincha, además puede buscar y contactar jugadores libres.',
+  Admin:'Gestiona roles, resultados, suspensiones y publicaciones.',
+};
+function Roles(){
+  const {s,dispatch,me}=useApp();
+  const q=s.ui.adminQuery,selId=s.ui.adminSel;
+  const [pick,setPick]=useState(null);
+  const [confirmStep,setConfirmStep]=useState(false);
+  const setUI=patch=>dispatch({type:'UI',patch});
+  if(me.role!=='Admin'){
+    return html`<${Page} title="Roles y permisos" sub="Solo para administradores">
+      <div className="card p-6 text-center"><span className="mx-auto w-14 h-14 rounded-2xl bg-goldbg text-gold flex items-center justify-center"><${Icon} n="lock" s=${26}/></span>
+        <h2 className="mt-3 text-[19px] font-bold">Acceso restringido</h2><p className="text-[14px] text-mute mt-1">Tu rol actual es <b>${me.role}</b>. Este panel es solo para administradores.</p>
+        <${Btn} className="mt-4" full v="gold" icon="shield" onClick=${()=>dispatch({type:'UPDATE_USER',id:me.id,patch:{role:'Admin'}})}>Activar modo Admin (demo)<//></div>
+    <//>`;
+  }
+  const list=s.users.filter(u=>(u.name+' '+u.email).toLowerCase().includes(q.trim().toLowerCase()));
+  const target=s.users.find(u=>u.id===selId);
+  const choose=r=>{setPick(r);setConfirmStep(false)};
+  const self=target&&target.id===me.id;
+  const apply=()=>{
+    dispatch({type:'SET_ROLE',userId:target.id,role:pick});
+    dispatch({type:'TOAST',toast:{kind:'success',title:'Rol actualizado',body:`${target.name} ahora es ${pick}.`}});
+    setPick(null);setConfirmStep(false);
+  };
+  return html`<${Page} title="Roles y permisos" sub="Panel de administración">
+    <div className=${cx('inp')}><${Icon} n="search" s=${18} className="text-mute"/><input id="adm-q" aria-label="Buscar usuario por nombre o email" placeholder="Buscar usuario (ej. Carla Bianchi)" value=${q} onChange=${e=>setUI({adminQuery:e.target.value})}/>
+      ${q?html`<button aria-label="Limpiar búsqueda" onClick=${()=>setUI({adminQuery:''})} className="text-mute"><${Icon} n="x" s=${16}/></button>`:null}</div>
+    <div className="flex flex-col gap-2">
+      ${list.length===0?html`<${Empty} icon="search" title="Sin resultados">No hay usuarios que coincidan con “${q}”.<//>`:list.map(u=>html`<button key=${u.id} onClick=${()=>{setUI({adminSel:u.id});setPick(null);setConfirmStep(false)}} aria-pressed=${selId===u.id?'true':'false'}
+        className="card p-3 flex items-center gap-3 w-full" style=${{border:`2px solid ${selId===u.id?'var(--pri)':'transparent'}`}}>
+        <${Avatar} name=${u.name} src=${u.avatar} size=${44}/><div className="min-w-0 flex-1"><div className="font-bold">${u.name}</div><div className="text-[12.5px] text-mute truncate">${u.email}</div></div>
+        <span className=${cx('chip',u.role==='Admin'?'chip-gold':u.role==='Club'?'chip-ok':'chip-pri')}>${u.role}</span></button>`)}
+    </div>
+    ${target?html`<section className="card p-5 flex flex-col gap-3" aria-label=${'Cambiar rol de '+target.name}>
+      <div className="flex items-center gap-3"><${Avatar} name=${target.name} src=${target.avatar} size=${52}/><div><div className="text-[17px] font-bold">${target.name}</div><div className="text-[13px] text-mute">Rol actual: <b className="text-ink">${target.role}</b></div></div></div>
+      <div role="radiogroup" aria-label="Nuevo rol" className="flex flex-col gap-2">
+        ${['Hincha','Club','Admin'].map(r=>html`<button key=${r} role="radio" aria-checked=${(pick||target.role)===r?'true':'false'} onClick=${()=>choose(r)} className=${cx('rounded-2xl border-2 p-3 flex items-start gap-3',(pick||target.role)===r?'border-pri bg-prisoft':'border-line bg-surface')}>
+          <span className=${cx('mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-none',(pick||target.role)===r?'border-pri':'border-line')}>${(pick||target.role)===r?html`<span className="w-2.5 h-2.5 rounded-full bg-pri"></span>`:null}</span>
+          <span><span className="font-bold block">${r}${r===target.role?' · actual':''}</span><span className="text-[13px] text-mute">${ROLE_INFO[r]}</span></span></button>`)}
+      </div>
+      ${pick&&pick!==target.role&&self&&pick!=='Admin'?html`<div className="alert alert-gold" role="alert"><${Icon} n="alert" s=${20}/><span>No podés quitarte el rol Admin a vos mismo. Pedile a otro administrador.</span></div>`:null}
+      ${pick&&pick!==target.role&&!(self&&pick!=='Admin')?(confirmStep
+        ?html`<div className="alert alert-gold flex-col" role="alert"><span>¿Cambiar el rol de <b>${target.name}</b> de ${target.role} a <b>${pick}</b>?</span><div className="flex gap-2 w-full"><${Btn} sm className="flex-1" onClick=${apply}>Sí, cambiar<//><${Btn} v="ghost" sm className="flex-1" onClick=${()=>setConfirmStep(false)}>Cancelar<//></div></div>`
+        :html`<${Btn} full icon="shield" onClick=${()=>setConfirmStep(true)}>Aplicar cambio de rol<//>`):null}
+    </section>`:null}
+    ${s.roleLog.length?html`<section><${SectionTitle}>Cambios recientes<//><div className="card mt-2 divide-y divide-line">${s.roleLog.slice(0,5).map(l=>html`<div key=${l.id} className="p-3 text-[13.5px]"><b>${l.name}</b>: ${l.from} → <b>${l.to}</b><div className="text-[12px] text-mute">Por ${l.by} · ${ago(l.ts)}</div></div>`)}</div></section>`:null}
+  <//>`;
+}
+/* ---------- Inicio ---------- */
+const GROUPS=[
+ {t:'Partidos',items:[['cu07','En vivo','ball'],['cu09','Fixture','calendar'],['cu10','Historial','history'],['cu11','Head to Head','swap']]},
+ {t:'Torneo',items:[['cu08','Posiciones','chart'],['cu17','Goleadores','trophy'],['cu16','Ficha de jugador','user'],['cu18','Tarjetas','alert']]},
+ {t:'Canchas',items:[['cu14','Mapa de canchas','pin'],['cu15','Cómo llegar','nav']]},
+ {t:'Fichajes',items:[['cu19','Publicar perfil','plus'],['cu20','Buscar jugadores','search'],['cu21','Chat club–jugador','send']]},
+ {t:'Avisos',items:[['cu12','Gol en vivo','bell'],['cu13','Partido suspendido','cloud']]},
+ {t:'Cuenta',items:[['cu01','Registro','user'],['cu02','Ingresar','lock'],['cu03','Recuperar clave','mail'],['cu04','Editar perfil','pencil'],['cu05','Favoritos','star'],['cu06','Roles (Admin)','shield']]},
+];
+function Home(){
+  const {s,go,d,me}=useApp();
+  const live=s.matches.find(m=>m.id==='LIVE');const [h,a]=scoreOf(live);
+  const unread=s.notifLog.filter(n=>n.ts>s.notifSeen).length;
+  const today=s.matches.filter(m=>m.date===TODAY).length;
+  return html`<main>
+    <header className="topbar"><div className="flex items-center gap-3 px-4 py-3">
+      <${Logo} size=${40}/><div className="flex-1 min-w-0"><div className="disp text-[21px] font-extrabold leading-none">Santa Fe GOL</div><div className="text-[12.5px] text-mute mt-1">Liga Local · Fecha 14</div></div>
+      <button className="icobtn" aria-label=${`Notificaciones${unread?`, ${unread} nuevas`:''}`} onClick=${()=>go('cu12')}><${Icon} n="bell" s=${20}/>${unread?html`<span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-live text-bg text-[11px] font-bold flex items-center justify-center" style=${{background:'var(--live)',color:'var(--surface)'}}>${unread}</span>`:null}</button>
+    </div></header>
+    <div className="px-4 pb-4 flex flex-col gap-5">
+      <div><h2 className="text-[26px] font-bold leading-tight">Hola, ${me.name.split(' ')[0]}</h2><p className="text-[14.5px] text-mute">Hoy se juegan ${today} partidos de la Fecha 14.</p></div>
+      <button className="hero p-5 text-left w-full" onClick=${()=>go('cu07')} aria-label="Ver partido en vivo">
+        <div className="flex items-center justify-between"><span className="text-[12px] font-bold tracking-wider opacity-80">${live.status==='live'?'EN VIVO':'FINALIZADO'} · FECHA 14</span>
+          ${live.status==='live'?html`<span className="flex items-center gap-2 text-[13px] font-bold"><span className="dot-live"></span>${live.minute}'</span>`:html`<span className="text-[13px] font-bold">Final</span>`}</div>
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${live.home} size=${56}/><span className="font-bold text-[14px] leading-tight">${T[live.home].name}</span></div>
+          <div className="disp text-[46px] font-extrabold tnum leading-none px-1">${h}–${a}</div>
+          <div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${live.away} size=${56}/><span className="font-bold text-[14px] leading-tight">${T[live.away].name}</span></div>
+        </div>
+        <div className="mt-4 flex items-center gap-1.5 text-[12.5px] opacity-80"><${Icon} n="pin" s=${14}/>${VENUES[live.home].name}</div>
+      </button>
+      <section><${SectionTitle} right=${html`<button className="text-[13.5px] font-bold text-brand" onClick=${()=>go('cu05')}>Editar</button>`}>Tus equipos<//>
+        ${s.favorites.length===0?html`<div className="mt-2"><${Empty} icon="star" title="Todavía no seguís equipos">Elegí tus favoritos para ver sus próximos partidos.<${Btn} className="mt-3" sm onClick=${()=>go('cu05')}>Elegir equipos<//><//></div>`
+        :html`<div className="mt-2 flex flex-col gap-2">${s.favorites.map(id=>{const r=d.table.find(x=>x.id===id);const nm=nextMatch(s.matches,id);const opp=nm?(nm.home===id?nm.away:nm.home):null;
+          return html`<button key=${id} onClick=${()=>go('cu08',{expandedTeam:id})} className="card p-3 flex items-center gap-3 text-left"><${Crest} id=${id} size=${44}/>
+            <div className="min-w-0 flex-1"><div className="font-bold leading-tight">${T[id].name}</div><div className="text-[12.5px] text-mute">#${r.pos} · ${r.pts} pts${nm?` · Próx.: ${nm.status==='suspended'?'a reprogramar':fmtLong(nm.date)} vs ${T[opp].init}`:''}</div></div><${Icon} n="right" s=${18} className="text-mute"/></button>`})}</div>`}
+      </section>
+      <section className="flex flex-col gap-4"><${SectionTitle}>Todo en la app<//>
+        ${GROUPS.map(g=>html`<div key=${g.t}><div className="text-[12px] font-bold uppercase tracking-widest text-mute mb-2">${g.t}</div>
+          <div className="grid grid-cols-2 gap-2">${g.items.map(([id,l,ic])=>html`<button key=${id} onClick=${()=>go(id)} className="card p-3 flex items-center gap-2.5 text-left">
+            <span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center flex-none"><${Icon} n=${ic} s=${18}/></span><span className="text-[13.5px] font-bold leading-tight">${l}</span></button>`)}</div></div>`)}
+      </section>
+    </div>
+  </main>`;
+}
+/* ---------- Perfil (menú) ---------- */
+function Profile(){
+  const {s,go,dispatch,me}=useApp();
+  const rows=[['cu04','Editar perfil','pencil',''],['cu05','Equipos favoritos','star',`${s.favorites.length}`],['cu12','Notificaciones','bell',''],['cu19','Publicar como jugador libre','plus',''],['cu21','Mensajes con clubes','send',''],['cu06','Roles y permisos','shield',me.role==='Admin'?'Admin':'Restringido']];
+  return html`<${Page} title="Mi perfil" back=${false}>
+    <div className="hero p-5 flex items-center gap-4"><${Avatar} name=${me.name} src=${me.avatar} size=${68}/>
+      <div className="min-w-0"><div className="disp text-[22px] font-bold leading-tight">${me.name}</div><div className="text-[13px] opacity-80 truncate">${me.email}</div><span className="chip chip-gold mt-2">${me.role}</span></div></div>
+    <div className="card divide-y divide-line">${rows.map(([id,l,ic,tag])=>html`<button key=${id} onClick=${()=>go(id)} className="w-full flex items-center gap-3 p-4 text-left"><span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center"><${Icon} n=${ic} s=${18}/></span>
+      <span className="flex-1 font-bold text-[15px]">${l}</span>${tag?html`<span className="chip">${tag}</span>`:null}<${Icon} n="right" s=${18} className="text-mute"/></button>`)}</div>
+    <${Btn} v="ghost" full icon="logout" onClick=${()=>{dispatch({type:'LOGOUT'});go('cu02')}}>Cerrar sesión<//>
+  <//>`;
+}
+/* ============================================================
+   Partidos: CU_007 a CU_013
+   ============================================================ */
+const pickScorer=tid=>{
+  const L=ROSTERS[tid];let x=Math.random()*L.reduce((a,p)=>a+p[2],0);
+  for(let i=0;i<L.length;i++){x-=L[i][2];if(x<=0)return tid+i}
+  return tid+'0';
+};
+function EventIcon({type}){
+  if(type==='goal')return html`<${Icon} n="ball" s=${18}/>`;
+  return html`<span className=${type==='yellow'?'cy':'cr'}></span>`;
+}
+const EV_LABEL={goal:'Gol',yellow:'Tarjeta amarilla',red:'Tarjeta roja'};
+/* CU_007 · Resultados en vivo */
+function Live(){
+  const {s,dispatch,go}=useApp();
+  const live=s.matches.find(m=>m.id==='LIVE');
+  const [h,a]=scoreOf(live);const on=live.status==='live';
+  const others=s.matches.filter(m=>m.fecha===14&&m.id!=='LIVE').sort((x,y)=>x.time.localeCompare(y.time));
+  const sim=side=>{if(!on)return;const tid=side==='home'?live.home:live.away;dispatch({type:'EVENT',matchId:'LIVE',ev:{min:Math.min(90,live.minute),type:'goal',team:tid,player:pickScorer(tid),sim:true}})};
+  return html`<${Page} title="Partidos" sub="Fecha 14 · hoy" nav=${NAV_MATCHES}>
+    <section className="hero p-5" aria-label="Partido en vivo">
+      <div className="flex items-center justify-between">
+        <span className=${cx('chip',on?'':'')} style=${{background:'rgba(255,255,255,.14)',color:'#fff'}}>${on?html`<span className="dot-live"></span>EN VIVO · ${live.minute}'`:'FINALIZADO'}</span>
+        <button className="flex items-center gap-1.5 text-[12.5px] opacity-85" onClick=${()=>go('cu15',{selVenue:live.home})}><${Icon} n="pin" s=${14}/>${VENUES[live.home].name}</button>
+      </div>
+      <div className="mt-5 flex items-center justify-between gap-2">
+        <div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${live.home} size=${60}/><span className="font-bold text-[14.5px] leading-tight">${T[live.home].name}</span></div>
+        <div className="disp text-[54px] font-extrabold tnum leading-none" aria-label=${`Marcador ${h} a ${a}`}>${h}–${a}</div>
+        <div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${live.away} size=${60}/><span className="font-bold text-[14.5px] leading-tight">${T[live.away].name}</span></div>
+      </div>
+      <div className="mt-5"><div className="h-1.5 rounded-full" style=${{background:'rgba(255,255,255,.18)'}}><div className="h-full rounded-full" style=${{width:Math.min(100,live.minute/90*100)+'%',background:'#E3A32B',transition:'width .6s'}}></div></div>
+        <div className="flex justify-between text-[11px] opacity-70 mt-1 tnum"><span>0'</span><span>45'</span><span>90'</span></div></div>
+    </section>
+    <section><${SectionTitle}>Minuto a minuto<//>
+      <ol className="card mt-2 divide-y divide-line">
+        ${[...live.events].reverse().map((e,i)=>html`<li key=${i} className="flex items-center gap-3 p-3">
+          <span className="w-10 text-[14px] font-extrabold tnum text-brand">${e.min}'</span>
+          <span className=${cx('w-8 h-8 rounded-full flex items-center justify-center flex-none',e.type==='goal'?'bg-okbg text-ok':'bg-surface2')}><${EventIcon} type=${e.type}/></span>
+          <div className="min-w-0 flex-1"><div className="font-bold text-[14.5px] leading-tight">${PLAYER[e.player].name}</div><div className="text-[12.5px] text-mute">${EV_LABEL[e.type]} · ${T[e.team].name}</div></div>
+          <${Crest} id=${e.team} size=${24}/></li>`)}
+        ${live.events.length===0?html`<li className="p-4 text-mute text-center text-[14px]">Todavía no hubo eventos.</li>`:null}
+      </ol></section>
+    <section className="card p-4 flex flex-col gap-3" aria-label="Controles de demostración">
+      <div className="flex items-center justify-between"><span className="text-[12px] font-bold uppercase tracking-widest text-mute">Controles de demo</span>
+        <div className="flex items-center gap-2 text-[13px] font-bold"><span id="clock-l">${s.clock?'Reloj activo':'Reloj pausado'}</span><button role="switch" aria-checked=${s.clock?'true':'false'} aria-labelledby="clock-l" className="sw" onClick=${()=>dispatch({type:'CLOCK'})}></button></div></div>
+      ${on?html`<div className="grid grid-cols-2 gap-2"><${Btn} v="ghost" sm icon="ball" onClick=${()=>sim('home')}>Gol ${T[live.home].init}<//><${Btn} v="ghost" sm icon="ball" onClick=${()=>sim('away')}>Gol ${T[live.away].init}<//></div>`
+        :html`<${Btn} v="gold" sm icon="refresh" onClick=${()=>dispatch({type:'RESET_LIVE'})}>Reiniciar partido en vivo<//>`}
+      <p className="text-[12.5px] text-mute">El reloj avanza solo y se simulan goles y tarjetas. Los goles generan un aviso push y actualizan la tabla de goleadores.</p>
+    </section>
+    <section><${SectionTitle}>Otros partidos de la fecha<//>
+      <div className="mt-2 flex flex-col gap-2">${others.map(m=>html`<${MatchRow} key=${m.id} m=${m}/>`)}</div></section>
+  <//>`;
+}
+/* CU_008 · Tabla de posiciones */
+function Standings(){
+  const {s,dispatch,d,go}=useApp();
+  const exp=s.ui.expandedTeam;
+  const setExp=id=>dispatch({type:'UI',patch:{expandedTeam:exp===id?null:id}});
+  const zone=p=>p<=4?'var(--ok)':p>=d.table.length-1?'var(--bad)':'transparent';
+  const formCls={G:'chip-ok',E:'',P:'chip-bad'};
+  return html`<${Page} title="Posiciones" sub="Liga Local · Fecha 14" back=${false}>
+    <div className="card overflow-hidden">
+      <div className="grid items-center px-3 py-2 text-[11.5px] font-bold uppercase tracking-wider text-mute bg-surface2" style=${{gridTemplateColumns:'30px 1fr 40px 46px 20px'}}>
+        <span>#</span><span>Equipo</span><span className="text-center">PJ</span><span className="text-center">PTS</span><span></span></div>
+      ${d.table.map(r=>{
+        const open=exp===r.id;const lead=r.pos===1;const fav=s.favorites.includes(r.id);const nm=nextMatch(s.matches,r.id);
+        return html`<div key=${r.id} className="border-t border-line" style=${lead?{background:'var(--goldbg)'}:{}}>
+          <button className="grid items-center w-full px-3 py-3 text-left" style=${{gridTemplateColumns:'30px 1fr 40px 46px 20px',boxShadow:`inset 4px 0 0 ${zone(r.pos)}`}} aria-expanded=${open?'true':'false'} onClick=${()=>setExp(r.id)}>
+            <span className=${cx('tnum font-extrabold text-[15px]',lead&&'text-gold')}>${lead?html`<${Icon} n="trophy" s=${16}/>`:r.pos}</span>
+            <span className="flex items-center gap-2.5 min-w-0"><${Crest} id=${r.id} size=${30}/><span className="font-bold text-[14.5px] leading-tight">${T[r.id].name}${fav?html` <span className="text-gold" aria-label="favorito"><${Icon} n="star" s=${12} className="inline -mt-0.5"/></span>`:null}</span></span>
+            <span className="text-center tnum text-mute font-semibold">${r.pj}</span>
+            <span className="text-center tnum font-extrabold text-[16px]">${r.pts}</span>
+            <${Icon} n=${open?'up':'down'} s=${16} className="text-mute"/></button>
+          ${open?html`<div className="px-3 pb-4 pt-1 flex flex-col gap-3">
+            <div className="grid grid-cols-6 gap-1.5 text-center">${[['PG',r.pg],['PE',r.pe],['PP',r.pp],['GF',r.gf],['GC',r.gc],['Dif',(r.dif>0?'+':'')+r.dif]].map(([l,v])=>html`<div key=${l} className="rounded-xl bg-surface py-2 border border-line"><div className="disp text-[19px] font-extrabold tnum">${v}</div><div className="text-[11px] font-bold text-mute">${l}</div></div>`)}</div>
+            <div className="flex items-center gap-2 text-[13px]"><span className="font-bold text-mute">Últimos 5</span>${r.form.map((f,i)=>html`<span key=${i} className=${cx('chip',formCls[f])} style=${{minWidth:26,justifyContent:'center'}}>${f}</span>`)}</div>
+            ${nm?html`<div className="text-[13px] text-mute">Próximo: <b className="text-ink">${T[nm.home===r.id?nm.away:nm.home].name}</b> · ${nm.status==='suspended'?'a reprogramar':`${fmtLong(nm.date)} ${nm.time}`}</div>`:null}
+          </div>`:null}
+        </div>`})}
+    </div>
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-mute"><span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style=${{background:'var(--ok)'}}></span>Clasifica a play-off</span><span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style=${{background:'var(--bad)'}}></span>Zona de descenso</span><span>PG ganados · PE empatados · PP perdidos · GF/GC goles</span></div>
+  <//>`;
+}
+/* CU_009 · Fixture */
+function Fixture(){
+  const {s,dispatch}=useApp();
+  const {fixtureTab:tab,fixtureTeam:team,openFechas:open}=s.ui;
+  const setUI=patch=>dispatch({type:'UI',patch});
+  const played=m=>m.status==='finished';
+  let ms=s.matches.filter(m=>tab==='all'||(tab==='played'?played(m):!played(m)));
+  if(team)ms=ms.filter(m=>m.home===team||m.away===team);
+  const fechas=[...new Set(ms.map(m=>m.fecha))].sort((x,y)=>tab==='played'?y-x:x-y);
+  const toggle=f=>setUI({openFechas:open.includes(f)?open.filter(x=>x!==f):[...open,f]});
+  const forceOpen=tab!=='all'||!!team;
+  return html`<${Page} title="Fixture" sub="Liga Local 2026" nav=${NAV_MATCHES}>
+    <${Seg} label="Filtrar partidos" value=${tab} onChange=${v=>setUI({fixtureTab:v})} options=${[{id:'all',label:'Todos'},{id:'played',label:'Jugados'},{id:'pending',label:'Pendientes'}]}/>
+    <div className="inp"><${Icon} n="sliders" s=${18} className="text-mute"/><select id="fx-team" aria-label="Filtrar por equipo" value=${team} onChange=${e=>setUI({fixtureTeam:e.target.value})}><option value="">Todos los equipos</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>
+    ${fechas.length===0?html`<${Empty} icon="calendar" title="No hay partidos">Probá con otro filtro.<//>`:null}
+    ${fechas.map(f=>{
+      const list=ms.filter(m=>m.fecha===f).sort((x,y)=>x.date.localeCompare(y.date)||x.time.localeCompare(y.time));
+      const isOpen=forceOpen||open.includes(f);
+      return html`<section key=${f} className="flex flex-col gap-2">
+        <button className="flex items-center justify-between gap-2 py-1" aria-expanded=${isOpen?'true':'false'} onClick=${()=>!forceOpen&&toggle(f)}>
+          <span className="flex items-center gap-2"><h2 className="text-[18px] font-bold">Fecha ${f}</h2>${f===14?html`<span className="chip chip-gold">Hoy</span>`:null}<span className="text-[12.5px] text-mute">${fmtShort(list[0].date)}</span></span>
+          ${forceOpen?null:html`<${Icon} n=${isOpen?'up':'down'} s=${18} className="text-mute"/>`}</button>
+        ${isOpen?list.map(m=>html`<${MatchRow} key=${m.id} m=${m}/>`):null}
+      </section>`})}
+  <//>`;
+}
+/* CU_010 · Historial de resultados */
+function History(){
+  const {s,dispatch}=useApp();
+  const team=s.ui.histTeam;
+  let ms=s.matches.filter(m=>m.status==='finished');
+  if(team)ms=ms.filter(m=>m.home===team||m.away===team);
+  ms.sort((a,b)=>b.date.localeCompare(a.date)||b.time.localeCompare(a.time));
+  const groups=[];ms.forEach(m=>{const k=monthLabel(m.date);let g=groups.find(x=>x.k===k);if(!g){g={k,list:[]};groups.push(g)}g.list.push(m)});
+  return html`<${Page} title="Historial" sub="Partidos terminados" nav=${NAV_MATCHES}>
+    <div className="inp"><${Icon} n="sliders" s=${18} className="text-mute"/><select id="hs-team" aria-label="Filtrar por equipo" value=${team} onChange=${e=>dispatch({type:'UI',patch:{histTeam:e.target.value}})}><option value="">Todos los equipos</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>
+    ${groups.length===0?html`<${Empty} icon="history" title="Sin partidos">Este equipo todavía no jugó.<//>`:null}
+    ${groups.map(g=>{const goals=g.list.reduce((a,m)=>{const [x,y]=scoreOf(m);return a+x+y},0);
+      return html`<section key=${g.k}>
+        <div className="flex items-end justify-between mb-2"><h2 className="text-[19px] font-bold">${g.k}</h2><span className="text-[12.5px] text-mute tnum">${g.list.length} partidos · ${goals} goles (${(goals/g.list.length).toFixed(1)} por partido)</span></div>
+        <div className="card divide-y divide-line">${g.list.map(m=>{const [x,y]=scoreOf(m);const hw=x>y,aw=y>x;return html`<div key=${m.id} className="p-3">
+          <div className="text-[12px] text-mute mb-1.5">${fmtLong(m.date)} · Fecha ${m.fecha}</div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0 flex items-center justify-end gap-2 text-right"><span className=${cx('text-[14px] leading-tight',hw?'font-extrabold':'font-medium')}>${T[m.home].name}</span><${Crest} id=${m.home} size=${26}/></div>
+            <div className="w-[58px] text-center disp text-[19px] font-extrabold tnum">${x}–${y}</div>
+            <div className="flex-1 min-w-0 flex items-center gap-2"><${Crest} id=${m.away} size=${26}/><span className=${cx('text-[14px] leading-tight',aw?'font-extrabold':'font-medium')}>${T[m.away].name}</span></div></div></div>`})}</div>
+      </section>`})}
+  <//>`;
+}
+/* CU_011 · Head to Head */
+function H2H(){
+  const {s,dispatch}=useApp();
+  const {h2hA:A,h2hB:B}=s.ui;
+  const setUI=patch=>dispatch({type:'UI',patch});
+  const r=useMemo(()=>computeH2H(s.matches,A,B),[s.matches,A,B]);
+  const tot=r.aW+r.bW+r.d;
+  const pct=n=>tot?n/tot*100:0;
+  const setSide=(side,val)=>{if(side==='A')setUI(val===B?{h2hA:val,h2hB:A}:{h2hA:val});else setUI(val===A?{h2hB:val,h2hA:B}:{h2hB:val})};
+  const sel=(id,key,val)=>html`<div className="inp flex-1 min-w-0"><select id=${id} aria-label=${'Equipo '+key} value=${val} onChange=${e=>setSide(key,e.target.value)}>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>`;
+  return html`<${Page} title="Head to Head" sub="Historial entre dos equipos" nav=${NAV_MATCHES}>
+    <div className="flex items-center gap-2">${sel('h2h-a','A',A)}<button className="icobtn" aria-label="Intercambiar equipos" onClick=${()=>setUI({h2hA:B,h2hB:A})}><${Icon} n="swap" s=${18}/></button>${sel('h2h-b','B',B)}</div>
+    <section className="card p-5">
+      <div className="flex items-center justify-between"><div className="flex flex-col items-center gap-1 flex-1"><${Crest} id=${A} size=${52}/><span className="font-bold text-[13.5px] text-center leading-tight">${T[A].name}</span></div>
+        <span className="text-[13px] font-extrabold text-mute px-2">VS</span>
+        <div className="flex flex-col items-center gap-1 flex-1"><${Crest} id=${B} size=${52}/><span className="font-bold text-[13.5px] text-center leading-tight">${T[B].name}</span></div></div>
+      <div className="mt-5 grid grid-cols-3 text-center"><div><div className="disp text-[38px] font-extrabold tnum leading-none" style=${{color:T[A].color}}>${r.aW}</div><div className="text-[12px] font-bold text-mute mt-1">Victorias</div></div>
+        <div><div className="disp text-[38px] font-extrabold tnum leading-none text-mute">${r.d}</div><div className="text-[12px] font-bold text-mute mt-1">Empates</div></div>
+        <div><div className="disp text-[38px] font-extrabold tnum leading-none" style=${{color:T[B].color}}>${r.bW}</div><div className="text-[12px] font-bold text-mute mt-1">Victorias</div></div></div>
+      <div className="mt-4 flex h-3 rounded-full overflow-hidden gap-0.5" role="img" aria-label=${`${r.aW} victorias de ${T[A].name}, ${r.d} empates, ${r.bW} victorias de ${T[B].name}`}>
+        <span style=${{width:pct(r.aW)+'%',background:T[A].color}}></span><span style=${{width:pct(r.d)+'%',background:'var(--line)'}}></span><span style=${{width:pct(r.bW)+'%',background:T[B].color}}></span></div>
+      <div className="mt-3 flex justify-between text-[13px] text-mute tnum"><span>${r.aG} goles</span><span>${tot} partidos</span><span>${r.bG} goles</span></div>
+    </section>
+    <section><${SectionTitle}>Últimos enfrentamientos<//>
+      <div className="card mt-2 divide-y divide-line">${r.list.slice(0,6).map((m,i)=>{const aWon=(m.home===A?m.h>m.a:m.a>m.h),bWon=(m.home===B?m.h>m.a:m.a>m.h);
+        return html`<div key=${i} className="p-3"><div className="flex items-center justify-between text-[12px] text-mute mb-1.5"><span>${fmtLong(m.date)} ${m.date.slice(0,4)}</span><span>${m.comp}</span></div>
+          <div className="flex items-center gap-2"><div className="flex-1 min-w-0 text-right text-[14px] font-semibold leading-tight">${T[m.home].name}</div><div className="w-[58px] text-center disp text-[19px] font-extrabold tnum">${m.h}–${m.a}</div><div className="flex-1 min-w-0 text-[14px] font-semibold leading-tight">${T[m.away].name}</div></div>
+          <div className="mt-1.5 flex justify-center"><span className=${cx('chip',aWon?'chip-ok':bWon?'chip-bad':'')}>${aWon?`Ganó ${T[A].init}`:bWon?`Ganó ${T[B].init}`:'Empate'}</span></div></div>`})}</div></section>
+  <//>`;
+}
+/* CU_012 · Notificación push de gol */
+function GoalPush(){
+  const {s,dispatch,go}=useApp();
+  const live=s.matches.find(m=>m.id==='LIVE');
+  const goals=live.events.filter(e=>e.type==='goal');const last=goals[goals.length-1];
+  const [h,a]=scoreOf(live);
+  useEffect(()=>{dispatch({type:'SEEN'})},[]);
+  const p=s.notifPrefs;
+  const sim=()=>{if(live.status!=='live'){dispatch({type:'TOAST',toast:{kind:'info',title:'El partido terminó',body:'Reiniciá el partido en vivo para simular otro gol.'}});return}
+    const tid=Math.random()<.5?live.home:live.away;dispatch({type:'EVENT',matchId:'LIVE',ev:{min:live.minute,type:'goal',team:tid,player:pickScorer(tid),sim:true}})};
+  const prefRows=[['goalsFav','Goles de mis equipos','Solo de los clubes que seguís'],['goalsAll','Goles de todos los partidos','Cualquier gol de la liga'],['susp','Suspensiones y reprogramaciones','Cambios en el fixture'],['cards','Tarjetas rojas','Expulsiones en partidos en vivo'],['sound','Sonido y vibración','Al llegar un aviso']];
+  return html`<${Page} title="Avisos de gol" sub="Notificaciones push">
+    <section aria-label="Vista previa de la notificación">
+      <div className="rounded-[26px] p-4" style=${{background:'linear-gradient(160deg,#25402F,#0f1d16)'}}>
+        <div className="text-center text-[12px] font-bold tracking-widest" style=${{color:'#B8C7BC'}}>VISTA PREVIA</div>
+        <div className="mt-3 rounded-2xl p-3 flex gap-3" style=${{background:'rgba(245,247,242,.94)',color:'#17241D'}}>
+          <${Logo} size=${40}/><div className="min-w-0 flex-1"><div className="flex justify-between text-[11.5px] font-bold" style=${{color:'#5f6e63'}}><span>SANTA FE GOL</span><span>ahora</span></div>
+            ${last?html`<div className="font-bold text-[15px] leading-tight mt-0.5">¡GOL de ${T[last.team].name}!</div><div className="text-[13.5px] leading-snug">${PLAYER[last.player].name} ${last.min}' · ${T[live.home].init} ${h}–${a} ${T[live.away].init}</div>`:html`<div className="text-[14px]">Todavía no hubo goles.</div>`}</div></div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 mt-3"><${Btn} icon="bell" onClick=${sim}>Simular gol ahora<//><${Btn} v="ghost" icon="ball" onClick=${()=>go('cu07')}>Ver partido<//></div>
+    </section>
+    <section><${SectionTitle}>Qué querés recibir<//>
+      <div className="card mt-2 px-4 divide-y divide-line">${prefRows.map(([k,l,sb])=>html`<${Toggle} key=${k} id=${'pref-'+k} on=${p[k]} label=${l} sub=${sb} onChange=${()=>dispatch({type:'NOTIF_PREF',key:k})}/>`)}</div></section>
+    <section><${SectionTitle}>Historial de avisos<//>
+      <div className="card mt-2 divide-y divide-line">${s.notifLog.slice(0,8).map(n=>html`<div key=${n.id} className="p-3 flex gap-3 items-start">
+        <span className=${cx('w-9 h-9 rounded-xl flex items-center justify-center flex-none',n.kind==='goal'?'bg-okbg text-ok':n.kind==='susp'?'bg-goldbg text-gold':'bg-prisoft text-brand')}><${Icon} n=${n.kind==='goal'?'ball':n.kind==='susp'?'cloud':'calendar'} s=${18}/></span>
+        <div className="min-w-0 flex-1"><div className="font-bold text-[14.5px] leading-tight">${n.title}</div><div className="text-[13px] text-mute leading-snug">${n.body}</div></div><span className="text-[11.5px] text-mute whitespace-nowrap">${ago(n.ts)}</span></div>`)}</div></section>
+  <//>`;
+}
+/* CU_013 · Suspensión de partido */
+function Suspension(){
+  const {s,dispatch,go}=useApp();
+  const list=s.matches.filter(m=>m.suspension);
+  const selId=s.ui.suspId&&list.some(m=>m.id===s.ui.suspId)?s.ui.suspId:(list[0]&&list[0].id);
+  const m=list.find(x=>x.id===selId);
+  const [choice,setChoice]=useState(0);
+  const [remind,setRemind]=useState(false);
+  const cand=s.matches.find(x=>x.status==='scheduled'&&x.fecha>=15&&!x.suspension);
+  const simulate=()=>{if(!cand)return;dispatch({type:'SUSPEND',id:cand.id,reason:'Intensas lluvias dejaron la cancha inhabilitada. La comisión evalúa nuevas fechas.',short:'cancha inhabilitada'});dispatch({type:'UI',patch:{suspId:cand.id}});setChoice(0)};
+  if(!m){return html`<${Page} title="Suspensiones" sub="Avisos de partidos"><${Empty} icon="cloud" title="Sin suspensiones">No hay partidos suspendidos.<//>${cand?html`<${Btn} v="ghost" onClick=${simulate}>Simular una suspensión<//>`:null}<//>`}
+  const su=m.suspension;const done=su.done;
+  return html`<${Page} title="Suspensiones" sub="Avisos de partidos">
+    ${list.length>1?html`<nav className="pillnav" aria-label="Partidos con aviso">${list.map(x=>html`<button key=${x.id} className=${cx('pill',x.id===m.id&&'on')} onClick=${()=>{dispatch({type:'UI',patch:{suspId:x.id}});setChoice(0)}}>${T[x.home].init} vs ${T[x.away].init}</button>`)}</nav>`:null}
+    <section className=${cx('card overflow-hidden')} aria-label="Aviso de partido">
+      <div className=${cx('px-5 py-3 flex items-center gap-2 font-bold',done?'bg-okbg text-ok':'bg-goldbg text-gold')}><${Icon} n=${done?'check':'cloud'} s=${20}/>${done?'Partido reprogramado':'Partido suspendido'}</div>
+      <div className="p-5 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-2"><div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${m.home} size=${52}/><span className="font-bold text-[14px] leading-tight">${T[m.home].name}</span></div><span className="text-mute font-extrabold">VS</span><div className="flex-1 flex flex-col items-center gap-2 text-center"><${Crest} id=${m.away} size=${52}/><span className="font-bold text-[14px] leading-tight">${T[m.away].name}</span></div></div>
+        <div className="card-soft p-3 text-[13.5px] flex flex-col gap-1"><div className="flex gap-2"><${Icon} n="calendar" s=${16} className="mt-0.5 flex-none"/><span>${done?html`Nueva fecha: <b>${fmtLong(m.date)} · ${m.time}</b> <span className="text-mute">(antes ${fmtLong(su.prev.date)} ${su.prev.time})</span>`:html`Fecha original: <b>${fmtLong(m.date)} · ${m.time}</b> · Fecha ${m.fecha}`}</span></div>
+          <div className="flex gap-2"><${Icon} n="pin" s=${16} className="mt-0.5 flex-none"/><span>${VENUES[m.home].name}</span></div></div>
+        <div><div className="lbl">Motivo</div><p className="text-[14.5px]">${su.reason}</p></div>
+        ${done?html`<div className="flex flex-col gap-2"><${Btn} v="ghost" full icon="calendar" onClick=${()=>go('cu09')}>Ver en el fixture<//><${Btn} v="ghost" full sm onClick=${()=>dispatch({type:'UNDO_REPROGRAM',id:m.id})}>Deshacer (demo)<//></div>`
+        :html`<fieldset><legend className="lbl">Elegí una nueva fecha propuesta</legend><div role="radiogroup" className="flex flex-col gap-2">${su.proposals.map((p,i)=>html`<button key=${i} role="radio" aria-checked=${choice===i?'true':'false'} onClick=${()=>setChoice(i)} className=${cx('rounded-2xl border-2 p-3 flex items-center gap-3',choice===i?'border-pri bg-prisoft':'border-line bg-surface')}>
+            <span className=${cx('w-5 h-5 rounded-full border-2 flex items-center justify-center flex-none',choice===i?'border-pri':'border-line')}>${choice===i?html`<span className="w-2.5 h-2.5 rounded-full bg-pri"></span>`:null}</span>
+            <span className="font-bold flex-1">${fmtLong(p.date)}</span><span className="text-mute font-semibold tnum">${p.time}</span></button>`)}</div></fieldset>
+          <${Btn} full icon="check" onClick=${()=>dispatch({type:'REPROGRAM',id:m.id,date:su.proposals[choice].date,time:su.proposals[choice].time})}>Confirmar nueva fecha<//>`}
+        <${Btn} v=${remind?'pri':'ghost'} full icon="bell" aria-pressed=${remind?'true':'false'} onClick=${()=>{setRemind(!remind);dispatch({type:'TOAST',toast:{kind:'info',title:remind?'Recordatorio quitado':'Te lo vamos a recordar',body:remind?'':'Vas a recibir un aviso antes del partido.'}})}}>${remind?'Recordatorio activado':'Recordarme el partido'}<//>
+      </div>
+    </section>
+    <section className="card-soft p-4 flex flex-col gap-2"><div className="text-[12px] font-bold uppercase tracking-widest text-mute">Demo</div>
+      <${Btn} v="ghost" sm icon="cloud" disabled=${!cand} onClick=${simulate}>Simular otra suspensión por lluvia<//></section>
+  <//>`;
+}
+/* ============================================================
+   Canchas, jugadores y fichajes: CU_014 a CU_021
+   ============================================================ */
+/* CU_014 · Ubicación de canchas */
+function Venues(){
+  const {s,dispatch,go}=useApp();
+  const sel=s.ui.selVenue;const v=VENUES[sel];
+  const setSel=id=>dispatch({type:'UI',patch:{selVenue:id}});
+  const homeM=nextMatch(s.matches,sel);
+  const hosting=s.matches.filter(m=>m.home===sel&&(m.status==='scheduled'||m.status==='live'||m.status==='suspended')).sort((a,b)=>a.fecha-b.fecha)[0];
+  return html`<${Page} title="Canchas" sub="Estadios de la liga">
+    <${MapView} sel=${sel} onSel=${setSel}/>
+    <section className="card p-4 flex flex-col gap-3" aria-live="polite">
+      <div className="flex items-start gap-3"><${Crest} id=${sel} size=${46}/><div className="min-w-0 flex-1"><h2 className="text-[19px] font-bold leading-tight">${v.name}</h2><div className="text-[13px] text-mute">${T[sel].name}</div></div></div>
+      <div className="grid grid-cols-2 gap-2 text-[13.5px]">
+        <div className="card-soft p-3 col-span-2 flex gap-2"><${Icon} n="pin" s=${18} className="flex-none mt-0.5 text-brand"/><span>${v.address}</span></div>
+        <div className="card-soft p-3"><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Capacidad</div><div className="disp text-[22px] font-extrabold tnum">${v.cap.toLocaleString('es-AR')}</div></div>
+        <div className="card-soft p-3"><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Superficie</div><div className="font-bold mt-1">${v.surface}</div></div>
+      </div>
+      ${hosting?html`<div className="text-[13px] text-mute">Próximo partido local: <b className="text-ink">vs ${T[hosting.away].name}</b> · ${hosting.status==='live'?'en vivo ahora':hosting.status==='suspended'?'a reprogramar':`${fmtLong(hosting.date)} ${hosting.time}`}</div>`:null}
+      <${Btn} full icon="nav" onClick=${()=>go('cu15',{selVenue:sel})}>Cómo llegar<//>
+    </section>
+    <section><${SectionTitle}>Todas las canchas<//>
+      <div className="card mt-2 divide-y divide-line">${TEAMS.map(t=>html`<button key=${t.id} onClick=${()=>setSel(t.id)} aria-pressed=${sel===t.id?'true':'false'} className=${cx('w-full flex items-center gap-3 p-3 text-left',sel===t.id&&'bg-prisoft')}>
+        <${Crest} id=${t.id} size=${34}/><span className="min-w-0 flex-1"><span className="block font-bold text-[14.5px] leading-tight">${VENUES[t.id].name}</span><span className="block text-[12.5px] text-mute truncate">${VENUES[t.id].address}</span></span>
+        <span className="text-[12.5px] text-mute tnum">${VENUES[t.id].cap.toLocaleString('es-AR')}</span></button>`)}</div>
+      <p className="text-[12px] text-mute mt-2">Mapa esquemático con datos de ejemplo.</p></section>
+  <//>`;
+}
+/* CU_015 · Cómo llegar */
+function Directions(){
+  const {s,dispatch}=useApp();
+  const sel=s.ui.selVenue;const v=VENUES[sel];const located=s.ui.located;
+  const [busy,setBusy]=useState(false);
+  const locate=()=>{setBusy(true);setTimeout(()=>{setBusy(false);dispatch({type:'UI',patch:{located:true}});dispatch({type:'TOAST',toast:{kind:'success',title:'Ubicación encontrada',body:PLAZA.name}})},900)};
+  const km=located?haversine(PLAZA,v)*1.3:0;
+  const modes=[['car','En auto',Math.max(4,Math.round(km/28*60)+3)],['bus','En colectivo',Math.max(10,Math.round(km/16*60)+8)],['walk','A pie',Math.round(km/5*60)]];
+  const url=`https://www.google.com/maps/dir/?api=1${located?`&origin=${PLAZA.lat},${PLAZA.lng}`:''}&destination=${v.lat},${v.lng}&travelmode=driving`;
+  return html`<${Page} title="Cómo llegar" sub=${v.name}>
+    <div className="inp"><${Icon} n="pin" s=${18} className="text-mute"/><select id="dir-venue" aria-label="Elegir cancha" value=${sel} onChange=${e=>dispatch({type:'UI',patch:{selVenue:e.target.value}})}>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${VENUES[t.id].name}</option>`)}</select></div>
+    <${MapView} sel=${sel} origin=${located?PLAZA:null} showAll=${false}/>
+    <section className="card p-4 flex flex-col gap-3">
+      <div className="flex items-start gap-3"><span className="w-10 h-10 rounded-xl bg-prisoft text-brand flex items-center justify-center flex-none"><${Icon} n="pin" s=${20}/></span><div><div className="font-bold">${v.name}</div><div className="text-[13px] text-mute">${v.address}</div><div className="text-[13px] text-mute mt-0.5">Estacionamiento: ${v.parking}</div></div></div>
+      ${located?html`<div className="flex items-center gap-2 text-[13px]"><span className="w-3 h-3 rounded-full" style=${{background:'#2A6FDB'}}></span><span className="text-mute">Salís de:</span> <b>${PLAZA.name}</b></div>
+        <div className="grid grid-cols-3 gap-2">${modes.map(([ic,l,min])=>html`<div key=${ic} className="card-soft p-3 text-center"><${Icon} n=${ic} s=${20} className="mx-auto text-brand"/><div className="disp text-[20px] font-extrabold tnum mt-1">${min} min</div><div className="text-[11.5px] text-mute font-semibold">${l}</div></div>`)}</div>
+        <div className="text-[13px] text-mute">Distancia aproximada: <b className="text-ink tnum">${km.toFixed(1).replace('.',',')} km</b></div>`
+      :html`<div className="alert alert-gold" role="status"><${Icon} n="info" s=${20}/><span>Activá tu ubicación para ver tiempos de viaje y la ruta dibujada en el mapa.</span></div>`}
+      ${located?null:html`<${Btn} v="ghost" full icon="target" disabled=${busy} onClick=${locate}>${busy?'Buscando tu ubicación…':'Usar mi ubicación actual'}<//>`}
+      <a href=${url} target="_blank" rel="noopener noreferrer" className="btn btn-pri w-full no-underline"><${Icon} n="external" s=${18}/>Abrir ruta en Google Maps</a>
+      <p className="text-[12px] text-mute">Se abre Google Maps en una pestaña nueva con la cancha como destino${located?' y tu ubicación simulada como origen':''}.</p>
+    </section>
+  <//>`;
+}
+/* ---------- Ficha de jugador: CU_016 y CU_018 ---------- */
+function PlayerPicker(){
+  const {s,dispatch}=useApp();
+  return html`<div className="inp"><${Icon} n="user" s=${18} className="text-mute"/><select id="pl-pick" aria-label="Elegir jugador" value=${s.ui.selPlayer} onChange=${e=>dispatch({type:'UI',patch:{selPlayer:e.target.value}})}>
+    ${TEAMS.map(t=>html`<optgroup key=${t.id} label=${t.name}>${PLAYERS.filter(p=>p.teamId===t.id).map(p=>html`<option key=${p.id} value=${p.id}>${p.name} · ${p.pos}</option>`)}</optgroup>`)}</select></div>`;
+}
+function PlayerHero({p}){
+  return html`<section className="hero p-5 flex items-center gap-4">
+    <div className="relative"><span className="avatar" style=${{width:76,height:76,fontSize:28,background:T[p.teamId].color,color:'#fff'}}>${initials(p.name)}</span>
+      <span className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center disp font-extrabold text-[13px]" style=${{background:'#E3A32B',color:'#1d1405',border:'3px solid var(--hero)'}}>${p.num}</span></div>
+    <div className="min-w-0"><h2 className="disp text-[23px] font-bold leading-tight">${p.name}</h2>
+      <div className="text-[13.5px] opacity-85 mt-0.5">${p.pos} · ${p.age} años</div>
+      <div className="flex items-center gap-2 mt-2"><${Crest} id=${p.teamId} size=${24}/><span className="text-[13.5px] font-semibold">${T[p.teamId].name}</span></div></div>
+  </section>`;
+}
+function PlayerStats(){
+  const {s,d}=useApp();
+  const p=d.players[s.ui.selPlayer];
+  const row=d.table.find(r=>r.id===p.teamId);
+  const maxG=Math.max(1,...p.gbf);
+  const fechas=Array.from({length:14},(_,i)=>i+1);
+  const gpp=p.pj?(p.goals/p.pj):0;
+  return html`<${Page} title="Ficha de jugador" sub="Estadísticas del torneo" nav=${NAV_PLAYERS}>
+    <${PlayerPicker}/>
+    <${PlayerHero} p=${p}/>
+    <div className="grid grid-cols-4 gap-2"><${StatTile} label="Goles" value=${p.goals}/><${StatTile} label="Partidos" value=${p.pj}/><${StatTile} label="Amarillas" value=${p.yellow} tone="y"/><${StatTile} label="Rojas" value=${p.red} tone="r"/></div>
+    <section className="card p-4">
+      <div className="flex items-end justify-between"><h3 className="text-[16px] font-bold">Goles por fecha</h3><span className="text-[12.5px] text-mute tnum">${gpp.toFixed(2).replace('.',',')} por partido</span></div>
+      <div className="mt-3 flex items-end gap-1" style=${{height:96}} role="img" aria-label=${`Goles de ${p.name} en cada fecha`}>${fechas.map(f=>{const g=p.gbf[f-1];return html`<div key=${f} className="flex-1 flex flex-col items-center justify-end h-full gap-1"><span className="text-[10.5px] font-bold tnum" style=${{opacity:g?1:0}}>${g||0}</span><div className="w-full rounded-t-md" style=${{height:g?(g/maxG*100)+'%':'4px',minHeight:4,background:g?'var(--brand)':'var(--line)'}}></div></div>`})}</div>
+      <div className="mt-1 flex gap-1">${fechas.map(f=>html`<span key=${f} className="flex-1 text-center text-[10px] text-mute tnum">${f}</span>`)}</div>
+    </section>
+    <section className="card p-4 grid grid-cols-2 gap-3 text-[13.5px]">
+      <div><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Club</div><div className="font-bold mt-0.5">${T[p.teamId].name}</div></div>
+      <div><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Posición del club</div><div className="font-bold mt-0.5">#${row.pos} · ${row.pts} pts</div></div>
+      <div><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Estado</div><div className="mt-0.5"><span className=${cx('chip',p.susp?'chip-bad':'chip-ok')}>${p.susp?'Suspendido':'Habilitado'}</span></div></div>
+      <div><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">Camiseta</div><div className="font-bold mt-0.5">N.º ${p.num}</div></div>
+    </section>
+  <//>`;
+}
+function PlayerCards(){
+  const {s,d,go}=useApp();
+  const p=d.players[s.ui.selPlayer];const nx=p.next;
+  const opp=nx?(nx.home===p.teamId?nx.away:nx.home):null;
+  const nextLabel=nx?`Fecha ${nx.fecha}${nx.status==='suspended'?' (a reprogramar)':` · ${nx.date===TODAY?'hoy':fmtLong(nx.date)} ${nx.time}`} vs ${T[opp].name}`:'sin partidos pendientes';
+  return html`<${Page} title="Tarjetas y suspensiones" sub=${p.name} nav=${NAV_PLAYERS}>
+    <${PlayerPicker}/>
+    <section className=${cx('rounded-[22px] p-5 flex gap-4 items-start',p.susp?'bg-badbg text-bad':'bg-okbg text-ok')} role="status">
+      <span className="w-12 h-12 rounded-2xl flex items-center justify-center flex-none" style=${{background:'var(--surface)'}}><${Icon} n=${p.susp?'lock':'check'} s=${24}/></span>
+      <div><div className="disp text-[22px] font-extrabold leading-tight">${p.susp?'Suspendido':'Habilitado'}</div>
+        <div className="text-[14px] font-semibold mt-0.5">${p.susp?`No juega ${nx?`la Fecha ${nx.fecha}`:'el próximo partido'}`:`Puede jugar ${nx?`la Fecha ${nx.fecha}`:'el próximo partido'}`}</div>
+        <div className="text-[13px] mt-1 opacity-90">${p.susp?p.susp.reason:p.cycle===4?'En capilla: una amarilla más y queda suspendido.':'Sin sanciones pendientes.'}</div></div></section>
+    <section className="card p-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between"><h3 className="text-[16px] font-bold">Amarillas acumuladas</h3><span className="font-extrabold tnum">${p.cycle} / 5</span></div>
+      <div className="flex gap-2" role="img" aria-label=${`${p.cycle} de 5 amarillas`}>${[1,2,3,4,5].map(i=>html`<span key=${i} className="flex-1 h-9 rounded-lg flex items-center justify-center" style=${{background:i<=p.cycle?'#F2C230':'var(--surface2)',border:'1px solid var(--line)'}}>${i<=p.cycle?html`<span className="w-3 h-4 rounded-sm" style=${{background:'rgba(0,0,0,.18)'}}></span>`:null}</span>`)}</div>
+      <div className="text-[13px] text-mute">Próximo partido: <b className="text-ink">${nextLabel}</b></div>
+    </section>
+    <div className="grid grid-cols-2 gap-2"><${StatTile} label="Amarillas" value=${p.yellow} tone="y"/><${StatTile} label="Rojas" value=${p.red} tone="r"/></div>
+    <section><${SectionTitle}>Historial<//>
+      ${p.cards.length===0?html`<div className="mt-2"><${Empty} icon="shield" title="Juego limpio">${p.name} no recibió tarjetas en el torneo.<//></div>`
+      :html`<ol className="card mt-2 divide-y divide-line">${p.cards.map((c,i)=>html`<li key=${i} className="p-3 flex items-center gap-3"><span className=${c.type==='yellow'?'cy':'cr'}></span>
+        <div className="min-w-0 flex-1"><div className="font-bold text-[14.5px]">${c.type==='yellow'?'Tarjeta amarilla':'Tarjeta roja'} · min. ${c.min}</div><div className="text-[12.5px] text-mute">Fecha ${c.fecha} · vs ${T[c.rival].name}</div></div><span className="text-[12px] text-mute">${fmtShort(c.date)}</span></li>`)}</ol>`}
+    </section>
+    <p className="text-[12.5px] text-mute">Reglamento: 5 amarillas acumuladas o una roja directa son 1 fecha de suspensión.</p>
+  <//>`;
+}
+/* CU_017 · Goleadores */
+function Scorers(){
+  const {s,dispatch,d,go}=useApp();
+  const club=s.ui.scorerClub,more=s.ui.scorerMore;
+  let list=Object.values(d.players).filter(p=>p.goals>0&&(!club||p.teamId===club));
+  list.sort((a,b)=>b.goals-a.goals||a.pj-b.pj||a.name.localeCompare(b.name));
+  const shown=more?list:list.slice(0,10);
+  const open=id=>go('cu16',{selPlayer:id});
+  const podium=list.slice(0,3);
+  return html`<${Page} title="Goleadores" sub="Máximos artilleros del torneo" nav=${NAV_PLAYERS} back=${false}>
+    <div className="inp"><${Icon} n="sliders" s=${18} className="text-mute"/><select id="sc-club" aria-label="Filtrar por club" value=${club} onChange=${e=>dispatch({type:'UI',patch:{scorerClub:e.target.value,scorerMore:false}})}><option value="">Todos los clubes</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>
+    ${list.length===0?html`<${Empty} icon="trophy" title="Sin goleadores">Este club todavía no convirtió goles.<//>`:null}
+    ${podium.length>=3?html`<section className="grid grid-cols-3 gap-2 items-end" aria-label="Podio">${[podium[1],podium[0],podium[2]].map(p=>{const rank=podium.indexOf(p)+1;return html`<button key=${p.id} onClick=${()=>open(p.id)} className=${cx('card p-3 flex flex-col items-center text-center gap-1',rank===1&&'pb-6')} style=${rank===1?{background:'var(--goldbg)'}:{}}>
+      <span className=${cx('text-[12px] font-extrabold',rank===1?'text-gold':'text-mute')}>${rank===1?'1.º':rank+'.º'}</span><${Crest} id=${p.teamId} size=${rank===1?50:40}/>
+      <span className="font-bold text-[13px] leading-tight mt-1">${p.name}</span><span className="disp text-[28px] font-extrabold tnum leading-none">${p.goals}</span><span className="text-[11px] text-mute font-bold uppercase">goles</span></button>`})}</section>`:null}
+    <div className="card divide-y divide-line">${shown.map((p,i)=>html`<button key=${p.id} onClick=${()=>open(p.id)} className="w-full flex items-center gap-3 p-3 text-left">
+      <span className=${cx('w-7 text-center disp font-extrabold tnum',i===0?'text-gold':'text-mute')}>${i+1}</span><${Crest} id=${p.teamId} size=${34}/>
+      <span className="min-w-0 flex-1"><span className="block font-bold text-[14.5px] leading-tight">${p.name}</span><span className="block text-[12.5px] text-mute">${T[p.teamId].name} · ${p.pos}</span></span>
+      <span className="text-right"><span className="block disp text-[22px] font-extrabold tnum leading-none">${p.goals}</span><span className="block text-[11px] text-mute tnum">${p.pj?(p.goals/p.pj).toFixed(2).replace('.',','):'0'} /pj</span></span></button>`)}</div>
+    ${list.length>10?html`<${Btn} v="ghost" full onClick=${()=>dispatch({type:'UI',patch:{scorerMore:!more}})}>${more?'Ver solo los 10 primeros':`Ver los ${list.length} goleadores`}<//>`:null}
+  <//>`;
+}
+/* CU_019 · Publicar perfil de jugador libre */
+const POSITIONS=['Delantero','Mediocampista','Defensor','Arquero'];
+const AVAIL=['Lun–Vie mañana','Lun–Vie tarde','Lun–Vie noche','Fines de semana'];
+const LEVELS=['Liga local','Ligas del interior','Reserva','Sin experiencia federada'];
+const ZONES=['Santa Fe capital','Santo Tomé','Recreo','Sauce Viejo','Esperanza'];
+function PublishFree(){
+  const {s,dispatch,go,me}=useApp();
+  const mine=s.freePlayers.find(p=>p.ownerId===me.id);
+  const [f,setF]=useState(()=>mine?{...mine,age:String(mine.age),exp:String(mine.exp)}:{name:me.name,pos:'',age:'',exp:'',level:LEVELS[0],note:'',avail:[],zone:ZONES[0],phone:me.phone||'',email:me.email});
+  const [sub,setSub]=useState(false);
+  const [done,setDone]=useState(false);
+  const set=k=>e=>setF({...f,[k]:e.target.value});
+  const age=Number(f.age),exp=Number(f.exp);
+  const errs={};
+  if(f.name.trim().length<3)errs.name='Ingresá tu nombre.';
+  if(!f.pos)errs.pos='Elegí tu posición.';
+  if(!f.age||age<15||age>45)errs.age='La edad debe estar entre 15 y 45.';
+  if(f.exp===''||exp<0||exp>30)errs.exp='Indicá tus años de experiencia (0 a 30).';
+  if(f.avail.length===0)errs.avail='Elegí al menos un momento disponible.';
+  if(f.phone.replace(/\D/g,'').length<8)errs.phone='Ingresá un teléfono de al menos 8 dígitos.';
+  if(!EMAIL.test(f.email))errs.email='Escribí un email válido.';
+  const toggleAvail=a=>setF({...f,avail:f.avail.includes(a)?f.avail.filter(x=>x!==a):[...f.avail,a]});
+  const submit=e=>{
+    e.preventDefault();setSub(true);if(Object.keys(errs).length)return;
+    dispatch({type:'FREE_UPSERT',player:{id:'fp'+uid(),ownerId:me.id,name:f.name.trim(),pos:f.pos,age,exp,level:f.level,note:f.note.trim()||'Sin descripción.',avail:f.avail,zone:f.zone,phone:f.phone.trim(),email:f.email.trim(),ts:Date.now()}});
+    dispatch({type:'TOAST',toast:{kind:'success',title:mine?'Publicación actualizada':'Perfil publicado',body:'Ya aparecés en la bolsa de pases.'}});
+    setDone(true);
+  };
+  if(done)return html`<${Page} title="Publicación lista" sub="Bolsa de pases" nav=${NAV_PLAYERS}>
+    <div className="card p-6 flex flex-col items-center text-center gap-3" role="status"><span className="w-16 h-16 rounded-full bg-okbg text-ok flex items-center justify-center"><${Icon} n="check" s=${32}/></span>
+      <h2 className="text-[22px] font-bold">¡Tu perfil ya está publicado!</h2><p className="text-[14.5px] text-mute">Los clubes pueden encontrarte por posición y edad, y escribirte desde la app.</p>
+      <${Btn} full icon="search" onClick=${()=>go('cu20',{fq:f.name.split(' ')[0],fpos:'',fmin:15,fmax:45})}>Ver mi publicación<//><${Btn} v="ghost" full onClick=${()=>setDone(false)}>Editar de nuevo<//></div>
+  <//>`;
+  return html`<${Page} title="Publicar perfil" sub="Bolsa de pases · jugador libre" nav=${NAV_PLAYERS}>
+    <form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
+      ${mine?html`<div className="alert alert-gold"><${Icon} n="info" s=${20}/><span>Ya tenés una publicación. Al guardar la vamos a actualizar.</span></div>`:null}
+      <div className="card p-5 flex flex-col gap-4">
+        <${Field} id="fp-name" label="Nombre" icon="user" value=${f.name} onChange=${set('name')} error=${sub?errs.name:''}/>
+        <fieldset><legend className="lbl">Posición</legend><div className="grid grid-cols-2 gap-2">${POSITIONS.map(p=>html`<button type="button" key=${p} aria-pressed=${f.pos===p?'true':'false'} onClick=${()=>setF({...f,pos:p})} className=${cx('rounded-xl border-2 py-3 font-bold text-[14px]',f.pos===p?'border-pri bg-prisoft text-brand':'border-line bg-surface')}>${p}</button>`)}</div>${sub&&errs.pos?html`<span className="err" role="alert">${errs.pos}</span>`:null}</fieldset>
+        <div className="grid grid-cols-2 gap-3"><${Field} id="fp-age" label="Edad" type="number" inputMode="numeric" min="15" max="45" value=${f.age} onChange=${set('age')} placeholder="24" error=${sub?errs.age:''}/><${Field} id="fp-exp" label="Años de experiencia" type="number" inputMode="numeric" min="0" max="30" value=${f.exp} onChange=${set('exp')} placeholder="5" error=${sub?errs.exp:''}/></div>
+        <div><label className="lbl" htmlFor="fp-level">Nivel de experiencia</label><div className="inp"><select id="fp-level" value=${f.level} onChange=${set('level')}>${LEVELS.map(l=>html`<option key=${l}>${l}</option>`)}</select></div></div>
+        <div><label className="lbl" htmlFor="fp-note">Sobre vos <span className="font-medium">(${f.note.length}/200)</span></label><div className="inp"><textarea id="fp-note" rows="3" maxLength="200" value=${f.note} onChange=${set('note')} placeholder="Estilo de juego, clubes anteriores, logros…"></textarea></div></div>
+      </div>
+      <div className="card p-5 flex flex-col gap-4">
+        <fieldset><legend className="lbl">Disponibilidad</legend><div className="flex flex-wrap gap-2">${AVAIL.map(a=>html`<button type="button" key=${a} aria-pressed=${f.avail.includes(a)?'true':'false'} onClick=${()=>toggleAvail(a)} className=${cx('pill',f.avail.includes(a)&&'on')}>${f.avail.includes(a)?'✓ ':''}${a}</button>`)}</div>${sub&&errs.avail?html`<span className="err" role="alert">${errs.avail}</span>`:null}</fieldset>
+        <div><label className="lbl" htmlFor="fp-zone">Zona</label><div className="inp"><select id="fp-zone" value=${f.zone} onChange=${set('zone')}>${ZONES.map(z=>html`<option key=${z}>${z}</option>`)}</select></div></div>
+        <${Field} id="fp-phone" label="Teléfono / WhatsApp" icon="phone" type="tel" value=${f.phone} onChange=${set('phone')} placeholder="342 555-0000" error=${sub?errs.phone:''}/>
+        <${Field} id="fp-email" label="Email de contacto" icon="mail" type="email" value=${f.email} onChange=${set('email')} error=${sub?errs.email:''}/>
+      </div>
+      <section aria-label="Vista previa"><div className="text-[12px] font-bold uppercase tracking-widest text-mute mb-2">Así te ven los clubes</div><${FreeCard} p=${{...f,age:age||'–',exp:exp||0,id:'preview'}} preview/></section>
+      <${Btn} type="submit" full icon="send">${mine?'Actualizar publicación':'Publicar perfil'}<//>
+    </form>
+  <//>`;
+}
+/* tarjeta de jugador libre */
+function FreeCard({p,preview,onContact,saved,onSave}){
+  return html`<article className="card p-4 flex flex-col gap-3">
+    <div className="flex items-start gap-3"><${Avatar} name=${p.name||'?'} size=${48}/>
+      <div className="min-w-0 flex-1"><h3 className="text-[17px] font-bold leading-tight">${p.name||'Tu nombre'}</h3><div className="text-[13px] text-mute">${p.pos||'Posición'} · ${p.age} años · ${p.zone}</div></div>
+      ${onSave?html`<button className="icobtn" aria-label=${saved?'Quitar de guardados':'Guardar jugador'} aria-pressed=${saved?'true':'false'} onClick=${onSave} style=${saved?{color:'var(--live)'}:{}}><${Icon} n="heart" s=${18} style=${saved?{fill:'currentColor'}:undefined}/></button>`:null}</div>
+    <p className="text-[14px]">${p.note||'Contá cómo jugás y qué buscás.'}</p>
+    <div className="flex flex-wrap gap-1.5"><span className="chip chip-pri">${p.exp} años de experiencia</span><span className="chip">${p.level}</span>${(p.avail||[]).map(a=>html`<span key=${a} className="chip chip-gold">${a}</span>`)}</div>
+    ${onContact?html`<${Btn} full icon="send" onClick=${onContact}>Contactar<//>`:null}
+  </article>`;
+}
+/* CU_020 · Buscar jugadores libres */
+function SearchFree(){
+  const {s,dispatch,go}=useApp();
+  const u=s.ui;
+  const q=u.fq??'',pos=u.fpos??'',min=u.fmin??15,max=u.fmax??45;
+  const setUI=patch=>dispatch({type:'UI',patch});
+  const saved=u.saved;
+  const list=s.freePlayers.filter(p=>(!pos||p.pos===pos)&&p.age>=min&&p.age<=max&&(p.name+' '+p.zone+' '+p.note).toLowerCase().includes(q.trim().toLowerCase()));
+  const clear=()=>setUI({fq:'',fpos:'',fmin:15,fmax:45});
+  const filtered=q||pos||min!==15||max!==45;
+  return html`<${Page} title="Bolsa de pases" sub="Encontrá refuerzos para tu club" nav=${NAV_PLAYERS}>
+    <div className="inp"><${Icon} n="search" s=${18} className="text-mute"/><input id="fs-q" aria-label="Buscar por nombre o zona" placeholder="Buscar por nombre o zona" value=${q} onChange=${e=>setUI({fq:e.target.value})}/>${q?html`<button aria-label="Borrar búsqueda" onClick=${()=>setUI({fq:''})} className="text-mute"><${Icon} n="x" s=${16}/></button>`:null}</div>
+    <div className="pillnav" role="group" aria-label="Posición">${[['','Todos'],['Delantero','Delanteros'],['Mediocampista','Mediocampistas'],['Defensor','Defensores'],['Arquero','Arqueros']].map(([v,l])=>html`<button key=${v||'all'} aria-pressed=${pos===v?'true':'false'} className=${cx('pill',pos===v&&'on')} onClick=${()=>setUI({fpos:v})}>${l}</button>`)}</div>
+    <div className="card p-4 flex flex-col gap-2"><div className="flex justify-between text-[13px] font-bold"><span>Edad</span><span className="tnum text-brand">${min} a ${max} años</span></div>
+      <div className="grid grid-cols-2 gap-3"><label className="text-[12px] text-mute font-semibold">Mínima<input id="fs-min" type="range" min="15" max="45" value=${min} onChange=${e=>{const v=Number(e.target.value);setUI({fmin:Math.min(v,max)})}} aria-label="Edad mínima"/></label>
+        <label className="text-[12px] text-mute font-semibold">Máxima<input id="fs-max" type="range" min="15" max="45" value=${max} onChange=${e=>{const v=Number(e.target.value);setUI({fmax:Math.max(v,min)})}} aria-label="Edad máxima"/></label></div></div>
+    <div className="flex items-center justify-between"><span className="text-[14px] text-mute"><b className="text-ink">${list.length}</b> ${list.length===1?'jugador':'jugadores'}</span>${filtered?html`<button className="text-[13.5px] font-bold text-brand underline" onClick=${clear}>Limpiar filtros</button>`:null}</div>
+    ${list.length===0?html`<${Empty} icon="users" title="Sin resultados">Probá con otra posición o ampliá el rango de edad.<${Btn} className="mt-3" sm onClick=${clear}>Limpiar filtros<//><//>`:null}
+    ${list.map(p=>html`<${FreeCard} key=${p.id} p=${p} saved=${saved.includes(p.id)} onSave=${()=>setUI({saved:saved.includes(p.id)?saved.filter(x=>x!==p.id):[...saved,p.id]})} onContact=${()=>go('cu21',{chatPlayer:p.id})}/>`)}
+  <//>`;
+}
+/* CU_021 · Chat club-jugador */
+const REPLIES={
+  club:['¡Hola! Gracias por escribirme, me interesa mucho.','Tengo disponibilidad martes y jueves por la tarde. ¿A qué hora sería?','Perfecto, ahí estaré. ¿Dónde entrenan?','Genial, llevo botines y documento. ¡Gracias!'],
+  player:['Hola, vimos tu perfil y nos gustó. ¿Seguís libre?','Entrenamos martes y jueves a las 19 h. ¿Podés venir esta semana?','Excelente. Te esperamos en el estadio, preguntá por el DT.','Dale, cualquier cosa avisanos por acá.'],
+};
+const QUICK={
+  club:[['text','Invitar a prueba','Te invitamos a una práctica de prueba esta semana. ¿Podés venir?'],['text','Proponer reunión','¿Te parece si nos juntamos 15 minutos para conversar el proyecto?'],['proposal','Propuesta formal','']],
+  player:[['text','Confirmar interés','Sigo interesado/a. ¿Podemos coordinar una práctica de prueba?'],['text','Consultar condiciones','¿Qué condiciones ofrece el club? ¿Hay viáticos o seguro?'],['text','Enviar CV','Te comparto mi trayectoria resumida: mirá mi publicación en la bolsa de pases.']],
+};
+function Chat(){
+  const {s,dispatch}=useApp();
+  const pid=s.ui.chatPlayer;const as=s.ui.chatAs;
+  const p=s.freePlayers.find(x=>x.id===pid)||s.freePlayers[0];
+  const msgs=s.chats[p.id]||[];
+  const [txt,setTxt]=useState('');
+  const boxRef=useRef(null);
+  const typing=s.ui.typing===p.id;
+  useEffect(()=>{const b=boxRef.current;if(b)b.scrollTop=b.scrollHeight},[msgs.length,typing,p.id]);
+  const other=as==='club'?'player':'club';
+  const send=(kind,text)=>{
+    const msg=kind==='proposal'?{from:as,kind:'proposal',text:'Propuesta de fichaje',data:{club:'Deportivo Central',detail:'Prueba de 2 prácticas (martes y jueves, 19 h) y, si resulta, contrato por el resto de la temporada.'}}:{from:as,kind:'text',text};
+    dispatch({type:'CHAT',playerId:p.id,msg});
+    const n=msgs.filter(m=>m.from===other).length;
+    dispatch({type:'UI',patch:{typing:p.id}});
+    setTimeout(()=>{dispatch({type:'CHAT',playerId:p.id,msg:{from:other,kind:'text',text:kind==='proposal'?(as==='club'?'¡Gracias por la propuesta! La reviso y te confirmo hoy.':'Recibimos tu propuesta, la analizamos y te respondemos.'):REPLIES[other][n%REPLIES[other].length]}});dispatch({type:'UI',patch:{typing:''}})},1500);
+  };
+  const submit=e=>{e.preventDefault();const t=txt.trim();if(!t)return;send('text',t);setTxt('')};
+  const mineSide=as;
+  return html`<${Page} title="Mensajes" sub="Contacto club · jugador" nav=${NAV_PLAYERS}>
+    <${Seg} label="Escribir como" value=${as} onChange=${v=>dispatch({type:'UI',patch:{chatAs:v}})} options=${[{id:'club',label:'Como Club (Deportivo Central)'},{id:'player',label:'Como jugador'}]}/>
+    <div className="inp"><${Icon} n="users" s=${18} className="text-mute"/><select id="chat-player" aria-label="Conversación con" value=${p.id} onChange=${e=>dispatch({type:'UI',patch:{chatPlayer:e.target.value}})}>${s.freePlayers.map(x=>html`<option key=${x.id} value=${x.id}>${x.name} · ${x.pos}</option>`)}</select></div>
+    <section className="card flex flex-col overflow-hidden" aria-label=${'Chat con '+p.name}>
+      <div className="p-3 flex items-center gap-3 border-b border-line bg-surface2"><${Avatar} name=${p.name} size=${40}/><div className="min-w-0 flex-1"><div className="font-bold leading-tight">${as==='club'?p.name:'Deportivo Central'}</div><div className="text-[12.5px] text-mute">${as==='club'?`${p.pos} · ${p.age} años · ${p.zone}`:'Club · Fecha 14'}</div></div>${as==='club'?html`<span className="chip chip-ok">Libre</span>`:html`<span className="chip chip-pri">Club</span>`}</div>
+      <div ref=${boxRef} className="p-3 flex flex-col gap-2.5 overflow-y-auto" style=${{minHeight:260,maxHeight:380}} role="log" aria-live="polite">
+        ${msgs.length===0?html`<div className="m-auto text-center text-mute text-[14px] py-8">Escribí el primer mensaje para iniciar la conversación.</div>`:null}
+        ${msgs.map(m=>{const me=m.from===mineSide;return html`<div key=${m.id} className=${cx('flex flex-col',me?'items-end':'items-start')}>
+          ${m.kind==='proposal'?html`<div className=${cx('bubble',me?'bubble-me':'bubble-them')} style=${{width:'88%'}}><div className="flex items-center gap-2 font-bold"><${Icon} n="shield" s=${16}/>${m.text}</div><div className="text-[13.5px] mt-1.5 opacity-95">${m.data.club}: ${m.data.detail}</div><span className="chip chip-gold mt-2">Enviada</span></div>`
+            :html`<div className=${cx('bubble',me?'bubble-me':'bubble-them')}>${m.text}</div>`}
+          <span className="text-[11px] text-mute mt-1 px-1 tnum">${m.t}${me?' · ✓✓':''}</span></div>`})}
+        ${typing?html`<div className="flex items-start"><div className="bubble bubble-them typing" aria-label="Escribiendo"><span></span><span></span><span></span></div></div>`:null}
+      </div>
+      <div className="px-3 pt-2 pb-1 flex gap-2 overflow-x-auto" style=${{scrollbarWidth:'none'}}>${QUICK[as].map(([k,l,t])=>html`<button key=${l} type="button" className="pill" onClick=${()=>send(k,t)}>${l}</button>`)}</div>
+      <form onSubmit=${submit} className="p-3 flex gap-2 items-center"><div className="inp flex-1"><input id="chat-input" aria-label="Escribir mensaje" placeholder="Escribí un mensaje…" value=${txt} onChange=${e=>setTxt(e.target.value)} autoComplete="off"/></div>
+        <button type="submit" className="btn btn-pri" style=${{minWidth:50,padding:'12px'}} aria-label="Enviar mensaje" disabled=${!txt.trim()}><${Icon} n="send" s=${20}/></button></form>
+    </section>
+  <//>`;
+}
+/* ============================================================
+   App: pantallas, contexto y arranque
+   ============================================================ */
+const SCREENS={
+  home:Home,profile:Profile,
+  cu01:Register,cu02:Login,cu03:Recover,cu04:EditProfile,cu05:Favorites,cu06:Roles,
+  cu07:Live,cu08:Standings,cu09:Fixture,cu10:History,cu11:H2H,cu12:GoalPush,cu13:Suspension,
+  cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
+};
+function App(){
+  const [s,dispatch]=useReducer(reducer,undefined,initState);
+  const d=useMemo(()=>({table:computeTable(s.matches),players:computePlayers(s.matches)}),[s.matches]);
+  const go=useCallback((screen,ui)=>{dispatch({type:'NAV',screen,ui});try{window.scrollTo(0,0)}catch(e){}},[]);
+  const back=useCallback(()=>{dispatch({type:'BACK'});try{window.scrollTo(0,0)}catch(e){}},[]);
+  useEffect(()=>{const id=setInterval(()=>dispatch({type:'TICK'}),6000);return()=>clearInterval(id)},[]);
+  const me=s.users.find(u=>u.id===s.userId)||s.users[0];
+  const ctx={s,dispatch,go,back,d,me};
+  const Screen=SCREENS[s.screen]||Home;
+  const showNav=!AUTH_SCREENS.includes(s.screen);
+  return html`<${Ctx.Provider} value=${ctx}>
+    <div className="app">
+      <${DemoBar}/>
+      <${Toasts}/>
+      <${Screen} key=${s.screen}/>
+      ${showNav?html`<${BottomNav}/>`:null}
+    </div>
+  <//>`;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+</script>
+</body></html>
