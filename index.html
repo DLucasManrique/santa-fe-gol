@@ -417,7 +417,7 @@ function initState(){
     toasts:[],roleLog:[],
     freePlayers:FREE0,chats:CHATS0,
     ui:{fixtureTab:'all',fixtureTeam:'',openFechas:[14,15],histTeam:'',h2hA:'dc',h2hB:'an',selPlayer:'dc0',selVenue:'dc',located:false,
-        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc'},
+        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc',selectedMatch:'LIVE',statsTeam:''},
   };
 }
 const INITIAL_LIVE=JSON.parse(JSON.stringify(buildMatches().find(m=>m.id==='LIVE')));
@@ -641,7 +641,7 @@ function SubNav({items}){
   const {s,go}=useApp();
   return html`<nav className="pillnav" aria-label="Secciones">${items.map(([id,label])=>html`<button key=${id} className=${cx('pill',s.screen===id&&'on')} aria-current=${s.screen===id?'page':undefined} onClick=${()=>go(id)}>${label}</button>`)}</nav>`;
 }
-const NAV_MATCHES=[['cu07','En vivo'],['cu09','Fixture'],['cu10','Historial'],['cu11','Head to Head']];
+const NAV_MATCHES=[['cu07','En vivo'],['cu09','Fixture'],['leagueStats','Estadísticas'],['cu10','Historial'],['cu11','Head to Head']];
 const NAV_PLAYERS=[['cu17','Goleadores'],['cu16','Ficha'],['cu18','Tarjetas'],['cu20','Bolsa de pases'],['cu19','Publicar perfil']];
 /* ---------- fila de partido ---------- */
 function MatchRow({m}){
@@ -652,7 +652,7 @@ function MatchRow({m}){
     :st==='suspended'?html`<span className="chip chip-gold"><${Icon} n="cloud" s=${13}/>Suspendido</span>`
     :html`<span className="chip chip-pri"><${Icon} n="clock" s=${13}/>${m.time}</span>`;
   const mid=st==='scheduled'||st==='suspended'?html`<span className="text-mute font-bold">vs</span>`:html`<span className="disp text-[22px] font-extrabold tnum">${h}–${a}</span>`;
-  const click=st==='live'?()=>go('cu07'):st==='suspended'?()=>go('cu13',{suspId:m.id}):null;
+  const click=()=>go('matchDetail',{selectedMatch:m.id});
   return html`<div className="card p-3">
     <div className="flex items-center justify-between gap-2 mb-2">
       <span className="text-[12px] text-mute font-semibold">${m.date===TODAY?'Hoy':fmtLong(m.date)} · ${m.time} · Fecha ${m.fecha}</span>
@@ -665,7 +665,7 @@ function MatchRow({m}){
     </div>
     <div className="mt-2 flex items-center justify-between gap-2">
       <button className="flex items-center gap-1.5 text-[12.5px] text-mute min-w-0" onClick=${()=>go('cu15',{selVenue:m.home})}><${Icon} n="pin" s=${14}/><span className="truncate">${VENUES[m.home].name}</span></button>
-      ${click?html`<button className="text-[12.5px] font-bold text-brand flex items-center gap-1" onClick=${click}>${st==='live'?'Ver en vivo':'Ver aviso'}<${Icon} n="right" s=${14}/></button>`:null}
+      <button className="text-[12.5px] font-bold text-brand flex items-center gap-1" onClick=${click}>Ver partido<${Icon} n="right" s=${14}/></button>
     </div>
   </div>`;
 }
@@ -717,7 +717,7 @@ const CUS=[
  ['cu19','CU_019','Publicar jugador libre'],['cu20','CU_020','Buscar jugadores libres'],['cu21','CU_021','Contacto club-jugador'],
 ];
 const AUTH_SCREENS=['cu01','cu02','cu03'];
-const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',
+const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',matchDetail:'matches',leagueStats:'matches',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',
   cu16:'players',cu17:'players',cu18:'players',cu19:'players',cu20:'players',cu21:'players',profile:'profile',cu04:'profile',cu05:'profile',cu06:'profile'};
 function BottomNav(){
   const {s,go}=useApp();
@@ -1185,6 +1185,63 @@ function Fixture(){
       </section>`})}
   <//>`;
 }
+/* Nueva función: ficha completa de cada encuentro. Datos de demostración. */
+function MatchDetail(){
+  const {s,go}=useApp();
+  const m=s.matches.find(x=>x.id===s.ui.selectedMatch)||s.matches[0];
+  const [h,a]=scoreOf(m);
+  const played=m.status==='finished'||m.status==='live';
+  const status=m.status==='finished'?'Finalizado':m.status==='live'?`En vivo · ${m.minute} min`:m.status==='suspended'?'Suspendido':'Programado';
+  const events=[...m.events].sort(byMin);
+  const count=(team,type)=>events.filter(e=>e.team===team&&e.type===type).length;
+  const metric=(title,x,y)=>html`<div className="grid items-center gap-2 py-2 border-b border-line text-[13px]" style=${{gridTemplateColumns:'35px 1fr 35px'}}><b className="text-center tnum">${x}</b><span className="text-center text-mute font-semibold">${title}</span><b className="text-center tnum">${y}</b></div>`;
+  return html`<${Page} title="Detalle del partido" sub=${`Fecha ${m.fecha} · ${fmtLong(m.date)} · ${m.time}`} nav=${NAV_MATCHES}>
+    <section className="hero p-5 text-center">
+      <span className="chip chip-gold">${status}</span>
+      <div className="flex items-center justify-between gap-2 mt-4">
+        <div className="flex-1 min-w-0 flex flex-col items-center gap-2"><${Crest} id=${m.home} size=${54}/><span className="font-bold text-[13px]">${T[m.home].name}</span></div>
+        <div className="disp font-extrabold text-[38px] tnum">${played?`${h}–${a}`:'vs'}</div>
+        <div className="flex-1 min-w-0 flex flex-col items-center gap-2"><${Crest} id=${m.away} size=${54}/><span className="font-bold text-[13px]">${T[m.away].name}</span></div>
+      </div>
+      <button className="text-[12px] underline opacity-90 mt-4" onClick=${()=>go('cu15',{selVenue:m.home})}>${VENUES[m.home].name}</button>
+    </section>
+    <section className="card p-4"><h2 className="font-bold text-[17px]">Resumen del partido</h2>
+      ${metric('Goles',h,a)}
+      ${metric('Tarjetas amarillas',count(m.home,'yellow'),count(m.away,'yellow'))}
+      ${metric('Tarjetas rojas',count(m.home,'red'),count(m.away,'red'))}
+      <p className="text-[12px] text-mute mt-3">Estadísticas calculadas desde los eventos cargados. No se inventan posesión, tiros ni asistencias.</p>
+    </section>
+    <section><h2 className="font-bold text-[17px] mb-2">Cronología de eventos</h2>
+      ${events.length?html`<ol className="card divide-y divide-line">${events.map((e,i)=>html`<li key=${i} className="p-3 flex items-center gap-3"><span className="w-10 font-extrabold tnum text-brand">${e.min}'</span><${EventIcon} type=${e.type}/><div className="flex-1 min-w-0"><div className="font-bold text-[14px]">${PLAYER[e.player]?.name||'Jugador sin registrar'}</div><div className="text-[12px] text-mute">${EV_LABEL[e.type]||e.type} · ${T[e.team]?.name||e.team}</div></div><${Crest} id=${e.team} size=${25}/></li>`)}</ol>`:html`<${Empty} icon="calendar" title="Sin eventos">${played?'No hay eventos cargados.':'El partido todavía no tiene eventos registrados.'}<//>`}
+    </section>
+    ${m.status==='suspended'?html`<${Btn} full v="ghost" onClick=${()=>go('cu13',{suspId:m.id})}>Ver motivo de suspensión<//>`:null}
+    ${m.id==='LIVE'?html`<${Btn} full onClick=${()=>go('cu07')}>Ir al minuto a minuto en vivo<//>`:null}
+    <p className="text-[12px] text-mute">Modo demostración: marcadores, fechas, jugadores y acontecimientos son simulados.</p>
+  <//>`;
+}
+/* Nueva función: tablero de números de la competición. */
+function LeagueStats(){
+ const {s,d,dispatch,go}=useApp();
+ const team=s.ui.statsTeam||'';
+ const finished=s.matches.filter(m=>m.status==='finished');
+ const goals=finished.reduce((n,m)=>{const [h,a]=scoreOf(m);return n+h+a},0);
+ const cards=finished.reduce((n,m)=>n+m.events.filter(e=>e.type==='yellow'||e.type==='red').length,0);
+ const n=v=>Number(v).toFixed(2).replace('.',',');
+ const leaders=[...d.table].sort((a,b)=>b.gf-a.gf||b.pts-a.pts).slice(0,5);
+ const defense=[...d.table].filter(r=>r.pj>0).sort((a,b)=>a.gc/a.pj-b.gc/b.pj).slice(0,5);
+ const rivals=finished.filter(m=>!team||m.home===team||m.away===team);
+ const clubStats=team?(()=>{const x=d.table.find(r=>r.id===team);return x||null})():null;
+ const top=Object.values(d.players).filter(p=>p.goals>0&&(!team||p.teamId===team)).sort((a,b)=>b.goals-a.goals).slice(0,5);
+ return html`<${Page} title="Estadísticas" sub="Radiografía de la Liga Santafesina · demo" nav=${NAV_MATCHES}>
+   <div className="grid grid-cols-2 gap-2"><${StatTile} label="Partidos finalizados" value=${finished.length}/><${StatTile} label="Goles anotados" value=${goals}/><${StatTile} label="Goles por partido" value=${n(finished.length?goals/finished.length:0)}/><${StatTile} label="Tarjetas totales" value=${cards} tone="y"/></div>
+   <div className="inp"><${Icon} n="sliders" s=${18}/><select aria-label="Filtrar estadísticas por club" value=${team} onChange=${e=>dispatch({type:'UI',patch:{statsTeam:e.target.value}})}><option value="">Toda la liga</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>
+   ${clubStats?html`<section className="card p-4"><div className="flex items-center gap-2 mb-3"><${Crest} id=${team} size=${35}/><h2 className="font-bold text-[18px]">${T[team].name}</h2></div><div className="grid grid-cols-3 gap-2"><${StatTile} label="Puntos" value=${clubStats.pts}/><${StatTile} label="A favor" value=${clubStats.gf}/><${StatTile} label="En contra" value=${clubStats.gc}/></div><p className="text-[13px] text-mute mt-3">${clubStats.pg} ganados · ${clubStats.pe} empatados · ${clubStats.pp} perdidos · ${rivals.length} partidos finalizados</p></section>`:null}
+   ${!team?html`<section className="card p-4"><h2 className="font-bold text-[17px] mb-3">Ataques más goleadores</h2>${leaders.map((r,i)=>html`<div key=${r.id} className="flex items-center gap-2 py-2 border-b border-line"><b className="text-mute w-5">${i+1}</b><${Crest} id=${r.id} size=${30}/><span className="flex-1 text-[13px] font-semibold">${T[r.id].name}</span><b className="tnum">${r.gf} goles</b></div>`)}</section>
+   <section className="card p-4"><h2 className="font-bold text-[17px] mb-3">Defensas menos vencidas</h2>${defense.map((r,i)=>html`<div key=${r.id} className="flex items-center gap-2 py-2 border-b border-line"><b className="text-mute w-5">${i+1}</b><${Crest} id=${r.id} size=${30}/><span className="flex-1 text-[13px] font-semibold">${T[r.id].name}</span><b className="tnum">${n(r.gc/r.pj)} GC/PJ</b></div>`)}</section>`:null}
+   <section className="card p-4"><div className="flex justify-between items-center gap-2 mb-3"><h2 className="font-bold text-[17px]">Goleadores ${team?'del club':'de la liga'}</h2><button className="text-brand text-[12px] font-bold" onClick=${()=>go('cu17')}>Ver todos →</button></div>${top.length?top.map((p,i)=>html`<button key=${p.id} className="flex items-center gap-2 w-full text-left py-2 border-b border-line" onClick=${()=>go('cu16',{selPlayer:p.id})}><b className="text-mute w-5">${i+1}</b><${Crest} id=${p.teamId} size=${30}/><span className="flex-1 text-[13px] font-semibold">${p.name}</span><b>${p.goals} goles</b></button>`):html`<p className="text-mute text-[13px]">No se registraron goles.</p>`}</section>
+   <p className="text-[12px] text-mute">Datos simulados y calculados localmente, no corresponden a resultados oficiales de la Liga Santafesina.</p>
+ <//>`;
+}
 /* CU_010 · Historial de resultados */
 function History(){
   const {s,dispatch}=useApp();
@@ -1373,7 +1430,7 @@ function PlayerStats(){
   const p=d.players[s.ui.selPlayer];
   const row=d.table.find(r=>r.id===p.teamId);
   const maxG=Math.max(1,...p.gbf);
-  const fechas=Array.from({length:14},(_,i)=>i+1);
+  const fechas=Array.from({length:21},(_,i)=>i+1);
   const gpp=p.pj?(p.goals/p.pj):0;
   return html`<${Page} title="Ficha de jugador" sub="Estadísticas del torneo" nav=${NAV_PLAYERS}>
     <${PlayerPicker}/>
@@ -1579,7 +1636,7 @@ function Chat(){
 const SCREENS={
   home:Home,profile:Profile,
   cu01:Register,cu02:Login,cu03:Recover,cu04:EditProfile,cu05:Favorites,cu06:Roles,
-  cu07:Live,cu08:Standings,cu09:Fixture,cu10:History,cu11:H2H,cu12:GoalPush,cu13:Suspension,
+  matchDetail:MatchDetail,leagueStats:LeagueStats,cu07:Live,cu08:Standings,cu09:Fixture,cu10:History,cu11:H2H,cu12:GoalPush,cu13:Suspension,
   cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
 };
 function App(){
