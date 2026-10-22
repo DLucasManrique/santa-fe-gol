@@ -1,0 +1,10 @@
+Santa Fe GOL
+
+1. Descomprimí este ZIP en la carpeta de tu proyecto VS Code (gol).
+2. Abrí PowerShell en esa carpeta y ejecutá: powershell -NoProfile -ExecutionPolicy Bypass -File .\descargar_escudos.ps1
+3. Confirmá que aparezca la carpeta escudos con las imágenes descargadas. Si falla alguna URL, te avisará cuál.
+4. Abrí index.html en Chrome, comprobá que se vean los escudos.
+5. En Git Bash: git add . ; git commit -m "Corregir fixture y escudos" ; git push
+6. Vercel publicará automáticamente index.html y escudos/ junto a tu proyecto.
+
+Aviso: los resultados son simulados. Este paquete corrige localías para que la comparación General/Local/Visitante tenga sentido.

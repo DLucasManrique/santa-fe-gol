@@ -121,6 +121,37 @@ input[type=range]{accent-color:var(--brand);width:100%}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 table.t{width:100%;border-collapse:collapse}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== Responsive: tablet y PC (en celular no cambia nada) ===== */
+.crest-link{cursor:pointer;transition:transform .12s}
+.crest-link:hover{transform:scale(1.08)}
+.crest-link:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.ha-grid{display:grid;align-items:center;column-gap:4px;grid-template-columns:24px minmax(0,1fr) repeat(3,30px) repeat(3,30px) 34px}
+.ha-grid>.sep{border-left:1px solid var(--line);padding-left:4px}
+.vd-long{display:none}
+.full-grid{display:grid;align-items:center;column-gap:6px;grid-template-columns:40px minmax(170px,1fr) repeat(6,46px) 54px 58px minmax(130px,170px)}
+@media (min-width:768px){
+  .app{max-width:none;box-shadow:none;padding-bottom:110px}
+  .app main>header>div,.app main>div{max-width:1200px;margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px}
+  .bnav{max-width:720px;border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0}
+  .ha-grid{column-gap:8px;grid-template-columns:36px minmax(160px,1fr) repeat(3,54px) repeat(3,54px) 170px}
+  .ha-grid>.sep{padding-left:8px}
+  .vd-short{display:none}.vd-long{display:inline-flex}
+  .demopanel{width:min(420px,calc(100% - 16px))}
+}
+@media (min-width:1024px){
+  .app{display:grid;grid-template-columns:240px minmax(0,1fr);grid-template-rows:auto 1fr;padding-bottom:28px}
+  .app>.demobar{grid-column:1/-1;grid-row:1}
+  .app>main{grid-column:2;grid-row:2;min-width:0}
+  .app>.bnav{grid-column:1;grid-row:2;position:sticky;top:calc(env(safe-area-inset-top,0px) + 38px);left:auto;bottom:auto;transform:none;width:auto;max-width:none;height:calc(100vh - 38px);align-self:start;display:flex;flex-direction:column;gap:6px;padding:18px 12px;border:0;border-right:1px solid var(--line);border-radius:0}
+  .bnav button{flex-direction:row;justify-content:flex-start;gap:12px;padding:6px 8px;font-size:14.5px}
+  .bnav .ico{width:44px;height:36px}
+  .bnav button:hover{background:var(--surface2)}
+}
+@media (min-width:1600px){.app main>header>div,.app main>div{max-width:1400px}}
+/* pantallas de acceso (sin menú): columna centrada */
+.app:not(:has(.bnav)){display:block}
+.app:not(:has(.bnav)) main{max-width:520px;margin:0 auto}
+.app:not(:has(.bnav)) main>div,.app:not(:has(.bnav)) main>header>div{max-width:none}
 </style>
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
@@ -163,28 +194,28 @@ const poisson=(rng,l)=>{const L=Math.exp(-l);let k=0,p=1;do{k++;p*=rng()}while(p
 const hash=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
 /* ---------- equipos y canchas ---------- */
 const TEAMS=[
- {id:'dc',name:'Colón de San Justo',init:'CSJ',color:'#D71920',str:1.8,logo:'https://lsf.ar/est/escudos/e_Colon%20de%20San%20Justo.jpg'},
- {id:'an',name:'Sanjustino',init:'SAN',color:'#0B5FA5',str:1.7,logo:'https://lsf.ar/est/escudos/e_Sanjustino.jpg'},
- {id:'uo',name:'La Perla del Oeste',init:'LPO',color:'#1E5B3A',str:1.6,logo:'https://lsf.ar/est/escudos/6881d942b676e_e_La%20Perla.jpg'},
- {id:'er',name:'Sportivo Guadalupe',init:'SG',color:'#E31E24',str:1.5,logo:'https://lsf.ar/est/escudos/e_Sportivo%20Guadalupe.jpg'},
- {id:'lt',name:'La Salle Jobson',init:'LSJ',color:'#005B96',str:1.5,logo:'https://lsf.ar/est/escudos/6881db4e8625d_la%20salle%20jobson.jpg'},
- {id:'sl',name:'Náutico El Quillá',init:'NEQ',color:'#007A5E',str:1.4,logo:'https://lsf.ar/est/escudos/e_Nautico%20El%20Quilla.jpg'},
- {id:'dr',name:'Unión',init:'UNI',color:'#006B3F',str:1.4,logo:'https://lsf.ar/est/escudos/e_Union.jpg'},
- {id:'ju',name:'Juventud Unida',init:'JUV',color:'#2E7D32',str:1.3,logo:'https://lsf.ar/est/escudos/e_Juventud%20Unida.jpg'},
- {id:'cr',name:'Ciclón Racing',init:'CR',color:'#0066A1',str:1.3,logo:'https://lsf.ar/est/escudos/e_Ciclon%20Racing.jpg'},
- {id:'no',name:'Nobleza',init:'NOB',color:'#8B1E3F',str:1.2,logo:'https://lsf.ar/est/escudos/e_Nobleza.jpg'},
- {id:'co',name:'Colón',init:'COL',color:'#E31E24',str:1.8,logo:'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Escudo_Colon_Con_Estrella.png/500px-Escudo_Colon_Con_Estrella.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail'},
- {id:'cos',name:'Cosmos FC',init:'COS',color:'#222222',str:1.2,logo:'https://lsf.ar/est/escudos/6a041cf434cb9_e_Cosmos.jpg'},
- {id:'at',name:'Ateneo Inmaculada',init:'ATE',color:'#1D4E89',str:1.2,logo:'https://lsf.ar/est/escudos/6881d8c028129_ateneo.jpg'},
- {id:'gy',name:'Gimnasia y Esgrima',init:'GE',color:'#1F5A3A',str:1.3,logo:'https://lsf.ar/est/escudos/e_Gimnasia%20y%20Esgrima.jpg'},
- {id:'cn',name:'Ciclón Norte',init:'CN',color:'#F2C300',str:1.1,logo:'https://lsf.ar/est/escudos/e_Ciclon%20Norte.jpg'},
- {id:'in',name:'Independiente',init:'IND',color:'#D71920',str:1.1,logo:'https://lsf.ar/est/escudos/e_Independiente.jpg'},
- {id:'unl',name:'UNL',init:'UNL',color:'#8A1538',str:1.0,logo:'https://lsf.ar/est/escudos/6881d99db8678_UNL.jpeg'},
- {id:'na',name:'Nacional',init:'NAC',color:'#005B96',str:1.0,logo:'https://lsf.ar/est/escudos/e_Nacional.jpg'},
- {id:'new',name:"Newell's Old Boys",init:'NEW',color:'#D71920',str:1.1,logo:'https://lsf.ar/est/escudos/e_Newells.jpg'},
- {id:'ac',name:'Academia Cabrera',init:'ACA',color:'#4A4A4A',str:0.9,logo:'https://lsf.ar/est/escudos/6881d96c36577_e_Academia%20AC.png'},
- {id:'lf',name:'Las Flores II',init:'LF2',color:'#7B1FA2',str:0.9,logo:'https://lsf.ar/est/escudos/6881d85da51b9_e_Las%20Flores.jpg'},
- {id:'dsr',name:'Deportivo Santa Rosa',init:'DSR',color:'#00897B',str:0.8,logo:'https://lsf.ar/est/escudos/6881d3942a949_e_Santa%20Rosa.jpg'},
+ {id:'dc',name:'Colón de San Justo',init:'CSJ',color:'#D71920',str:1.8,logo:'escudos/dc.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Colon%20de%20San%20Justo.jpg'},
+ {id:'an',name:'Sanjustino',init:'SAN',color:'#0B5FA5',str:1.7,logo:'escudos/an.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Sanjustino.jpg'},
+ {id:'uo',name:'La Perla del Oeste',init:'LPO',color:'#1E5B3A',str:1.6,logo:'escudos/uo.jpg',logoBackup:'https://lsf.ar/est/escudos/6881d942b676e_e_La%20Perla.jpg'},
+ {id:'er',name:'Sportivo Guadalupe',init:'SG',color:'#E31E24',str:1.5,logo:'escudos/er.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Sportivo%20Guadalupe.jpg'},
+ {id:'lt',name:'La Salle Jobson',init:'LSJ',color:'#005B96',str:1.5,logo:'escudos/lt.jpg',logoBackup:'https://lsf.ar/est/escudos/6881db4e8625d_la%20salle%20jobson.jpg'},
+ {id:'sl',name:'Náutico El Quillá',init:'NEQ',color:'#007A5E',str:1.4,logo:'escudos/sl.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Nautico%20El%20Quilla.jpg'},
+ {id:'dr',name:'Unión',init:'UNI',color:'#006B3F',str:1.4,logo:'escudos/dr.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Union.jpg'},
+ {id:'ju',name:'Juventud Unida',init:'JUV',color:'#2E7D32',str:1.3,logo:'escudos/ju.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Juventud%20Unida.jpg'},
+ {id:'cr',name:'Ciclón Racing',init:'CR',color:'#0066A1',str:1.3,logo:'escudos/cr.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Ciclon%20Racing.jpg'},
+ {id:'no',name:'Nobleza',init:'NOB',color:'#8B1E3F',str:1.2,logo:'escudos/no.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Nobleza.jpg'},
+ {id:'co',name:'Colón',init:'COL',color:'#E31E24',str:1.8,logo:'escudos/co.png',logoBackup:'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/68/Escudo_Colon_Con_Estrella.png/500px-Escudo_Colon_Con_Estrella.png?utm_source=es.wikipedia.org&utm_campaign=index&utm_content=thumbnail'},
+ {id:'cos',name:'Cosmos FC',init:'COS',color:'#222222',str:1.2,logo:'escudos/cos.jpg',logoBackup:'https://lsf.ar/est/escudos/6a041cf434cb9_e_Cosmos.jpg'},
+ {id:'at',name:'Ateneo Inmaculada',init:'ATE',color:'#1D4E89',str:1.2,logo:'escudos/at.jpg',logoBackup:'https://lsf.ar/est/escudos/6881d8c028129_ateneo.jpg'},
+ {id:'gy',name:'Gimnasia y Esgrima',init:'GE',color:'#1F5A3A',str:1.3,logo:'escudos/gy.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Gimnasia%20y%20Esgrima.jpg'},
+ {id:'cn',name:'Ciclón Norte',init:'CN',color:'#F2C300',str:1.1,logo:'escudos/cn.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Ciclon%20Norte.jpg'},
+ {id:'in',name:'Independiente',init:'IND',color:'#D71920',str:1.1,logo:'escudos/in.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Independiente.jpg'},
+ {id:'unl',name:'UNL',init:'UNL',color:'#8A1538',str:1.0,logo:'escudos/unl.jpeg',logoBackup:'https://lsf.ar/est/escudos/6881d99db8678_UNL.jpeg'},
+ {id:'na',name:'Nacional',init:'NAC',color:'#005B96',str:1.0,logo:'escudos/na.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Nacional.jpg'},
+ {id:'new',name:"Newell's Old Boys",init:'NEW',color:'#D71920',str:1.1,logo:'escudos/new.jpg',logoBackup:'https://lsf.ar/est/escudos/e_Newells.jpg'},
+ {id:'ac',name:'Academia Cabrera',init:'ACA',color:'#4A4A4A',str:0.9,logo:'escudos/ac.png',logoBackup:'https://lsf.ar/est/escudos/6881d96c36577_e_Academia%20AC.png'},
+ {id:'lf',name:'Las Flores II',init:'LF2',color:'#7B1FA2',str:0.9,logo:'escudos/lf.jpg',logoBackup:'https://lsf.ar/est/escudos/6881d85da51b9_e_Las%20Flores.jpg'},
+ {id:'dsr',name:'Deportivo Santa Rosa',init:'DSR',color:'#00897B',str:0.8,logo:'escudos/dsr.jpg',logoBackup:'https://lsf.ar/est/escudos/6881d3942a949_e_Santa%20Rosa.jpg'},
 ];
 const T=Object.fromEntries(TEAMS.map(t=>[t.id,t]));
 const VENUES={
@@ -217,6 +248,42 @@ Object.entries(ROSTERS).forEach(([tid,list])=>list.forEach((p,i)=>PLAYERS.push({
 TEAMS.forEach((t,i)=>{if(!ROSTERS[t.id])ROSTERS[t.id]=[['Jugador '+t.init+' 1','Delantero',5],['Jugador '+t.init+' 2','Mediocampista',3],['Jugador '+t.init+' 3','Defensor',1],['Jugador '+t.init+' 4','Mediocampista',2],['Jugador '+t.init+' 5','Arquero',0]];});
 PLAYERS.length=0;Object.entries(ROSTERS).forEach(([tid,list])=>list.forEach((p,i)=>PLAYERS.push({id:tid+i,teamId:tid,name:p[0],pos:p[1],w:p[2],num:NUMS[i],age:19+hash(tid+i)%15})));
 const PLAYER=Object.fromEntries(PLAYERS.map(p=>[p.id,p]));
+
+/* ---------- fichas de equipo (DATOS DE EJEMPLO) ----------
+   Para cargar datos reales completá TEAM_OVERRIDES con el id del equipo, por ejemplo:
+   dc:{founded:'5 de mayo de 1905',dt:'Nombre Apellido',titles:{liga:3,copa:1,otros:0},clasico:'an'} */
+const TEAM_OVERRIDES={};
+const CLASICOS={dc:'an',an:'dc',uo:'er',er:'uo',lt:'sl',sl:'lt',dr:'co',co:'dr',ju:'no',no:'ju',cr:'cn',cn:'cr',cos:'at',at:'cos',gy:'in',in:'gy',unl:'na',na:'unl',new:'ac',ac:'new',lf:'dsr',dsr:'lf'};
+const FN=['Matías','Nicolás','Lucas','Franco','Joaquín','Tomás','Bruno','Agustín','Emiliano','Facundo','Gonzalo','Ignacio','Maximiliano','Federico','Leandro','Ramiro','Santiago','Ezequiel','Cristian','Damián','Lisandro','Rodrigo','Mauro','Ariel','Gastón','Ciro','Valentín','Julián'];
+const LN=['González','Rodríguez','Gómez','Fernández','López','Díaz','Martínez','Pérez','Romero','Sosa','Álvarez','Torres','Ruiz','Ramírez','Flores','Acosta','Benítez','Medina','Herrera','Suárez','Aguirre','Castro','Ortiz','Silva','Núñez','Rojas','Molina','Vera','Cabrera','Ríos','Luna','Peralta'];
+const POS_QUOTA=[['Arquero',3],['Defensor',8],['Mediocampista',7],['Delantero',5]];
+const POS_NUMS={Arquero:[1,12,22,25],Defensor:[2,3,4,6,13,14,15,16,24,26],Mediocampista:[5,8,10,11,17,18,20,21,23],Delantero:[7,9,19,27,28,29]};
+function buildSquad(tid){
+  const rng=mulberry32(hash('plantel'+tid));
+  const base=ROSTERS[tid].map((p,i)=>({id:tid+i,name:p[0],pos:p[1],num:NUMS[i],age:19+hash(tid+i)%15,ficha:true}));
+  const used=new Set(base.map(p=>p.num));const names=new Set(base.map(p=>p.name));const out=[...base];
+  POS_QUOTA.forEach(([pos,q])=>{
+    let have=out.filter(p=>p.pos===pos).length;const pool=POS_NUMS[pos].filter(n=>!used.has(n));let k=0;
+    while(have<q){
+      let name;do{name=FN[Math.floor(rng()*FN.length)]+' '+LN[Math.floor(rng()*LN.length)]}while(names.has(name));
+      names.add(name);let num=pool[k++];if(num==null)num=30+out.length;used.add(num);
+      out.push({id:null,name,pos,num,age:18+Math.floor(rng()*19),ficha:false});have++;
+    }
+  });
+  return out;
+}
+const TEAM_INFO=Object.fromEntries(TEAMS.map(t=>{
+  const rng=mulberry32(hash('info'+t.id));
+  const year=1902+Math.floor(rng()*58);
+  const founded=`${1+Math.floor(rng()*28)} de ${MONTHS[Math.floor(rng()*12)]} de ${year}`;
+  const base={founded,dt:FN[Math.floor(rng()*FN.length)]+' '+LN[Math.floor(rng()*LN.length)],
+    titles:{liga:Math.floor(rng()*(t.str*4)),copa:Math.floor(rng()*3),otros:Math.floor(rng()*3)},clasico:CLASICOS[t.id]};
+  const o=TEAM_OVERRIDES[t.id]||{};
+  const info={...base,...o,titles:{...base.titles,...(o.titles||{})}};
+  info.titlesTotal=info.titles.liga+info.titles.copa+info.titles.otros;
+  info.squad=o.squad||buildSquad(t.id);
+  return [t.id,info];
+}));
 /* ---------- partidos (fixture + historial) ---------- */
 function weightedPick(rng,tid,kind){
   const L=ROSTERS[tid];
@@ -243,14 +310,25 @@ const byMin=(a,b)=>a.min-b.min;
 function buildMatches(){
   const rng=mulberry32(20261008);
   /* Rueda única: 22 equipos, todos contra todos, 21 fechas. */
-  const roundPairs=r=>{
-    const arr=Array.from({length:22},(_,i)=>i);
-    for(let x=0;x<r;x++){arr.splice(1,0,arr.pop())}
-    const pairs=[];
-    for(let i=0;i<11;i++)pairs.push([TEAMS[arr[i]].id,TEAMS[arr[21-i]].id]);
-    return pairs;
-  };
-  const round=r=>roundPairs(r);
+  // Ronda única: los emparejamientos son únicos y la localía se balancea
+  // progresivamente (6 o 7 partidos en casa por equipo tras 13 fechas).
+  const homeCounts=Object.fromEntries(TEAMS.map(t=>[t.id,0]));
+  const rounds=[];
+  for(let r=0;r<21;r++){
+    const arr=Array.from({length:TEAMS.length},(_,i)=>i);
+    for(let x=0;x<r;x++)arr.splice(1,0,arr.pop());
+    const games=[];
+    for(let i=0;i<TEAMS.length/2;i++){
+      const a=TEAMS[arr[i]].id,b=TEAMS[arr[TEAMS.length-1-i]].id;
+      const swap=homeCounts[b]<homeCounts[a] ||
+        (homeCounts[b]===homeCounts[a] && (r+i)%2===0);
+      const home=swap?b:a,away=swap?a:b;
+      homeCounts[home]++;
+      games.push([home,away]);
+    }
+    rounds.push(games);
+  }
+  const round=r=>rounds[r];
   const base=new Date(2026,6,9);
   const dateOf=f=>iso(addDays(base,(f-1)*7));
   const times=['14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00'];
@@ -259,9 +337,7 @@ function buildMatches(){
   /* Fechas 1 a 13: ya disputadas. */
   for(let f=1;f<=13;f++){
     round(f-1).forEach(([a,b],i)=>{
-      let h=a,aw=b;
-      if((f+i)%2===0){h=b;aw=a}
-      const m=mk(f,i,h,aw,{status:'finished'});
+      const m=mk(f,i,a,b,{status:'finished'});
       m.events=genEvents(m,rng);
       out.push(m);
     });
@@ -282,13 +358,12 @@ function buildMatches(){
     {min:34,type:'goal',team:r13[2][0],player:r13[2][0]+'0'},{min:61,type:'yellow',team:r13[2][1],player:r13[2][1]+'1'},{min:71,type:'goal',team:r13[2][1],player:r13[2][1]+'0'}]}));
   for(let i=3;i<11;i++){
     const [a,b]=r13[i];
-    out.push(mk(14,i,(i%2===0)?a:b,(i%2===0)?b:a,{}));
+    out.push(mk(14,i,a,b,{}));
   }
   /* Fechas 15 a 21: segunda parte de la rueda. */
   for(let f=15;f<=21;f++){
     round(f-1).forEach(([a,b],i)=>{
-      const sw=(f+i)%2===0;
-      out.push(mk(f,i,sw?a:b,sw?b:a,{}));
+      out.push(mk(f,i,a,b,{}));
     });
   }
   /* Ajustes manuales para mantener ejemplos de tarjetas/suspensiones. */
@@ -417,7 +492,7 @@ function initState(){
     toasts:[],roleLog:[],
     freePlayers:FREE0,chats:CHATS0,
     ui:{fixtureTab:'all',fixtureTeam:'',openFechas:[14,15],histTeam:'',h2hA:'dc',h2hB:'an',selPlayer:'dc0',selVenue:'dc',located:false,
-        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc',selectedMatch:'LIVE',statsTeam:''},
+        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc',selectedMatch:'LIVE',statsTeam:'',teamId:'dc'},
   };
 }
 const INITIAL_LIVE=JSON.parse(JSON.stringify(buildMatches().find(m=>m.id==='LIVE')));
@@ -577,9 +652,18 @@ function Logo({size=44}){
     <path d="M24 10v5.5M30.6 20.3l5.2-1.7M28.1 28l3.3 4.4M19.9 28l-3.3 4.4M17.4 20.3l-5.2-1.7" stroke="#E3A32B" strokeWidth="1.6" strokeLinecap="round" fill="none"/>
   </svg>`;
 }
-function Crest({id,size=34}){
+function Crest({id,size=34,plain}){
   const t=T[id];
-  return t.logo?html`<span className="crest" title=${t.name} style=${{width:size,height:size,background:'#fff',fontSize:Math.round(size*.38),overflow:'hidden',display:'inline-flex',alignItems:'center',justifyContent:'center'}}><img src=${t.logo} alt=${'Escudo de '+t.name} style=${{width:'100%',height:'100%',objectFit:'contain'}} onError=${e=>{e.currentTarget.style.display='none';e.currentTarget.parentElement.textContent=t.init}}/></span>`:html`<span className="crest" title=${t.name} style=${{width:size,height:size,background:t.color,fontSize:Math.round(size*.38)}}>${t.init}</span>`;
+  const app=useApp();
+  const link=!plain&&!!app&&!!t;
+  const open=e=>{e.preventDefault();e.stopPropagation();app.go('team',{teamId:id})};
+  if(!t)return null;
+  /* Las siglas siempre están debajo: si el servidor externo bloquea la imagen,
+     el equipo sigue siendo identificable en todas las pantallas. */
+  return html`<span className=${cx('crest',link&&'crest-link')} title=${link?t.name+' · ver ficha del equipo':t.name} role=${link?'button':undefined} tabIndex=${link?0:undefined} onClick=${link?open:undefined} onKeyDown=${link?(e=>{if(e.key==='Enter'||e.key===' ')open(e)}):undefined} style=${{width:size,height:size,background:t.color,color:'#fff',fontSize:Math.round(size*.31),position:'relative',overflow:'hidden',display:'inline-flex',alignItems:'center',justifyContent:'center'}}>
+    <span aria-hidden="true">${t.init}</span>
+    ${t.logo?html`<img src=${t.logo} alt=${'Escudo de '+t.name} loading="lazy" referrerPolicy="no-referrer" style=${{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'contain',background:'#fff',opacity:0}} onLoad=${e=>{e.currentTarget.style.opacity='1'}} onError=${e=>{const img=e.currentTarget;if(!img.dataset.fallbackTried&&t.logoBackup){img.dataset.fallbackTried='1';img.src=t.logoBackup;}else{img.style.display='none'}}}/>`:null}
+  </span>`;
 }
 function initials(n){return n.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()}
 function Avatar({name,src,size=44}){
@@ -717,7 +801,7 @@ const CUS=[
  ['cu19','CU_019','Publicar jugador libre'],['cu20','CU_020','Buscar jugadores libres'],['cu21','CU_021','Contacto club-jugador'],
 ];
 const AUTH_SCREENS=['cu01','cu02','cu03'];
-const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',matchDetail:'matches',leagueStats:'matches',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',
+const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',matchDetail:'matches',leagueStats:'matches',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',team:'table',
   cu16:'players',cu17:'players',cu18:'players',cu19:'players',cu20:'players',cu21:'players',profile:'profile',cu04:'profile',cu05:'profile',cu06:'profile'};
 function BottomNav(){
   const {s,go}=useApp();
@@ -742,7 +826,7 @@ function DemoBar(){
   },[open]);
   return html`<div className="demobar">
     <span className="tag">DEMO</span>
-    <span className="cur">${cur?cur[1]+' · '+cur[2]:s.screen==='home'?'Inicio':'Perfil'}</span>
+    <span className="cur">${cur?cur[1]+' · '+cur[2]:s.screen==='home'?'Inicio':s.screen==='team'?'Ficha de equipo':'Perfil'}</span>
     <button className="demobtn" aria-expanded=${open?'true':'false'} aria-haspopup="true" onClick=${()=>setOpen(!open)}><${Icon} n=${open?'x':'sliders'} s=${14}/>21 pantallas</button>
     ${open?html`<div className="fixed inset-0 z-[60]" onClick=${()=>setOpen(false)} aria-hidden="true"></div>`:null}
     ${open?html`<div className="demopanel" role="menu" aria-label="Saltar a un caso de uso">
@@ -765,7 +849,7 @@ function ToastItem({t}){
   const close=e=>{e.stopPropagation();dispatch({type:'TOAST_RM',id:t.id})};
   if(t.kind==='goal'){
     return html`<div className="toast p-3 flex items-center gap-3" style=${{background:'#101a15',color:'#F1F5EE',cursor:'pointer'}} role="status" onClick=${()=>{dispatch({type:'TOAST_RM',id:t.id});go('cu07')}}>
-      <${Crest} id=${t.team} size=${42}/>
+      <${Crest} id=${t.team} size=${42} plain/>
       <div className="min-w-0 flex-1"><div className="text-[11px] font-bold tracking-wider" style=${{color:'#E3A32B'}}>SANTA FE GOL · AHORA</div>
         <div className="font-bold text-[15px] leading-tight">${t.title}</div><div className="text-[13px] opacity-85 leading-snug">${t.body}</div></div>
       <button aria-label="Cerrar aviso" className="p-1 opacity-70" onClick=${close}><${Icon} n="x" s=${16}/></button></div>`;
@@ -958,7 +1042,7 @@ function Favorites(){
     <div className="flex flex-col gap-2">
       ${d.table.map(r=>{const on=sel.includes(r.id);return html`<label key=${r.id} className="card p-3 flex items-center gap-3 cursor-pointer" style=${{border:`2px solid ${on?'var(--pri)':'transparent'}`,background:on?'var(--prisoft)':undefined}}>
         <input type="checkbox" className="peer sr-only" checked=${on} onChange=${()=>toggle(r.id)}/>
-        <${Crest} id=${r.id} size=${44}/>
+        <${Crest} id=${r.id} size=${44} plain/>
         <div className="min-w-0 flex-1"><div className="font-bold text-[16px] leading-tight">${T[r.id].name}</div><div className="text-[12.5px] text-mute">#${r.pos} en la tabla · ${r.pts} pts</div></div>
         <span className=${cx('w-7 h-7 rounded-lg border-2 flex items-center justify-center peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2',on?'bg-pri border-pri text-onpri':'border-line bg-surface')}>${on?html`<${Icon} n="check" s=${16} sw=${3}/>`:null}</span>
       </label>`})}
@@ -1129,18 +1213,126 @@ function Live(){
       <div className="mt-2 flex flex-col gap-2">${others.map(m=>html`<${MatchRow} key=${m.id} m=${m}/>`)}</div></section>
   <//>`;
 }
+/* Estadísticas avanzadas: solo partidos finalizados; datos de demostración. */
+function splitTable(matches,side){
+ const rows=Object.fromEntries(TEAMS.map(t=>[t.id,{id:t.id,pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0,form:[]}]));
+ matches.filter(m=>m.status==='finished').sort((a,b)=>a.fecha-b.fecha).forEach(m=>{
+  const [h,a]=scoreOf(m);
+  const apply=(tid,gf,gc)=>{const r=rows[tid];r.pj++;r.gf+=gf;r.gc+=gc;const f=gf>gc?'G':gf<gc?'P':'E';r.form.push(f);if(f==='G'){r.pg++;r.pts+=3}else if(f==='P')r.pp++;else{r.pe++;r.pts++}};
+  if(side==='home')apply(m.home,h,a);else apply(m.away,a,h);
+ });
+ return Object.values(rows).map(r=>({...r,dif:r.gf-r.gc,form:r.form.slice(-5)})).sort((a,b)=>b.pts-a.pts||b.dif-a.dif||b.gf-a.gf||T[a.id].name.localeCompare(T[b.id].name)).map((r,i)=>({...r,pos:i+1}));
+}
+function clubEvolution(matches,tid){
+ const played=matches.filter(m=>m.status==='finished'&&(m.home===tid||m.away===tid)).sort((a,b)=>a.fecha-b.fecha);
+ let pts=0,gf=0,gc=0;const byFecha=new Map();
+ played.forEach(m=>{const [h,a]=scoreOf(m);const x=m.home===tid?h:a,y=m.home===tid?a:h;pts+=x>y?3:x===y?1:0;gf+=x;gc+=y;byFecha.set(m.fecha,{fecha:m.fecha,pts,gf,gc,result:x>y?'G':x===y?'E':'P',rival:m.home===tid?m.away:m.home})});
+ let cp=0,cgf=0,cgc=0;const points=Array.from({length:21},(_,i)=>{const x=byFecha.get(i+1);if(x){cp=x.pts;cgf=x.gf;cgc=x.gc}return {fecha:i+1,pts:cp,gf:cgf,gc:cgc}});return {played,points,last:played.slice(-5)};
+}
+function currentStreak(form){if(!form.length)return 'Sin partidos';const last=form[form.length-1];let n=0;for(let i=form.length-1;i>=0&&form[i]===last;i--)n++;return n+' '+({G:'victorias',E:'empates',P:'derrotas'}[last]);}
+function TrendChart({data,field='pts',label='Puntos acumulados'}){
+ const values=data.map(x=>Number(x[field]||0)),max=Math.max(1,...values),W=320,H=135,pad=17;
+ const pos=(v,i)=>[pad+i*(W-2*pad)/Math.max(1,values.length-1),H-pad-(v/max)*(H-2*pad)];
+ const pts=values.map((v,i)=>pos(v,i).join(',')).join(' ');
+ return html`<div className="card p-3"><div className="text-[12px] text-mute font-bold mb-2">${label}</div><svg viewBox=${`0 0 ${W} ${H}`} role="img" aria-label=${label} className="w-full" style=${{height:150}}>
+  ${[0,.5,1].map(q=>html`<line x1=${pad} y1=${H-pad-q*(H-2*pad)} x2=${W-pad} y2=${H-pad-q*(H-2*pad)} stroke="var(--line)" stroke-width="1"/>`)}
+  <polyline points=${pts} fill="none" stroke="var(--ok)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  ${values.map((v,i)=>html`<circle key=${i} cx=${pos(v,i)[0]} cy=${pos(v,i)[1]} r="2.5" fill="var(--ok)"/>`)}
+ </svg><div className="flex justify-between text-[11px] text-mute"><span>Fecha 1</span><span>Fecha 11</span><span>Fecha 21</span></div></div>`;
+}
+function TeamComparison(){
+ const {s,dispatch,d}=useApp();const A=s.ui.compareA||'dc',B=s.ui.compareB||'an';
+ const set=patch=>dispatch({type:'UI',patch});const ea=clubEvolution(s.matches,A),eb=clubEvolution(s.matches,B);
+ const ar=d.table.find(x=>x.id===A),br=d.table.find(x=>x.id===B);
+ const vals=[['Puntos','pts'],['Partidos','pj'],['Victorias','pg'],['Empates','pe'],['Derrotas','pp'],['Goles a favor','gf'],['Goles en contra','gc'],['Diferencia','dif']];
+ const picker=(id,v)=>html`<select className="w-full bg-transparent text-[12px] font-bold min-w-0" value=${v} aria-label=${'Elegir equipo '+id} onChange=${e=>set(id==='a'?{compareA:e.target.value,compareB:e.target.value===B?A:B}:{compareB:e.target.value,compareA:e.target.value===A?B:A})}>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select>`;
+ return html`<section className="flex flex-col gap-3"><h2 className="font-bold text-[18px]">Comparador de equipos</h2><div className="grid grid-cols-2 gap-2"><div className="card p-3 flex flex-col items-center gap-2"><${Crest} id=${A} size=${44}/>${picker('a',A)}</div><div className="card p-3 flex flex-col items-center gap-2"><${Crest} id=${B} size=${44}/>${picker('b',B)}</div></div>
+ <div className="card p-3">${vals.map(([label,key])=>html`<div key=${key} className="grid items-center gap-2 py-2 border-b border-line text-center" style=${{gridTemplateColumns:'1fr 1.4fr 1fr'}}><b className=${ar[key]>br[key]&&key!=='pp'&&key!=='gc'?'text-ok':''}>${ar[key]}</b><span className="text-[12px] text-mute font-semibold">${label}</span><b className=${br[key]>ar[key]&&key!=='pp'&&key!=='gc'?'text-ok':''}>${br[key]}</b></div>`)}</div>
+ <div className="grid grid-cols-2 gap-2">${[[A,ea],[B,eb]].map(([id,e])=>html`<div key=${id} className="card p-3"><b className="text-[12px]">${T[id].name}</b><div className="text-[11px] text-mute mt-1">Últimos 5</div><div className="flex gap-1 flex-wrap mt-2">${e.last.length?e.last.map(m=>{const [h,a]=scoreOf(m);const x=m.home===id?h:a,y=m.home===id?a:h;return html`<span key=${m.id} className=${cx('chip',x>y?'chip-ok':x<y?'chip-bad':'')}>${x>y?'G':x<y?'P':'E'}</span>`}):html`<span className="text-mute text-[12px]">Sin partidos</span>`}</div></div>`)}</div></section>`;
+}
+
+/* Tabla completa para pantallas anchas (tablet / PC) */
+function FullTable({rows}){
+  const {s,go}=useApp();
+  const zone=p=>p<=4?'var(--ok)':p>=rows.length-1?'var(--bad)':'transparent';
+  const formCls={G:'chip-ok',E:'',P:'chip-bad'};
+  const H=['PJ','PG','PE','PP','GF','GC','DIF','PTS'];
+  return html`<div className="card overflow-x-auto hidden md:block"><div style=${{minWidth:880}}>
+    <div className="full-grid px-3 py-2 text-[11.5px] font-bold uppercase tracking-wider text-mute bg-surface2"><span>#</span><span>Equipo</span>${H.map(h=>html`<span key=${h} className="text-center">${h}</span>`)}<span>Últimos 5</span></div>
+    ${rows.map(r=>{const lead=r.pos===1;const fav=s.favorites.includes(r.id);
+      return html`<div key=${r.id} className="full-grid px-3 py-2.5 border-t border-line" style=${{boxShadow:`inset 4px 0 0 ${zone(r.pos)}`,background:lead?'var(--goldbg)':undefined}}>
+        <span className=${cx('tnum font-extrabold',lead&&'text-gold')}>${lead?html`<${Icon} n="trophy" s=${16}/>`:r.pos}</span>
+        <span className="flex items-center gap-2.5 min-w-0"><${Crest} id=${r.id} size=${30}/><button className="font-bold text-[14.5px] leading-tight text-left hover:underline" onClick=${()=>go('team',{teamId:r.id})}>${T[r.id].name}${fav?html` <span className="text-gold"><${Icon} n="star" s=${12} className="inline -mt-0.5"/></span>`:null}</button></span>
+        <span className="text-center tnum text-mute font-semibold">${r.pj}</span><span className="text-center tnum">${r.pg}</span><span className="text-center tnum">${r.pe}</span><span className="text-center tnum">${r.pp}</span>
+        <span className="text-center tnum">${r.gf}</span><span className="text-center tnum">${r.gc}</span><span className="text-center tnum font-semibold">${r.dif>0?'+':''}${r.dif}</span>
+        <span className="text-center tnum font-extrabold text-[16px]">${r.pts}</span>
+        <span className="flex gap-1">${r.form.map((f,i)=>html`<span key=${i} className=${cx('chip',formCls[f])} style=${{minWidth:24,justifyContent:'center',padding:'2px 6px'}}>${f}</span>`)}</span>
+      </div>`})}
+  </div></div>`;
+}
+/* Local vs Visitante: a quién le va mejor en cada contexto */
+function HomeAwayTable(){
+  const {s,go}=useApp();
+  const [sort,setSort]=useState('pos');
+  const all=useMemo(()=>computeTable(s.matches),[s.matches]);
+  const hm=useMemo(()=>splitTable(s.matches,'home'),[s.matches]);
+  const aw=useMemo(()=>splitTable(s.matches,'away'),[s.matches]);
+  const base=all.map(a=>{const h=hm.find(x=>x.id===a.id),w=aw.find(x=>x.id===a.id);
+    const ph=h.pj?h.pts/h.pj:0,pa=w.pj?w.pts/w.pj:0,gap=ph-pa;
+    return {id:a.id,pos:a.pos,h,w,ph,pa,gap,verdict:Math.abs(gap)<.2?'eq':gap>0?'home':'away'}});
+  const pick=(key,dir)=>[...base].sort((x,y)=>dir*(y[key]-x[key])||y.pos-x.pos)[0];
+  const tiles=[
+    ['Mejor local',pick('ph',1),r=>`${r.ph.toFixed(2)} pts/PJ · ${r.h.pts} pts en ${r.h.pj} PJ`],
+    ['Mejor visitante',pick('pa',1),r=>`${r.pa.toFixed(2)} pts/PJ · ${r.w.pts} pts en ${r.w.pj} PJ`],
+    ['Más fuerte en casa',pick('gap',1),r=>`+${r.gap.toFixed(2)} pts/PJ que de visitante`],
+    ['Más fuerte afuera',pick('gap',-1),r=>`+${(-r.gap).toFixed(2)} pts/PJ que de local`],
+  ];
+  const rows=[...base].sort(sort==='home'?(x,y)=>y.ph-x.ph||y.h.pts-x.h.pts||x.pos-y.pos:sort==='away'?(x,y)=>y.pa-x.pa||y.w.pts-x.w.pts||x.pos-y.pos:(x,y)=>x.pos-y.pos);
+  const vd={home:['L','Mejor de local','chip-pri'],away:['V','Mejor de visitante','chip-gold'],eq:['=','Parejo','']};
+  const dif=n=>(n>0?'+':'')+n;
+  return html`<div className="flex flex-col gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">${tiles.map(([l,r,f])=>html`<div key=${l} className="card p-3">
+      <div className="text-[11.5px] font-bold uppercase tracking-wide text-mute">${l}</div>
+      <div className="flex items-center gap-2 mt-2"><${Crest} id=${r.id} size=${32}/><span className="font-bold text-[14px] leading-tight">${T[r.id].name}</span></div>
+      <div className="text-[12px] text-mute mt-1.5">${f(r)}</div></div>`)}</div>
+    <nav className="pillnav" aria-label="Ordenar tabla">${[['pos','Por posición general'],['home','Mejor de local'],['away','Mejor de visitante']].map(([k,l])=>html`<button key=${k} className=${cx('pill',sort===k&&'on')} onClick=${()=>setSort(k)}>${l}</button>`)}</nav>
+    <div className="card overflow-hidden">
+      <div className="ha-grid px-3 pt-2 text-[11.5px] font-extrabold uppercase tracking-wider"><span></span><span></span>
+        <span className="text-center sep text-brand" style=${{gridColumn:'3 / 6'}}>Local</span><span className="text-center sep text-gold" style=${{gridColumn:'6 / 9'}}>Visitante</span><span></span></div>
+      <div className="ha-grid px-3 pb-2 pt-1 text-[11.5px] font-bold uppercase tracking-wider text-mute bg-surface2"><span>#</span><span>Equipo</span>
+        <span className="text-center sep">PJ</span><span className="text-center">PTS</span><span className="text-center">DIF</span>
+        <span className="text-center sep">PJ</span><span className="text-center">PTS</span><span className="text-center">DIF</span><span className="text-center">Mejor</span></div>
+      ${rows.map(r=>{const v=vd[r.verdict];return html`<div key=${r.id} className="ha-grid px-3 py-2.5 border-t border-line">
+        <span className="tnum font-extrabold text-[13px]">${r.pos}</span>
+        <span className="flex items-center gap-2 min-w-0"><${Crest} id=${r.id} size=${26}/><button className="font-bold text-[13px] md:text-[14.5px] leading-tight text-left truncate hover:underline" onClick=${()=>go('team',{teamId:r.id})}>${T[r.id].name}</button></span>
+        <span className="text-center tnum text-mute sep">${r.h.pj}</span><span className="text-center tnum font-extrabold">${r.h.pts}</span><span className="text-center tnum text-[12px]">${dif(r.h.dif)}</span>
+        <span className="text-center tnum text-mute sep">${r.w.pj}</span><span className="text-center tnum font-extrabold">${r.w.pts}</span><span className="text-center tnum text-[12px]">${dif(r.w.dif)}</span>
+        <span className="flex items-center justify-center gap-1.5"><span className=${cx('chip vd-short',v[2])} style=${{padding:'2px 7px'}}>${v[0]}</span><span className=${cx('chip vd-long',v[2])}>${v[1]}</span><span className="hidden md:inline text-[12px] text-mute tnum">${r.verdict==='eq'?'':(r.gap>0?'+':'')+r.gap.toFixed(1)}</span></span>
+      </div>`})}
+    </div>
+    <p className="text-[12px] text-mute">L = rinde mejor de local · V = rinde mejor de visitante · = parejo (menos de 0,2 pts por partido de diferencia). Se compara el promedio de puntos por partido para que sea justo aunque hayan jugado distinta cantidad de partidos como local y visitante.</p>
+  </div>`;
+}
 /* CU_008 · Tabla de posiciones */
 function Standings(){
   const {s,dispatch,d,go}=useApp();
   const exp=s.ui.expandedTeam;
+  const [tableMode,setTableMode]=useState('all');
+  const tableRows=tableMode==='all'||tableMode==='both'?computeTable(s.matches):splitTable(s.matches,tableMode);
+  const modeName={all:'GENERAL',home:'LOCAL',away:'VISITANTE',both:'LOCAL VS VISITANTE'}[tableMode];
+  const countedMatches=s.matches.filter(m=>m.status==='finished').length;
+  const totalPJ=tableRows.reduce((sum,r)=>sum+r.pj,0);
   const setExp=id=>dispatch({type:'UI',patch:{expandedTeam:exp===id?null:id}});
-  const zone=p=>p<=4?'var(--ok)':p>=d.table.length-1?'var(--bad)':'transparent';
+  const zone=p=>p<=4?'var(--ok)':p>=tableRows.length-1?'var(--bad)':'transparent';
   const formCls={G:'chip-ok',E:'',P:'chip-bad'};
   return html`<${Page} title="Posiciones" sub="Liga Local · Fecha 14" back=${false}>
-    <div className="card overflow-hidden">
+    <${Seg} label="Tipo de tabla" value=${tableMode} onChange=${v=>{setTableMode(v);dispatch({type:'UI',patch:{expandedTeam:null}})}} options=${[{id:'all',label:'General'},{id:'home',label:'Local'},{id:'away',label:'Visitante'},{id:'both',label:'Comparar'}]}/>
+    <div className="text-[12px] font-bold text-brand bg-prisoft rounded-xl px-3 py-2" aria-live="polite">TABLA ${modeName} · Fixture con localías equilibradas · ${tableMode==='all'?'Todos los partidos finalizados':tableMode==='both'?'Local y visitante lado a lado':tableMode==='home'?'Solo partidos jugados como local':'Solo partidos jugados como visitante'} · ${countedMatches} partidos finalizados · ${totalPJ} participaciones ${tableMode==='all'||tableMode==='both'?'(2 por partido)':'(1 por partido)'}</div>
+    ${tableMode==='both'?html`<${HomeAwayTable}/>`:null}
+    <div key=${tableMode} className=${cx('card overflow-hidden',tableMode==='both'?'hidden':'md:hidden')}>
       <div className="grid items-center px-3 py-2 text-[11.5px] font-bold uppercase tracking-wider text-mute bg-surface2" style=${{gridTemplateColumns:'30px 1fr 40px 46px 20px'}}>
         <span>#</span><span>Equipo</span><span className="text-center">PJ</span><span className="text-center">PTS</span><span></span></div>
-      ${d.table.map(r=>{
+      ${tableRows.map(r=>{
         const open=exp===r.id;const lead=r.pos===1;const fav=s.favorites.includes(r.id);const nm=nextMatch(s.matches,r.id);
         return html`<div key=${r.id} className="border-t border-line" style=${lead?{background:'var(--goldbg)'}:{}}>
           <button className="grid items-center w-full px-3 py-3 text-left" style=${{gridTemplateColumns:'30px 1fr 40px 46px 20px',boxShadow:`inset 4px 0 0 ${zone(r.pos)}`}} aria-expanded=${open?'true':'false'} onClick=${()=>setExp(r.id)}>
@@ -1156,6 +1348,8 @@ function Standings(){
           </div>`:null}
         </div>`})}
     </div>
+    ${tableMode!=='both'?html`<${FullTable} rows=${tableRows}/>`:null}
+    <${Btn} full v="ghost" onClick=${()=>go('leagueStats')}>Ver estadísticas avanzadas<//>
     <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12.5px] text-mute"><span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style=${{background:'var(--ok)'}}></span>Clasifica a play-off</span><span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded" style=${{background:'var(--bad)'}}></span>Zona de descenso</span><span>PG ganados · PE empatados · PP perdidos · GF/GC goles</span></div>
   <//>`;
 }
@@ -1235,6 +1429,9 @@ function LeagueStats(){
  return html`<${Page} title="Estadísticas" sub="Radiografía de la Liga Santafesina · demo" nav=${NAV_MATCHES}>
    <div className="grid grid-cols-2 gap-2"><${StatTile} label="Partidos finalizados" value=${finished.length}/><${StatTile} label="Goles anotados" value=${goals}/><${StatTile} label="Goles por partido" value=${n(finished.length?goals/finished.length:0)}/><${StatTile} label="Tarjetas totales" value=${cards} tone="y"/></div>
    <div className="inp"><${Icon} n="sliders" s=${18}/><select aria-label="Filtrar estadísticas por club" value=${team} onChange=${e=>dispatch({type:'UI',patch:{statsTeam:e.target.value}})}><option value="">Toda la liga</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}</select></div>
+   ${team?html`<section className="flex flex-col gap-3"><div className="flex items-center justify-between"><h2 className="font-bold text-[17px]">Evolución del equipo</h2><span className="chip">21 fechas</span></div><${TrendChart} data=${clubEvolution(s.matches,team).points} field="pts" label="Puntos acumulados por fecha"/><${TrendChart} data=${clubEvolution(s.matches,team).points} field="gf" label="Goles acumulados por fecha"/>
+   <div className="card p-3"><b>Racha actual</b><div className="text-[13px] text-mute mt-1">${currentStreak(clubEvolution(s.matches,team).played.map(m=>{const [h,a]=scoreOf(m);const x=m.home===team?h:a,y=m.home===team?a:h;return x>y?'G':x<y?'P':'E'}))}</div></div></section>`:null}
+   <${TeamComparison}/>
    ${clubStats?html`<section className="card p-4"><div className="flex items-center gap-2 mb-3"><${Crest} id=${team} size=${35}/><h2 className="font-bold text-[18px]">${T[team].name}</h2></div><div className="grid grid-cols-3 gap-2"><${StatTile} label="Puntos" value=${clubStats.pts}/><${StatTile} label="A favor" value=${clubStats.gf}/><${StatTile} label="En contra" value=${clubStats.gc}/></div><p className="text-[13px] text-mute mt-3">${clubStats.pg} ganados · ${clubStats.pe} empatados · ${clubStats.pp} perdidos · ${rivals.length} partidos finalizados</p></section>`:null}
    ${!team?html`<section className="card p-4"><h2 className="font-bold text-[17px] mb-3">Ataques más goleadores</h2>${leaders.map((r,i)=>html`<div key=${r.id} className="flex items-center gap-2 py-2 border-b border-line"><b className="text-mute w-5">${i+1}</b><${Crest} id=${r.id} size=${30}/><span className="flex-1 text-[13px] font-semibold">${T[r.id].name}</span><b className="tnum">${r.gf} goles</b></div>`)}</section>
    <section className="card p-4"><h2 className="font-bold text-[17px] mb-3">Defensas menos vencidas</h2>${defense.map((r,i)=>html`<div key=${r.id} className="flex items-center gap-2 py-2 border-b border-line"><b className="text-mute w-5">${i+1}</b><${Crest} id=${r.id} size=${30}/><span className="flex-1 text-[13px] font-semibold">${T[r.id].name}</span><b className="tnum">${n(r.gc/r.pj)} GC/PJ</b></div>`)}</section>`:null}
@@ -1633,11 +1830,93 @@ function Chat(){
 /* ============================================================
    App: pantallas, contexto y arranque
    ============================================================ */
+
+/* ============================================================
+   Ficha de equipo (se abre tocando cualquier escudo)
+   ============================================================ */
+function TeamMatchRow({m,tid}){
+  const {go}=useApp();
+  const [h,a]=scoreOf(m);const home=m.home===tid;const rival=home?m.away:m.home;const st=m.status;
+  const x=home?h:a,y=home?a:h;
+  const chip=st==='finished'?html`<span className=${cx('chip',x>y?'chip-ok':x<y?'chip-bad':'')}>${x>y?'G':x<y?'P':'E'}</span>`
+    :st==='live'?html`<span className="chip chip-live"><span className="dot-live"></span>${m.minute}'</span>`
+    :st==='suspended'?html`<span className="chip chip-gold">Suspendido</span>`:html`<span className="chip chip-pri">${m.time}</span>`;
+  return html`<div className="flex items-center gap-3 p-3">
+    <${Crest} id=${rival} size=${34}/>
+    <button className="flex-1 min-w-0 text-left" onClick=${()=>go('matchDetail',{selectedMatch:m.id})}>
+      <span className="block font-bold text-[14px] leading-tight truncate">${home?'vs':'@'} ${T[rival].name}</span>
+      <span className="block text-[12px] text-mute">${home?'Local':'Visitante'} · Fecha ${m.fecha} · ${st==='suspended'?'a reprogramar':(m.date===TODAY?'Hoy':fmtLong(m.date))}</span>
+    </button>
+    ${st==='finished'||st==='live'?html`<span className="disp text-[19px] font-extrabold tnum">${x}–${y}</span>`:null}${chip}
+  </div>`;
+}
+function TeamPage(){
+  const {s,go,d}=useApp();
+  const id=T[s.ui.teamId]?s.ui.teamId:'dc';
+  const t=T[id],info=TEAM_INFO[id],v=VENUES[id];
+  const row=d.table.find(r=>r.id===id);
+  const mine=s.matches.filter(m=>m.home===id||m.away===id);
+  const last=mine.filter(m=>m.status==='finished').sort((a,b)=>b.fecha-a.fecha).slice(0,5);
+  const next=mine.filter(m=>m.status!=='finished').sort((a,b)=>a.fecha-b.fecha).slice(0,5);
+  const rival=info.clasico&&T[info.clasico]?info.clasico:null;
+  const h2h=rival?computeH2H(s.matches,id,rival):null;
+  const fav=s.favorites.includes(id);
+  const order=['Arquero','Defensor','Mediocampista','Delantero'];
+  const plural={Arquero:'Arqueros',Defensor:'Defensores',Mediocampista:'Mediocampistas',Delantero:'Delanteros'};
+  const Fact=({label,children,span})=>html`<div className=${cx('card-soft p-3',span&&'col-span-2')}><div className="text-[11.5px] font-bold text-mute uppercase tracking-wide">${label}</div><div className="font-bold mt-0.5 leading-snug">${children}</div></div>`;
+  const heroTile=(l,val)=>html`<div className="rounded-2xl py-3 text-center" style=${{background:'rgba(255,255,255,.12)'}}><div className="disp text-[26px] font-extrabold leading-none tnum">${val}</div><div className="mt-1 text-[11px] font-bold uppercase tracking-wide opacity-85">${l}</div></div>`;
+  return html`<${Page} title=${t.name} sub="Ficha del equipo">
+    <section className="hero p-5 md:p-7 flex flex-col md:flex-row md:items-center gap-5">
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <${Crest} id=${id} size=${88} plain/>
+        <div className="min-w-0"><div className="text-[12px] font-bold tracking-wider opacity-80">LIGA LOCAL${fav?' · ★ FAVORITO':''}</div>
+          <h2 className="disp text-[28px] md:text-[34px] font-extrabold leading-tight">${t.name}</h2>
+          <div className="text-[13.5px] opacity-85">Fundado en ${info.founded.split(' ').pop()} · ${t.init}</div></div>
+      </div>
+      <div className="grid grid-cols-3 gap-2 md:w-[380px]">${heroTile('Posición','#'+row.pos)}${heroTile('Puntos',row.pts)}${heroTile('Títulos',info.titlesTotal)}</div>
+    </section>
+    <div className="grid gap-4 md:grid-cols-2 items-start">
+      <div className="flex flex-col gap-4">
+        <section className="card p-4 flex flex-col gap-3"><h3 className="font-bold text-[18px]">Información del club</h3>
+          <div className="grid grid-cols-2 gap-2 text-[14px]">
+            <${Fact} label="Cancha" span=${true}>${v.name}<div className="font-medium text-[13px] text-mute">${v.address} · ${v.cap.toLocaleString('es-AR')} personas · ${v.surface}</div><//>
+            <${Fact} label="Fundación">${info.founded}<//>
+            <${Fact} label="Director técnico">${info.dt}<//>
+          </div>
+          <div className="grid grid-cols-2 gap-2"><${Btn} icon="nav" onClick=${()=>go('cu15',{selVenue:id})}>Cómo llegar<//><${Btn} v="ghost" icon="pin" onClick=${()=>go('cu14',{selVenue:id})}>Ver en el mapa<//></div>
+        </section>
+        <section className="card p-4 flex flex-col gap-3"><h3 className="font-bold text-[18px]">Títulos totales</h3>
+          <div className="grid grid-cols-4 gap-2"><${StatTile} label="Total" value=${info.titlesTotal} tone="y"/><${StatTile} label="Liga" value=${info.titles.liga}/><${StatTile} label="Copas" value=${info.titles.copa}/><${StatTile} label="Otros" value=${info.titles.otros}/></div>
+        </section>
+        ${rival?html`<section className="card p-4 flex flex-col gap-3"><h3 className="font-bold text-[18px]">Clásico</h3>
+          <div className="flex items-center gap-3"><${Crest} id=${rival} size=${52}/><div className="min-w-0 flex-1"><div className="font-bold text-[16px] leading-tight">${T[rival].name}</div><div className="text-[12.5px] text-mute">Su clásico rival · tocá el escudo para ver su ficha</div></div></div>
+          <div className="grid grid-cols-3 gap-2"><${StatTile} label=${'Gana '+t.init} value=${h2h.aW}/><${StatTile} label="Empates" value=${h2h.d} tone="y"/><${StatTile} label=${'Gana '+T[rival].init} value=${h2h.bW} tone="r"/></div>
+          <div className="text-[12.5px] text-mute">Goles: ${t.init} ${h2h.aG} – ${h2h.bG} ${T[rival].init} en ${h2h.list.length} partidos</div>
+          <${Btn} v="ghost" onClick=${()=>go('cu11',{h2hA:id,h2hB:rival})}>Ver historial completo<//></section>`:null}
+      </div>
+      <div className="flex flex-col gap-4">
+        <section className="card overflow-hidden"><h3 className="font-bold text-[18px] px-4 pt-4 pb-2">Últimos partidos</h3>
+          ${last.length?html`<div className="divide-y divide-line">${last.map(m=>html`<${TeamMatchRow} key=${m.id} m=${m} tid=${id}/>`)}</div>`:html`<p className="px-4 pb-4 text-mute text-[14px]">Todavía no jugó.</p>`}</section>
+        <section className="card overflow-hidden"><h3 className="font-bold text-[18px] px-4 pt-4 pb-2">Próximos partidos</h3>
+          ${next.length?html`<div className="divide-y divide-line">${next.map(m=>html`<${TeamMatchRow} key=${m.id} m=${m} tid=${id}/>`)}</div>`:html`<p className="px-4 pb-4 text-mute text-[14px]">No hay partidos programados.</p>`}</section>
+      </div>
+    </div>
+    <section className="card p-4"><div className="flex items-baseline justify-between gap-3"><h3 className="font-bold text-[18px]">Plantel completo</h3><span className="text-[12.5px] text-mute">${info.squad.length} jugadores</span></div>
+      <div className="mt-3 grid gap-x-6 gap-y-4 md:grid-cols-2">${order.map(pos=>{const list=info.squad.filter(p=>p.pos===pos);return html`<div key=${pos}>
+        <div className="text-[12px] font-extrabold uppercase tracking-wider text-brand mb-1">${plural[pos]} (${list.length})</div>
+        <div className="divide-y divide-line">${list.map(p=>{const inner=html`<span className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-extrabold tnum flex-none" style=${{background:t.color,color:'#fff'}}>${p.num}</span>
+          <span className="flex-1 min-w-0 font-semibold text-[14px] truncate">${p.name}</span><span className="text-[12.5px] text-mute tnum">${p.age} años</span>${p.ficha?html`<${Icon} n="right" s=${15} className="text-mute"/>`:null}`;
+          return p.ficha?html`<button key=${p.name} className="w-full flex items-center gap-3 py-2 text-left hover:bg-surface2 rounded-lg px-1" onClick=${()=>go('cu16',{selPlayer:p.id})}>${inner}</button>`
+            :html`<div key=${p.name} className="flex items-center gap-3 py-2 px-1">${inner}</div>`})}</div></div>`})}</div>
+    </section>
+    <p className="text-[12px] text-mute">Maqueta: los datos de fundación, DT, títulos, clásico y plantel son de ejemplo. Se pueden reemplazar en TEAM_OVERRIDES.</p>
+  <//>`;
+}
 const SCREENS={
   home:Home,profile:Profile,
   cu01:Register,cu02:Login,cu03:Recover,cu04:EditProfile,cu05:Favorites,cu06:Roles,
   matchDetail:MatchDetail,leagueStats:LeagueStats,cu07:Live,cu08:Standings,cu09:Fixture,cu10:History,cu11:H2H,cu12:GoalPush,cu13:Suspension,
-  cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
+  team:TeamPage,cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
 };
 function App(){
   const [s,dispatch]=useReducer(reducer,undefined,initState);
