@@ -460,6 +460,19 @@ const USERS0=[
  {id:'u6',name:'Gerardo Acosta',email:'gerardo.acosta@unionoeste.ar',pw:'club5678',phone:'342 555-0156',role:'Club',avatar:null},
  {id:'u7',name:'Agustina Maidana',email:'agustina.maidana@ejemplo.com',pw:'agus1234',phone:'342 555-0167',role:'Hincha',avatar:null},
 ];
+USERS0.push({id:'u8',name:'Julián Herrera',email:'julian.herrera@ejemplo.com',pw:'hincha2026',phone:'342 555-0178',role:'Hincha',avatar:null});
+const CLUB0={u1:'dc',u2:'er',u3:'dc',u4:null,u5:'co',u6:'uo',u7:'dr',u8:'er'};
+USERS0.forEach(u=>{u.club=CLUB0[u.id]||null});
+/* hinchas de cada club: base simulada + usuarios de la app que eligieron ese club */
+const FAN_BASE=Object.fromEntries(TEAMS.map(t=>{const r=mulberry32(hash('fans'+t.id));return [t.id,Math.round(t.str*(700+r()*500))]}));
+const FAN_WEEK=Object.fromEntries(TEAMS.map(t=>{const r=mulberry32(hash('wk'+t.id));return [t.id,6+Math.floor(r()*40)]}));
+const fmtN=n=>n.toLocaleString('es-AR');
+function fanTable(s){
+  const rows=TEAMS.map(t=>{const mine=s.users.filter(u=>u.club===t.id);return {id:t.id,n:FAN_BASE[t.id]+mine.length,wk:FAN_WEEK[t.id]+mine.filter(u=>u.fresh).length}});
+  rows.sort((a,b)=>b.n-a.n||T[a.id].name.localeCompare(T[b.id].name));
+  const total=rows.reduce((a,r)=>a+r.n,0);
+  return rows.map((r,i)=>({...r,pos:i+1,pct:r.n/total*100,total}));
+}
 const FREE0=[
  {id:'fp1',name:'Gonzalo Acuña',pos:'Delantero',age:24,exp:6,level:'Liga local',note:'Juego de 9 y de segunda punta. Último club: Juventud Unida (reserva).',avail:['Fines de semana','Lun–Vie tarde'],zone:'Santa Fe capital',phone:'342 555-0142',email:'gonzalo.acuna@ejemplo.com',ts:Date.now()-2*3600e3},
  {id:'fp2',name:'Ezequiel Bravo',pos:'Mediocampista',age:28,exp:10,level:'Liga local',note:'Volante central, buena salida con pelota. Capitán en mi último equipo.',avail:['Lun–Vie noche','Fines de semana'],zone:'Santo Tomé',phone:'342 555-0158',email:'ezequiel.bravo@ejemplo.com',ts:Date.now()-5*3600e3},
@@ -481,8 +494,8 @@ const CHATS0={
 function initState(){
   const matches=buildMatches();
   return {
-    screen:'home',hist:[],authed:true,userId:'u1',users:USERS0,
-    favorites:['dc','er'],matches,clock:true,
+    screen:'welcome',hist:[],authed:false,userId:null,users:USERS0,
+    favorites:[],matches,clock:true,
     notifPrefs:{goalsFav:true,goalsAll:false,susp:true,cards:false,sound:true},
     notifLog:[
       {id:'n1',kind:'susp',title:'Partido suspendido',body:'Los Tigres FC vs Sportivo Litoral · campo anegado',ts:Date.now()-195*60000,matchId:'f14m0'},
@@ -492,7 +505,7 @@ function initState(){
     toasts:[],roleLog:[],
     freePlayers:FREE0,chats:CHATS0,
     ui:{fixtureTab:'all',fixtureTeam:'',openFechas:[14,15],histTeam:'',h2hA:'dc',h2hB:'an',selPlayer:'dc0',selVenue:'dc',located:false,
-        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',histOpen:null,expandedTeam:'dc',selectedMatch:'LIVE',statsTeam:'',teamId:'dc'},
+        scorerClub:'',scorerMore:false,saved:[],chatPlayer:'fp1',chatAs:'club',typing:'',adminSel:'u2',adminQuery:'Carla',onboarding:true,afterClub:'home',clubTab:'pick',histOpen:null,expandedTeam:'dc',selectedMatch:'LIVE',statsTeam:'',teamId:'dc'},
   };
 }
 const INITIAL_LIVE=JSON.parse(JSON.stringify(buildMatches().find(m=>m.id==='LIVE')));
@@ -580,6 +593,21 @@ function reducer(s,a){
     case 'FREE_UPSERT':{
       const exists=s.freePlayers.some(p=>p.ownerId===a.player.ownerId);
       return {...s,freePlayers:exists?s.freePlayers.map(p=>p.ownerId===a.player.ownerId?{...a.player,id:p.id}:p):[a.player,...s.freePlayers]};
+    }
+    case 'SET_CLUB':{
+      const favs=s.userId===a.userId&&s.favorites.length===0?[a.club]:s.favorites;
+      return {...s,users:s.users.map(u=>u.id===a.userId?{...u,club:a.club}:u),favorites:favs};
+    }
+    case 'PERSONA':{
+      const base={...s,hist:[],toasts:[],users:s.users.filter(u=>!u.fresh)};
+      if(a.who==='first')return {...base,authed:false,userId:null,screen:'welcome',favorites:[],ui:{...s.ui,onboarding:true,afterClub:'home',clubTab:'pick'}};
+      if(a.who==='user')return {...base,authed:true,userId:'u8',screen:'home',favorites:['er'],ui:{...s.ui,onboarding:false}};
+      return {...base,authed:true,userId:'u1',screen:'home',favorites:['dc','er'],ui:{...s.ui,onboarding:false}};
+    }
+    case 'REQUEST_ACCOUNT':return {...s,users:[...s.users,a.user],ui:{...s.ui,pendingId:a.user.id}};
+    case 'REVIEW_REQUEST':{
+      const u=s.users.find(x=>x.id===a.userId);if(!u)return s;
+      return {...s,users:s.users.map(x=>x.id===a.userId?{...x,status:a.ok?'active':'rejected',club:a.ok&&x.verif&&x.verif.clubId?x.verif.clubId:x.club}:x)};
     }
     case 'CHAT':{
       const cur=s.chats[a.playerId]||[];
@@ -792,6 +820,7 @@ function haversine(a,b){
 }
 /* ---------- navegación inferior, demo y avisos ---------- */
 const CUS=[
+ ['welcome','NUEVO','Bienvenida · primer ingreso'],['clubs','NUEVO','Elegir club y hinchadas'],['diff','NUEVO','Usuario normal vs Admin'],['pending','NUEVO','Club/Admin en verificación (24 hs)'],
  ['cu01','CU_001','Registro de usuario'],['cu02','CU_002','Login de usuario'],['cu03','CU_003','Recupero de contraseña'],
  ['cu04','CU_004','Edición de perfil básico'],['cu05','CU_005','Selección de equipos favoritos'],['cu06','CU_006','Gestión de roles y permisos'],
  ['cu07','CU_007','Resultados en vivo'],['cu08','CU_008','Tabla de posiciones'],['cu09','CU_009','Fixture'],
@@ -800,8 +829,8 @@ const CUS=[
  ['cu16','CU_016','Estadísticas de jugador'],['cu17','CU_017','Tabla de goleadores'],['cu18','CU_018','Tarjetas y suspensiones'],
  ['cu19','CU_019','Publicar jugador libre'],['cu20','CU_020','Buscar jugadores libres'],['cu21','CU_021','Contacto club-jugador'],
 ];
-const AUTH_SCREENS=['cu01','cu02','cu03'];
-const NAV_GROUP={home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',matchDetail:'matches',leagueStats:'matches',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',team:'table',
+const AUTH_SCREENS=['welcome','cu01','cu02','cu03','pending'];
+const NAV_GROUP={clubs:'home',diff:'profile',home:'home',cu12:'home',cu13:'home',cu14:'home',cu15:'home',matchDetail:'matches',leagueStats:'matches',cu07:'matches',cu09:'matches',cu10:'matches',cu11:'matches',cu08:'table',team:'table',
   cu16:'players',cu17:'players',cu18:'players',cu19:'players',cu20:'players',cu21:'players',profile:'profile',cu04:'profile',cu05:'profile',cu06:'profile'};
 function BottomNav(){
   const {s,go}=useApp();
@@ -810,8 +839,10 @@ function BottomNav(){
   return html`<nav className="bnav" aria-label="Navegación principal">${items.map(([k,l,ic,dest])=>html`<button key=${k} className=${g===k?'on':''} aria-current=${g===k?'page':undefined} onClick=${()=>go(dest)}>
     <span className="ico"><${Icon} n=${ic} s=${21}/></span>${l}</button>`)}</nav>`;
 }
+const PERSONAS=[['first','Primer ingreso','star'],['user','Usuario normal','user'],['admin','Admin','shield']];
 function DemoBar(){
-  const {s,go}=useApp();
+  const {s,go,dispatch,me}=useApp();
+  const persona=!s.authed||me.fresh?'first':me.role==='Admin'?'admin':'user';
   const [open,setOpen]=useState(false);
   const [theme,setTheme]=useState('auto');
   const cur=CUS.find(c=>c[0]===s.screen);
@@ -827,9 +858,14 @@ function DemoBar(){
   return html`<div className="demobar">
     <span className="tag">DEMO</span>
     <span className="cur">${cur?cur[1]+' · '+cur[2]:s.screen==='home'?'Inicio':s.screen==='team'?'Ficha de equipo':'Perfil'}</span>
-    <button className="demobtn" aria-expanded=${open?'true':'false'} aria-haspopup="true" onClick=${()=>setOpen(!open)}><${Icon} n=${open?'x':'sliders'} s=${14}/>21 pantallas</button>
+    <button className="demobtn" aria-expanded=${open?'true':'false'} aria-haspopup="true" onClick=${()=>setOpen(!open)}><${Icon} n=${open?'x':'sliders'} s=${14}/>${CUS.length} pantallas</button>
     ${open?html`<div className="fixed inset-0 z-[60]" onClick=${()=>setOpen(false)} aria-hidden="true"></div>`:null}
     ${open?html`<div className="demopanel" role="menu" aria-label="Saltar a un caso de uso">
+      <div className="mb-2 pb-2 border-b border-line">
+        <div className="text-[11px] font-bold uppercase tracking-widest text-mute px-1 mb-1.5">Ver la app como…</div>
+        <div className="grid grid-cols-3 gap-1.5">${PERSONAS.map(([k,l,ic])=>html`<button key=${k} aria-pressed=${persona===k?'true':'false'} onClick=${()=>{dispatch({type:'PERSONA',who:k});setOpen(false);try{window.scrollTo(0,0)}catch(e){}}}
+          className=${cx('rounded-xl border-2 p-2 flex flex-col items-center gap-1 text-center text-[12px] font-bold leading-tight',persona===k?'border-pri bg-prisoft text-brand':'border-line bg-surface')}><${Icon} n=${ic} s=${18}/>${l}</button>`)}</div>
+      </div>
       <div className="flex gap-2 mb-2">
         <button style=${{flex:1,textAlign:'center'}} className=${cx('pill',s.screen==='home'&&'on')} onClick=${()=>{go('home');setOpen(false)}}>Inicio</button>
         <button style=${{flex:1,textAlign:'center'}} className=${cx('pill',s.screen==='profile'&&'on')} onClick=${()=>{go('profile');setOpen(false)}}>Mi perfil</button>
@@ -877,33 +913,85 @@ function AuthShell({title,sub,children,foot}){
     <div className="px-4 -mt-7 pb-6"><div className="card p-5 flex flex-col gap-4">${children}</div>${foot}</div>
   </main>`;
 }
-/* CU_001 · Registro */
+function Sel({id,label,icon,error,children,...p}){
+  return html`<div>
+    <label className="lbl" htmlFor=${id}>${label}</label>
+    <div className=${cx('inp',error&&'inp-err')}>
+      ${icon?html`<${Icon} n=${icon} s=${18} className="text-mute"/>`:null}
+      <select id=${id} ...${p} aria-invalid=${error?'true':'false'}>${children}</select>
+    </div>
+    ${error?html`<span className="err" role="alert">${error}</span>`:null}
+  </div>`;
+}
+const CARGOS=['Presidente/a','Vicepresidente/a','Secretario/a','Tesorero/a','Delegado/a','Director/a técnico/a','Otro cargo'];
+/* CU_001 · Registro (Club y Admin requieren verificación de hasta 24 hs) */
 function Register(){
   const {s,dispatch,go}=useApp();
   const [f,setF]=useState({name:'',email:'',pw:'',type:'Hincha'});
+  const [v,setV]=useState({clubId:'',clubOther:'',cargo:'',dni:'',cuit:'',tel:'',doc:'',ent:'',motivo:'',aval:'',ok:false});
   const [show,setShow]=useState(false);
   const [sub,setSub]=useState(false);
   const set=k=>e=>setF({...f,[k]:e.target.value});
+  const setv=k=>e=>setV({...v,[k]:e.target.value});
+  const isClub=f.type==='Club',isAdm=f.type==='Admin',verify=isClub||isAdm;
   const errs={};
   const nm=f.name.trim();
   if(nm.length<3)errs.name='Ingresá tu nombre completo.';else if(!/\s/.test(nm))errs.name='Falta tu apellido.';
   if(!EMAIL.test(f.email))errs.email='Escribí un email válido, por ejemplo nombre@correo.com.';
   else if(s.users.some(u=>u.email.toLowerCase()===f.email.toLowerCase()))errs.email='Ese email ya tiene una cuenta. Probá iniciar sesión.';
   if(f.pw.length<6)errs.pw='Usá al menos 6 caracteres.';
-  const strength=(f.pw.length>=8)+(/[A-Z]/.test(f.pw))+(/\d/.test(f.pw))+(/[^A-Za-z0-9]/.test(f.pw));
-  const types=[['Hincha','heart','Sigo a mi equipo'],['Club','shield','Represento a un club'],['Jugador libre','user','Busco equipo']];
+  const strength=(f.pw.length>=8)+(/[A-Z]/.test(f.pw))+(/[0-9]/.test(f.pw))+(/[^A-Za-z0-9]/.test(f.pw));
+  const ve={};
+  if(verify){
+    if(isClub){
+      if(!v.clubId)ve.clubId='Elegí el club que representás.';
+      else if(v.clubId==='otro'&&v.clubOther.trim().length<3)ve.clubOther='Escribí el nombre oficial del club.';
+      if(!v.cargo)ve.cargo='Indicá tu cargo en el club.';
+      if(!/^\d{2}-?\d{8}-?\d$/.test(v.cuit.trim()))ve.cuit='Ingresá el CUIT del club (11 dígitos, ej. 30-12345678-9).';
+    }else{
+      if(v.ent.trim().length<3)ve.ent='Indicá la entidad u organización a la que pertenecés.';
+      if(v.cargo.trim().length<3)ve.cargo='Indicá tu cargo o función.';
+      if(v.motivo.trim().length<20)ve.motivo='Contanos con al menos 20 caracteres por qué necesitás acceso de administrador.';
+      if(!EMAIL.test(v.aval))ve.aval='Escribí el email de la persona de la liga que te autoriza.';
+      else if(v.aval.trim().toLowerCase()===f.email.trim().toLowerCase())ve.aval='El aval tiene que ser de otra persona.';
+    }
+    if(!/^\d{7,8}$/.test(v.dni.replace(/\./g,'').trim()))ve.dni='Ingresá tu DNI sin puntos (7 u 8 dígitos).';
+    if(v.tel.replace(/\D/g,'').length<8)ve.tel='Ingresá un teléfono de contacto válido.';
+    if(!v.doc)ve.doc=isClub?'Adjuntá el estatuto, acta de comisión directiva o constancia de personería.':'Adjuntá la nota de autorización firmada.';
+    if(!v.ok)ve.ok='Tenés que aceptar la declaración para continuar.';
+  }
+  const err=k=>sub&&ve[k]?ve[k]:'';
+  const types=[['Hincha','heart','Hincha','Sigo a mi equipo'],['Club','shield','Club','Represento a un club'],['Admin','sliders','Administrador','Gestiono la liga'],['Jugador libre','user','Jugador libre','Busco equipo']];
+  const pickType=t=>{setF({...f,type:t});setV({...v,cargo:''});setSub(false)};
+  const sample=()=>{
+    const base={name:'Julieta Fernández',email:'julieta.fernandez@ejemplo.com',pw:'hincha123'};
+    if(isClub){setF({...f,name:'Ramiro Sosa',email:'ramiro.sosa@clubejemplo.ar',pw:'club1234'});setV({...v,clubId:'an',cargo:'Presidente/a',cuit:'30-71234567-8',dni:'28456123',tel:'342 555-0199',doc:'acta-comision-directiva.pdf',ok:true})}
+    else if(isAdm){setF({...f,name:'Paula Giménez',email:'paula.gimenez@ejemplo.com',pw:'admin1234'});setV({...v,ent:'Liga Santafesina de Fútbol',cargo:'Coordinadora de torneos',dni:'31222333',tel:'342 555-0188',motivo:'Cargar resultados y gestionar suspensiones de la fecha.',aval:'valentina@santafegol.ar',doc:'nota-autorizacion.pdf',ok:true})}
+    else setF({...f,...base});
+  };
   const submit=e=>{
     e.preventDefault();setSub(true);
-    if(Object.keys(errs).length)return;
-    const user={id:'u'+uid(),name:nm,email:f.email.trim(),pw:f.pw,phone:'',role:f.type,avatar:null};
+    if(Object.keys(errs).length||(verify&&Object.keys(ve).length))return;
+    if(verify){
+      const user={id:'u'+uid(),name:nm,email:f.email.trim(),pw:f.pw,phone:v.tel.trim(),role:f.type,avatar:null,club:null,fresh:true,status:'pending',
+        ticket:'SG-'+String(Math.floor(10000+Math.random()*89999)),verif:{...v,clubId:isClub&&v.clubId!=='otro'?v.clubId:''}};
+      dispatch({type:'REQUEST_ACCOUNT',user});
+      go('pending',{pendingId:user.id});
+      return;
+    }
+    const user={id:'u'+uid(),name:nm,email:f.email.trim(),pw:f.pw,phone:'',role:f.type,avatar:null,club:null,fresh:true};
     dispatch({type:'REGISTER',user});
     dispatch({type:'TOAST',toast:{kind:'success',title:'Cuenta creada',body:`Bienvenido/a, ${nm.split(' ')[0]}. Ya sos parte de Santa Fe GOL.`}});
-    go(f.type==='Jugador libre'?'cu19':f.type==='Hincha'?'cu05':'home');
+    go('clubs',{onboarding:true,afterClub:f.type==='Jugador libre'?'cu19':'home',clubTab:'pick'});
   };
-  return html`<${AuthShell} title="Creá tu cuenta" sub="Seguí a tu club, mirá los goles en vivo y encontrá equipo." foot=${html`<p className="text-center text-[14px] mt-4 text-mute">¿Ya tenés cuenta? <button className="font-bold text-brand underline" onClick=${()=>go('cu02')}>Iniciá sesión</button></p>`}>
+  const softMail=isClub&&/@(gmail|hotmail|yahoo|outlook|live|icloud)\./i.test(f.email);
+  return html`<${AuthShell} title=${verify?'Solicitá tu cuenta':'Creá tu cuenta'} sub=${verify?'Verificamos cada cuenta de '+(isClub?'club':'administrador')+' antes de activarla.':'Seguí a tu club, mirá los goles en vivo y encontrá equipo.'} foot=${html`<p className="text-center text-[14px] mt-4 text-mute">¿Ya tenés cuenta? <button className="font-bold text-brand underline" onClick=${()=>go('cu02')}>Iniciá sesión</button></p>`}>
     <form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
       <${Field} id="reg-name" label="Nombre completo" icon="user" value=${f.name} onChange=${set('name')} placeholder="Ej. Julieta Fernández" autoComplete="name" error=${sub?errs.name:''}/>
-      <${Field} id="reg-email" label="Email" icon="mail" type="email" value=${f.email} onChange=${set('email')} placeholder="nombre@correo.com" autoComplete="email" error=${sub?errs.email:''}/>
+      <div>
+        <${Field} id="reg-email" label=${isClub?'Email (preferentemente institucional)':'Email'} icon="mail" type="email" value=${f.email} onChange=${set('email')} placeholder=${isClub?'nombre@tuclub.ar':'nombre@correo.com'} autoComplete="email" error=${sub?errs.email:''}/>
+        ${softMail?html`<p className="text-[12.5px] text-mute mt-1.5">Tip: con un email del club la verificación es más rápida.</p>`:null}
+      </div>
       <div>
         <${Field} id="reg-pw" label="Contraseña" icon="lock" type=${show?'text':'password'} value=${f.pw} onChange=${set('pw')} placeholder="Mínimo 6 caracteres" autoComplete="new-password" error=${sub?errs.pw:''}
           right=${html`<button type="button" aria-label=${show?'Ocultar contraseña':'Mostrar contraseña'} onClick=${()=>setShow(!show)} className="text-mute"><${Icon} n=${show?'eyeoff':'eye'} s=${18}/></button>`}/>
@@ -911,12 +999,73 @@ function Register(){
       </div>
       <fieldset>
         <legend className="lbl">Tipo de usuario</legend>
-        <div className="grid grid-cols-3 gap-2">${types.map(([t,ic,sub2])=>html`<button type="button" key=${t} aria-pressed=${f.type===t?'true':'false'} onClick=${()=>setF({...f,type:t})}
+        <div className="grid grid-cols-2 gap-2">${types.map(([t,ic,lab,sub2])=>html`<button type="button" key=${t} aria-pressed=${f.type===t?'true':'false'} onClick=${()=>pickType(t)}
           className=${cx('rounded-2xl border-2 p-3 flex flex-col items-center gap-1 text-center',f.type===t?'border-pri bg-prisoft text-brand':'border-line bg-surface')}>
-          <${Icon} n=${ic} s=${22}/><span className="font-bold text-[13.5px] leading-tight">${t}</span><span className="text-[11px] text-mute leading-tight">${sub2}</span></button>`)}</div>
+          <${Icon} n=${ic} s=${22}/><span className="font-bold text-[13.5px] leading-tight">${lab}</span><span className="text-[11px] text-mute leading-tight">${sub2}</span></button>`)}</div>
       </fieldset>
-      <${Btn} type="submit" full icon="check">Crear cuenta<//>
+      ${verify?html`<section className="card-soft p-3 flex flex-col gap-4" aria-label="Datos de verificación">
+        <div className="alert alert-gold"><${Icon} n="clock" s=${20}/><div><div>La cuenta tarda hasta 24 horas en crearse</div><div className="font-medium text-[13px]">${isClub?'Necesitamos comprobar que sos un club real y que estás autorizado/a a representarlo.':'Necesitamos comprobar tu identidad y que la liga te autoriza como administrador.'} Te avisamos por email cuando esté lista.</div></div></div>
+        <div className="text-[12px] font-bold uppercase tracking-widest text-mute">Datos de verificación ${isClub?'del club':'de administrador'}</div>
+        ${isClub?html`
+          <${Sel} id="v-club" label="Club que representás" icon="shield" value=${v.clubId} onChange=${setv('clubId')} error=${err('clubId')}>
+            <option value="">Elegí tu club…</option>${TEAMS.map(t=>html`<option key=${t.id} value=${t.id}>${t.name}</option>`)}<option value="otro">Mi club no está en la lista</option><//>
+          ${v.clubId==='otro'?html`<${Field} id="v-other" label="Nombre oficial del club" icon="shield" value=${v.clubOther} onChange=${setv('clubOther')} placeholder="Ej. Club Atlético Ejemplo" error=${err('clubOther')}/>`:null}
+          <${Sel} id="v-cargo" label="Tu cargo en el club" icon="user" value=${v.cargo} onChange=${setv('cargo')} error=${err('cargo')}>
+            <option value="">Elegí tu cargo…</option>${CARGOS.map(c=>html`<option key=${c} value=${c}>${c}</option>`)}<//>
+          <${Field} id="v-cuit" label="CUIT del club" icon="info" inputMode="numeric" value=${v.cuit} onChange=${setv('cuit')} placeholder="30-12345678-9" error=${err('cuit')}/>`
+        :html`
+          <${Field} id="v-ent" label="Entidad u organización" icon="shield" value=${v.ent} onChange=${setv('ent')} placeholder="Ej. Liga Santafesina de Fútbol" error=${err('ent')}/>
+          <${Field} id="v-cargo" label="Cargo o función" icon="user" value=${v.cargo} onChange=${setv('cargo')} placeholder="Ej. Coordinador de torneos" error=${err('cargo')}/>
+          <div>
+            <label className="lbl" htmlFor="v-motivo">¿Para qué necesitás acceso de administrador?</label>
+            <div className=${cx('inp',err('motivo')&&'inp-err')}><textarea id="v-motivo" rows="3" value=${v.motivo} onChange=${setv('motivo')} placeholder="Ej. Cargar resultados y gestionar suspensiones de la fecha."></textarea></div>
+            ${err('motivo')?html`<span className="err" role="alert">${err('motivo')}</span>`:null}
+          </div>
+          <${Field} id="v-aval" label="Email de quien te avala en la liga" icon="mail" type="email" value=${v.aval} onChange=${setv('aval')} placeholder="avalista@liga.ar" error=${err('aval')}/>`}
+        <${Field} id="v-dni" label="DNI del responsable" icon="user" inputMode="numeric" value=${v.dni} onChange=${setv('dni')} placeholder="Sin puntos" error=${err('dni')}/>
+        <${Field} id="v-tel" label="Teléfono de contacto" icon="phone" type="tel" value=${v.tel} onChange=${setv('tel')} placeholder="342 555-0000" error=${err('tel')}/>
+        <div>
+          <label className="lbl" htmlFor="v-doc">${isClub?'Documentación del club (estatuto, acta o constancia de personería)':'Nota de autorización firmada'}</label>
+          <div className=${cx('inp',err('doc')&&'inp-err')}><input id="v-doc" type="file" accept=".pdf,.png,.jpg,.jpeg" className="text-[13px]" onChange=${e=>setV({...v,doc:e.target.files&&e.target.files[0]?e.target.files[0].name:''})}/></div>
+          ${v.doc&&!err('doc')?html`<p className="text-[12.5px] text-mute mt-1.5">Adjunto: ${v.doc}</p>`:null}
+          ${err('doc')?html`<span className="err" role="alert">${err('doc')}</span>`:null}
+        </div>
+        <div>
+          <label className="flex items-start gap-2 text-[13px]"><input type="checkbox" checked=${v.ok} onChange=${e=>setV({...v,ok:e.target.checked})} className="mt-1"/><span>Declaro que los datos son verdaderos${isClub?' y que estoy autorizado/a a representar al club':''}. Entiendo que pueden pedirme documentación adicional.</span></label>
+          ${err('ok')?html`<span className="err" role="alert">${err('ok')}</span>`:null}
+        </div>
+      </section>`:null}
+      <button type="button" className="text-[13px] font-bold text-brand underline text-center" onClick=${sample}>Completar con datos de ejemplo</button>
+      <${Btn} type="submit" full icon=${verify?'send':'check'}>${verify?'Enviar solicitud':'Crear cuenta'}<//>
+      ${verify?html`<p className="text-[12.5px] text-mute text-center -mt-2">No vas a poder ingresar hasta que verifiquemos tus datos (hasta 24 hs).</p>`:null}
     </form>
+  <//>`;
+}
+/* Cuenta de Club/Admin en verificación */
+function Pending(){
+  const {s,dispatch,go}=useApp();
+  const real=s.users.find(x=>x.id===s.ui.pendingId);
+  const u=real||{role:'Club',email:'tuclub@correo.com',ticket:'SG-48213',name:'Demo',verif:{}};
+  const isAdm=u.role==='Admin';
+  const steps=[['Recibimos tu solicitud','Ya tenemos tus datos y la documentación.','done'],
+    [isAdm?'Verificamos tu autorización':'Verificamos que sos un club',isAdm?'Confirmamos tu identidad y el aval de la liga.':'Revisamos el CUIT, tu cargo y la documentación del club.','now'],
+    ['Activamos tu cuenta','Te avisamos a '+u.email+' y ya podés ingresar.','next']];
+  const approve=()=>{
+    dispatch({type:'REVIEW_REQUEST',userId:u.id,ok:true});
+    dispatch({type:'LOGIN',userId:u.id});
+    dispatch({type:'TOAST',toast:{kind:'success',title:'Cuenta verificada',body:`Hola, ${u.name.split(' ')[0]}. Tu cuenta de ${isAdm?'Administrador':'Club'} ya está activa.`}});
+    const cid=u.verif&&u.verif.clubId;
+    if(cid){dispatch({type:'SET_FAVS',ids:[cid]});go('home',{onboarding:false})}
+    else go('clubs',{onboarding:true,afterClub:'home',clubTab:'pick'});
+  };
+  return html`<${AuthShell} title="Solicitud enviada" sub=${'Estamos verificando tu cuenta de '+(isAdm?'administrador':'club')+'.'}>
+    <div className="alert alert-gold"><${Icon} n="clock" s=${20}/><div><div>Tu cuenta tardará hasta 24 horas en crearse</div><div className="font-medium text-[13px]">Necesitamos verificar que ${isAdm?'estás autorizado/a como administrador':'sos un club'} antes de activarla. Hasta entonces no vas a poder ingresar.</div></div></div>
+    <ol className="flex flex-col gap-3">${steps.map(([t,sub2,st],i)=>html`<li key=${t} className="flex items-start gap-3">
+      <span className=${cx('w-8 h-8 rounded-full flex items-center justify-center font-extrabold flex-none tnum',st==='done'?'bg-okbg text-ok':st==='now'?'bg-goldbg text-gold':'bg-surface2 text-mute')}>${st==='done'?html`<${Icon} n="check" s=${16}/>`:i+1}</span>
+      <span><span className="font-bold block leading-tight">${t}</span><span className="text-[13.5px] text-mute">${sub2}</span></span></li>`)}</ol>
+    <div className="card-soft p-3 text-[13.5px]"><div className="text-mute">Número de solicitud</div><div className="font-extrabold text-[18px] tnum">${u.ticket}</div></div>
+    <${Btn} full v="ghost" icon="home" onClick=${()=>go('welcome')}>Volver al inicio<//>
+    ${real?html`<${Btn} full v="gold" icon="check" onClick=${approve}>Demo: simular verificación aprobada<//>`:null}
   <//>`;
 }
 /* CU_002 · Login */
@@ -927,17 +1076,30 @@ function Login(){
   const [show,setShow]=useState(false);
   const [tries,setTries]=useState(0);
   const [bad,setBad]=useState(false);
+  const [rej,setRej]=useState(false);
+  const enter=(u,direct)=>{
+    dispatch({type:'LOGIN',userId:u.id});
+    if(u.club&&s.favorites.length===0)dispatch({type:'SET_FAVS',ids:[u.club]});
+    dispatch({type:'TOAST',toast:{kind:'success',title:`Hola, ${u.name.split(' ')[0]}`,body:'Iniciaste sesión correctamente.'}});
+    if(u.club||direct)go('home',{onboarding:false});else go('clubs',{onboarding:true,afterClub:'home',clubTab:'pick'});
+  };
+  const quick=(em,pass)=>{
+    const u=s.users.find(x=>x.email.toLowerCase()===em&&x.pw===pass);
+    setEmail(em);setPw(pass);setBad(false);setRej(false);
+    if(u)enter(u,true);
+  };
   const submit=e=>{
-    e.preventDefault();
+    e.preventDefault();setRej(false);
     const u=s.users.find(x=>x.email.toLowerCase()===email.trim().toLowerCase()&&x.pw===pw);
     if(!u){setBad(true);setTries(t=>t+1);return}
-    setBad(false);dispatch({type:'LOGIN',userId:u.id});
-    dispatch({type:'TOAST',toast:{kind:'success',title:`Hola, ${u.name.split(' ')[0]}`,body:'Iniciaste sesión correctamente.'}});
-    go('home');
+    if(u.status==='pending'){setBad(false);go('pending',{pendingId:u.id});return}
+    if(u.status==='rejected'){setBad(false);setRej(true);return}
+    setBad(false);enter(u,false);
   };
   return html`<${AuthShell} title="Ingresá a tu cuenta" sub="Resultados, tabla y avisos de tu equipo en un solo lugar." foot=${html`<p className="text-center text-[14px] mt-4 text-mute">¿Primera vez? <button className="font-bold text-brand underline" onClick=${()=>go('cu01')}>Creá tu cuenta</button></p>`}>
     <form className="flex flex-col gap-4" onSubmit=${submit} noValidate>
       ${bad?html`<div key=${tries} className="alert alert-bad shake" role="alert"><${Icon} n="alert" s=${20}/><div><div>Credenciales incorrectas</div><div className="font-medium text-[13px]">Revisá tu email y tu contraseña e intentá de nuevo.${tries>=3?' Si no la recordás, recuperala abajo.':''}</div></div></div>`:null}
+      ${rej?html`<div className="alert alert-bad" role="alert"><${Icon} n="alert" s=${20}/><div><div>Solicitud no aprobada</div><div className="font-medium text-[13px]">No pudimos verificar tus datos. Podés volver a solicitar la cuenta con documentación actualizada.</div></div></div>`:null}
       <${Field} id="log-email" label="Email" icon="mail" type="email" value=${email} onChange=${e=>setEmail(e.target.value)} placeholder="nombre@correo.com" autoComplete="email" error=${bad?' ':''}/>
       <${Field} id="log-pw" label="Contraseña" icon="lock" type=${show?'text':'password'} value=${pw} onChange=${e=>setPw(e.target.value)} placeholder="Tu contraseña" autoComplete="current-password" error=${bad?' ':''}
         right=${html`<button type="button" aria-label=${show?'Ocultar contraseña':'Mostrar contraseña'} onClick=${()=>setShow(!show)} className="text-mute"><${Icon} n=${show?'eyeoff':'eye'} s=${18}/></button>`}/>
@@ -945,9 +1107,15 @@ function Login(){
       <${Btn} type="submit" full icon="lockopen">Ingresar<//>
     </form>
     <div className="card-soft p-3 text-[13px]">
-      <div className="font-bold mb-1">Datos de prueba</div>
+      <div className="font-bold mb-1">Datos de prueba · tocá un botón para entrar directo</div>
+      <div className="text-mute">julian.herrera@ejemplo.com · hincha2026 (Hincha)</div>
+      <div className="text-mute">martin.duarte@deportivocentral.ar · club1234 (Club)</div>
       <div className="text-mute">valentina@santafegol.ar · gol2026 (Admin)</div>
-      <${Btn} v="ghost" sm className="mt-2" onClick=${()=>{setEmail('valentina@santafegol.ar');setPw('gol2026');setBad(false)}}>Completar datos<//>
+      <div className="grid grid-cols-3 gap-2 mt-2">
+        <${Btn} v="ghost" sm onClick=${()=>quick('julian.herrera@ejemplo.com','hincha2026')}>Hincha<//>
+        <${Btn} v="ghost" sm onClick=${()=>quick('martin.duarte@deportivocentral.ar','club1234')}>Club<//>
+        <${Btn} v="ghost" sm onClick=${()=>quick('valentina@santafegol.ar','gol2026')}>Admin<//>
+      </div>
     </div>
   <//>`;
 }
@@ -1057,7 +1225,7 @@ const ROLE_INFO={
   Admin:'Gestiona roles, resultados, suspensiones y publicaciones.',
 };
 function Roles(){
-  const {s,dispatch,me}=useApp();
+  const {s,dispatch,go,me}=useApp();
   const q=s.ui.adminQuery,selId=s.ui.adminSel;
   const [pick,setPick]=useState(null);
   const [confirmStep,setConfirmStep]=useState(false);
@@ -1066,9 +1234,12 @@ function Roles(){
     return html`<${Page} title="Roles y permisos" sub="Solo para administradores">
       <div className="card p-6 text-center"><span className="mx-auto w-14 h-14 rounded-2xl bg-goldbg text-gold flex items-center justify-center"><${Icon} n="lock" s=${26}/></span>
         <h2 className="mt-3 text-[19px] font-bold">Acceso restringido</h2><p className="text-[14px] text-mute mt-1">Tu rol actual es <b>${me.role}</b>. Este panel es solo para administradores.</p>
-        <${Btn} className="mt-4" full v="gold" icon="shield" onClick=${()=>dispatch({type:'UPDATE_USER',id:me.id,patch:{role:'Admin'}})}>Activar modo Admin (demo)<//></div>
+        <${Btn} className="mt-4" full v="gold" icon="shield" onClick=${()=>{dispatch({type:'PERSONA',who:'admin'});go('cu06')}}>Ver la app como Admin (demo)<//></div>
     <//>`;
   }
+  const pend=s.users.filter(u=>u.status==='pending');
+  const review=(u,ok)=>{dispatch({type:'REVIEW_REQUEST',userId:u.id,ok});dispatch({type:'TOAST',toast:{kind:ok?'success':'warn',title:ok?'Cuenta aprobada':'Solicitud rechazada',body:ok?`${u.name} ya puede ingresar como ${u.role}.`:`Se rechazó la solicitud de ${u.name}.`}})};
+  const vinfo=u=>{const x=u.verif||{};return (u.role==='Admin'?[['Entidad',x.ent],['Cargo',x.cargo],['DNI',x.dni],['Avalado por',x.aval],['Motivo',x.motivo],['Documento',x.doc]]:[['Club',x.clubId&&T[x.clubId]?T[x.clubId].name:x.clubOther],['Cargo',x.cargo],['CUIT',x.cuit],['DNI',x.dni],['Documento',x.doc]]).filter(r=>r[1])};
   const list=s.users.filter(u=>(u.name+' '+u.email).toLowerCase().includes(q.trim().toLowerCase()));
   const target=s.users.find(u=>u.id===selId);
   const choose=r=>{setPick(r);setConfirmStep(false)};
@@ -1079,6 +1250,14 @@ function Roles(){
     setPick(null);setConfirmStep(false);
   };
   return html`<${Page} title="Roles y permisos" sub="Panel de administración">
+    ${pend.length?html`<section className="card p-4 flex flex-col gap-3" aria-label="Solicitudes pendientes">
+      <h3 className="font-bold text-[18px]">Solicitudes pendientes (${pend.length})</h3>
+      ${pend.map(u=>html`<div key=${u.id} className="card-soft p-3 flex flex-col gap-2">
+        <div className="flex items-center gap-3"><${Avatar} name=${u.name} src=${u.avatar} size=${40}/><div className="min-w-0 flex-1"><div className="font-bold leading-tight">${u.name}</div><div className="text-[12.5px] text-mute truncate">${u.email}</div></div><span className=${cx('chip',u.role==='Admin'?'chip-gold':'chip-ok')}>${u.role}</span></div>
+        <dl className="text-[13px] grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5">${vinfo(u).map(([k,val])=>html`<${React.Fragment} key=${k}><dt className="text-mute">${k}</dt><dd className="font-semibold break-words">${val}</dd><//>`)}</dl>
+        <div className="grid grid-cols-2 gap-2"><${Btn} sm icon="check" onClick=${()=>review(u,true)}>Aprobar<//><${Btn} sm v="ghost" icon="x" onClick=${()=>review(u,false)}>Rechazar<//></div>
+      </div>`)}
+    </section>`:null}
     <div className=${cx('inp')}><${Icon} n="search" s=${18} className="text-mute"/><input id="adm-q" aria-label="Buscar usuario por nombre o email" placeholder="Buscar usuario (ej. Carla Bianchi)" value=${q} onChange=${e=>setUI({adminQuery:e.target.value})}/>
       ${q?html`<button aria-label="Limpiar búsqueda" onClick=${()=>setUI({adminQuery:''})} className="text-mute"><${Icon} n="x" s=${16}/></button>`:null}</div>
     <div className="flex flex-col gap-2">
@@ -1109,6 +1288,7 @@ const GROUPS=[
  {t:'Canchas',items:[['cu14','Mapa de canchas','pin'],['cu15','Cómo llegar','nav']]},
  {t:'Fichajes',items:[['cu19','Publicar perfil','plus'],['cu20','Buscar jugadores','search'],['cu21','Chat club–jugador','send']]},
  {t:'Avisos',items:[['cu12','Gol en vivo','bell'],['cu13','Partido suspendido','cloud']]},
+ {t:'Comunidad',items:[['clubs','Hinchadas por club','users'],['diff','Normal vs Admin','swap']]},
  {t:'Cuenta',items:[['cu01','Registro','user'],['cu02','Ingresar','lock'],['cu03','Recuperar clave','mail'],['cu04','Editar perfil','pencil'],['cu05','Favoritos','star'],['cu06','Roles (Admin)','shield']]},
 ];
 function Home(){
@@ -1122,7 +1302,8 @@ function Home(){
       <button className="icobtn" aria-label=${`Notificaciones${unread?`, ${unread} nuevas`:''}`} onClick=${()=>go('cu12')}><${Icon} n="bell" s=${20}/>${unread?html`<span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-live text-bg text-[11px] font-bold flex items-center justify-center" style=${{background:'var(--live)',color:'var(--surface)'}}>${unread}</span>`:null}</button>
     </div></header>
     <div className="px-4 pb-4 flex flex-col gap-5">
-      <div><h2 className="text-[26px] font-bold leading-tight">Hola, ${me.name.split(' ')[0]}</h2><p className="text-[14.5px] text-mute">Hoy se juegan ${today} partidos de la Fecha 14.</p></div>
+      <div><h2 className="text-[26px] font-bold leading-tight">Hola, ${me.name.split(' ')[0]}</h2><p className="text-[14.5px] text-mute">Hoy se juegan ${today} partidos de la Fecha 14.</p>
+        <div className="flex flex-wrap gap-2 mt-2"><span className=${cx('chip',me.role==='Admin'?'chip-gold':'chip-pri')}><${Icon} n=${me.role==='Admin'?'shield':'user'} s=${13}/>${me.role==='Admin'?'Administrador':me.role}</span>${me.club?html`<span className="chip">${T[me.club].name}</span>`:null}</div></div>
       <button className="hero p-5 text-left w-full" onClick=${()=>go('cu07')} aria-label="Ver partido en vivo">
         <div className="flex items-center justify-between"><span className="text-[12px] font-bold tracking-wider opacity-80">${live.status==='live'?'EN VIVO':'FINALIZADO'} · FECHA 14</span>
           ${live.status==='live'?html`<span className="flex items-center gap-2 text-[13px] font-bold"><span className="dot-live"></span>${live.minute}'</span>`:html`<span className="text-[13px] font-bold">Final</span>`}</div>
@@ -1133,6 +1314,7 @@ function Home(){
         </div>
         <div className="mt-4 flex items-center gap-1.5 text-[12.5px] opacity-80"><${Icon} n="pin" s=${14}/>${VENUES[live.home].name}</div>
       </button>
+      <${HomeExtras}/>
       <section><${SectionTitle} right=${html`<button className="text-[13.5px] font-bold text-brand" onClick=${()=>go('cu05')}>Editar</button>`}>Tus equipos<//>
         ${s.favorites.length===0?html`<div className="mt-2"><${Empty} icon="star" title="Todavía no seguís equipos">Elegí tus favoritos para ver sus próximos partidos.<${Btn} className="mt-3" sm onClick=${()=>go('cu05')}>Elegir equipos<//><//></div>`
         :html`<div className="mt-2 flex flex-col gap-2">${s.favorites.map(id=>{const r=d.table.find(x=>x.id===id);const nm=nextMatch(s.matches,id);const opp=nm?(nm.home===id?nm.away:nm.home):null;
@@ -1141,8 +1323,8 @@ function Home(){
       </section>
       <section className="flex flex-col gap-4"><${SectionTitle}>Todo en la app<//>
         ${GROUPS.map(g=>html`<div key=${g.t}><div className="text-[12px] font-bold uppercase tracking-widest text-mute mb-2">${g.t}</div>
-          <div className="grid grid-cols-2 gap-2">${g.items.map(([id,l,ic])=>html`<button key=${id} onClick=${()=>go(id)} className="card p-3 flex items-center gap-2.5 text-left">
-            <span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center flex-none"><${Icon} n=${ic} s=${18}/></span><span className="text-[13.5px] font-bold leading-tight">${l}</span></button>`)}</div></div>`)}
+          <div className="grid grid-cols-2 gap-2">${g.items.map(([id,l,ic])=>html`<button key=${id} onClick=${()=>go(id)} className=${cx('card p-3 flex items-center gap-2.5 text-left',id==='cu06'&&me.role!=='Admin'&&'opacity-70')}>
+            <span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center flex-none"><${Icon} n=${ic} s=${18}/></span><span className="text-[13.5px] font-bold leading-tight flex-1">${l}</span>${id==='cu06'&&me.role!=='Admin'?html`<${Icon} n="lock" s=${15} className="text-mute"/>`:null}</button>`)}</div></div>`)}
       </section>
     </div>
   </main>`;
@@ -1150,10 +1332,10 @@ function Home(){
 /* ---------- Perfil (menú) ---------- */
 function Profile(){
   const {s,go,dispatch,me}=useApp();
-  const rows=[['cu04','Editar perfil','pencil',''],['cu05','Equipos favoritos','star',`${s.favorites.length}`],['cu12','Notificaciones','bell',''],['cu19','Publicar como jugador libre','plus',''],['cu21','Mensajes con clubes','send',''],['cu06','Roles y permisos','shield',me.role==='Admin'?'Admin':'Restringido']];
+  const rows=[['clubs','Mi club y hinchadas','users',me.club?T[me.club].init:'Elegir'],['cu04','Editar perfil','pencil',''],['cu05','Equipos favoritos','star',`${s.favorites.length}`],['cu12','Notificaciones','bell',''],['cu19','Publicar como jugador libre','plus',''],['cu21','Mensajes con clubes','send',''],['cu06','Roles y permisos','shield',me.role==='Admin'?'Admin':'Restringido'],['diff','Normal vs Admin','swap','']];
   return html`<${Page} title="Mi perfil" back=${false}>
     <div className="hero p-5 flex items-center gap-4"><${Avatar} name=${me.name} src=${me.avatar} size=${68}/>
-      <div className="min-w-0"><div className="disp text-[22px] font-bold leading-tight">${me.name}</div><div className="text-[13px] opacity-80 truncate">${me.email}</div><span className="chip chip-gold mt-2">${me.role}</span></div></div>
+      <div className="min-w-0"><div className="disp text-[22px] font-bold leading-tight">${me.name}</div><div className="text-[13px] opacity-80 truncate">${me.email}</div><div className="flex gap-2 flex-wrap mt-2"><span className="chip chip-gold">${me.role}</span>${me.club?html`<span className="chip">${T[me.club].name}</span>`:null}</div></div></div>
     <div className="card divide-y divide-line">${rows.map(([id,l,ic,tag])=>html`<button key=${id} onClick=${()=>go(id)} className="w-full flex items-center gap-3 p-4 text-left"><span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center"><${Icon} n=${ic} s=${18}/></span>
       <span className="flex-1 font-bold text-[15px]">${l}</span>${tag?html`<span className="chip">${tag}</span>`:null}<${Icon} n="right" s=${18} className="text-mute"/></button>`)}</div>
     <${Btn} v="ghost" full icon="logout" onClick=${()=>{dispatch({type:'LOGOUT'});go('cu02')}}>Cerrar sesión<//>
@@ -1523,7 +1705,8 @@ function GoalPush(){
 }
 /* CU_013 · Suspensión de partido */
 function Suspension(){
-  const {s,dispatch,go}=useApp();
+  const {s,dispatch,go,me}=useApp();
+  const isAdmin=me.role==='Admin';
   const list=s.matches.filter(m=>m.suspension);
   const selId=s.ui.suspId&&list.some(m=>m.id===s.ui.suspId)?s.ui.suspId:(list[0]&&list[0].id);
   const m=list.find(x=>x.id===selId);
@@ -1531,7 +1714,7 @@ function Suspension(){
   const [remind,setRemind]=useState(false);
   const cand=s.matches.find(x=>x.status==='scheduled'&&x.fecha>=15&&!x.suspension);
   const simulate=()=>{if(!cand)return;dispatch({type:'SUSPEND',id:cand.id,reason:'Intensas lluvias dejaron la cancha inhabilitada. La comisión evalúa nuevas fechas.',short:'cancha inhabilitada'});dispatch({type:'UI',patch:{suspId:cand.id}});setChoice(0)};
-  if(!m){return html`<${Page} title="Suspensiones" sub="Avisos de partidos"><${Empty} icon="cloud" title="Sin suspensiones">No hay partidos suspendidos.<//>${cand?html`<${Btn} v="ghost" onClick=${simulate}>Simular una suspensión<//>`:null}<//>`}
+  if(!m){return html`<${Page} title="Suspensiones" sub="Avisos de partidos"><${Empty} icon="cloud" title="Sin suspensiones">No hay partidos suspendidos.<//>${cand&&isAdmin?html`<${Btn} v="ghost" onClick=${simulate}>Simular una suspensión<//>`:null}<//>`}
   const su=m.suspension;const done=su.done;
   return html`<${Page} title="Suspensiones" sub="Avisos de partidos">
     ${list.length>1?html`<nav className="pillnav" aria-label="Partidos con aviso">${list.map(x=>html`<button key=${x.id} className=${cx('pill',x.id===m.id&&'on')} onClick=${()=>{dispatch({type:'UI',patch:{suspId:x.id}});setChoice(0)}}>${T[x.home].init} vs ${T[x.away].init}</button>`)}</nav>`:null}
@@ -1542,16 +1725,16 @@ function Suspension(){
         <div className="card-soft p-3 text-[13.5px] flex flex-col gap-1"><div className="flex gap-2"><${Icon} n="calendar" s=${16} className="mt-0.5 flex-none"/><span>${done?html`Nueva fecha: <b>${fmtLong(m.date)} · ${m.time}</b> <span className="text-mute">(antes ${fmtLong(su.prev.date)} ${su.prev.time})</span>`:html`Fecha original: <b>${fmtLong(m.date)} · ${m.time}</b> · Fecha ${m.fecha}`}</span></div>
           <div className="flex gap-2"><${Icon} n="pin" s=${16} className="mt-0.5 flex-none"/><span>${VENUES[m.home].name}</span></div></div>
         <div><div className="lbl">Motivo</div><p className="text-[14.5px]">${su.reason}</p></div>
-        ${done?html`<div className="flex flex-col gap-2"><${Btn} v="ghost" full icon="calendar" onClick=${()=>go('cu09')}>Ver en el fixture<//><${Btn} v="ghost" full sm onClick=${()=>dispatch({type:'UNDO_REPROGRAM',id:m.id})}>Deshacer (demo)<//></div>`
-        :html`<fieldset><legend className="lbl">Elegí una nueva fecha propuesta</legend><div role="radiogroup" className="flex flex-col gap-2">${su.proposals.map((p,i)=>html`<button key=${i} role="radio" aria-checked=${choice===i?'true':'false'} onClick=${()=>setChoice(i)} className=${cx('rounded-2xl border-2 p-3 flex items-center gap-3',choice===i?'border-pri bg-prisoft':'border-line bg-surface')}>
+        ${done?html`<div className="flex flex-col gap-2"><${Btn} v="ghost" full icon="calendar" onClick=${()=>go('cu09')}>Ver en el fixture<//>${isAdmin?html`<${Btn} v="ghost" full sm onClick=${()=>dispatch({type:'UNDO_REPROGRAM',id:m.id})}>Deshacer (Admin)<//>`:null}</div>`
+        :!isAdmin?html`<div className="alert alert-gold" role="status"><${Icon} n="lock" s=${20}/><span>La comisión organizadora (Admin) confirma la nueva fecha. Te avisamos apenas esté definida.</span></div>`:html`<fieldset><legend className="lbl">Elegí una nueva fecha propuesta</legend><div role="radiogroup" className="flex flex-col gap-2">${su.proposals.map((p,i)=>html`<button key=${i} role="radio" aria-checked=${choice===i?'true':'false'} onClick=${()=>setChoice(i)} className=${cx('rounded-2xl border-2 p-3 flex items-center gap-3',choice===i?'border-pri bg-prisoft':'border-line bg-surface')}>
             <span className=${cx('w-5 h-5 rounded-full border-2 flex items-center justify-center flex-none',choice===i?'border-pri':'border-line')}>${choice===i?html`<span className="w-2.5 h-2.5 rounded-full bg-pri"></span>`:null}</span>
             <span className="font-bold flex-1">${fmtLong(p.date)}</span><span className="text-mute font-semibold tnum">${p.time}</span></button>`)}</div></fieldset>
           <${Btn} full icon="check" onClick=${()=>dispatch({type:'REPROGRAM',id:m.id,date:su.proposals[choice].date,time:su.proposals[choice].time})}>Confirmar nueva fecha<//>`}
         <${Btn} v=${remind?'pri':'ghost'} full icon="bell" aria-pressed=${remind?'true':'false'} onClick=${()=>{setRemind(!remind);dispatch({type:'TOAST',toast:{kind:'info',title:remind?'Recordatorio quitado':'Te lo vamos a recordar',body:remind?'':'Vas a recibir un aviso antes del partido.'}})}}>${remind?'Recordatorio activado':'Recordarme el partido'}<//>
       </div>
     </section>
-    <section className="card-soft p-4 flex flex-col gap-2"><div className="text-[12px] font-bold uppercase tracking-widest text-mute">Demo</div>
-      <${Btn} v="ghost" sm icon="cloud" disabled=${!cand} onClick=${simulate}>Simular otra suspensión por lluvia<//></section>
+    ${isAdmin?html`<section className="card-soft p-4 flex flex-col gap-2"><div className="text-[12px] font-bold uppercase tracking-widest text-mute">Herramientas de Admin</div>
+      <${Btn} v="ghost" sm icon="cloud" disabled=${!cand} onClick=${simulate}>Simular otra suspensión por lluvia<//></section>`:null}
   <//>`;
 }
 /* ============================================================
@@ -1761,7 +1944,7 @@ function FreeCard({p,preview,onContact,saved,onSave}){
 }
 /* CU_020 · Buscar jugadores libres */
 function SearchFree(){
-  const {s,dispatch,go}=useApp();
+  const {s,dispatch,go,me}=useApp();
   const u=s.ui;
   const q=u.fq??'',pos=u.fpos??'',min=u.fmin??15,max=u.fmax??45;
   const setUI=patch=>dispatch({type:'UI',patch});
@@ -1777,7 +1960,7 @@ function SearchFree(){
         <label className="text-[12px] text-mute font-semibold">Máxima<input id="fs-max" type="range" min="15" max="45" value=${max} onChange=${e=>{const v=Number(e.target.value);setUI({fmax:Math.max(v,min)})}} aria-label="Edad máxima"/></label></div></div>
     <div className="flex items-center justify-between"><span className="text-[14px] text-mute"><b className="text-ink">${list.length}</b> ${list.length===1?'jugador':'jugadores'}</span>${filtered?html`<button className="text-[13.5px] font-bold text-brand underline" onClick=${clear}>Limpiar filtros</button>`:null}</div>
     ${list.length===0?html`<${Empty} icon="users" title="Sin resultados">Probá con otra posición o ampliá el rango de edad.<${Btn} className="mt-3" sm onClick=${clear}>Limpiar filtros<//><//>`:null}
-    ${list.map(p=>html`<${FreeCard} key=${p.id} p=${p} saved=${saved.includes(p.id)} onSave=${()=>setUI({saved:saved.includes(p.id)?saved.filter(x=>x!==p.id):[...saved,p.id]})} onContact=${()=>go('cu21',{chatPlayer:p.id})}/>`)}
+    ${list.map(p=>html`<${FreeCard} key=${p.id} p=${p} saved=${saved.includes(p.id)} onSave=${()=>setUI({saved:saved.includes(p.id)?saved.filter(x=>x!==p.id):[...saved,p.id]})} onContact=${()=>{if(me.role==='Hincha'||me.role==='Jugador libre'){dispatch({type:'TOAST',toast:{kind:'warn',title:'Solo para clubes',body:'Contactar jugadores está habilitado para cuentas Club y Admin.'}});return}go('cu21',{chatPlayer:p.id})}}/>`)}
   <//>`;
 }
 /* CU_021 · Chat club-jugador */
@@ -1851,10 +2034,13 @@ function TeamMatchRow({m,tid}){
   </div>`;
 }
 function TeamPage(){
-  const {s,go,d}=useApp();
+  const {s,go,d,me,dispatch}=useApp();
   const id=T[s.ui.teamId]?s.ui.teamId:'dc';
   const t=T[id],info=TEAM_INFO[id],v=VENUES[id];
   const row=d.table.find(r=>r.id===id);
+  const fans=fanTable(s).find(r=>r.id===id);
+  const isFan=me.club===id;
+  const joinClub=()=>{dispatch({type:'SET_CLUB',userId:me.id,club:id});dispatch({type:'TOAST',toast:{kind:'success',title:`¡Ya sos hincha de ${t.name}!`,body:'Sumaste 1 hincha a tu club.'}})};
   const mine=s.matches.filter(m=>m.home===id||m.away===id);
   const last=mine.filter(m=>m.status==='finished').sort((a,b)=>b.fecha-a.fecha).slice(0,5);
   const next=mine.filter(m=>m.status!=='finished').sort((a,b)=>a.fecha-b.fecha).slice(0,5);
@@ -1873,10 +2059,15 @@ function TeamPage(){
           <h2 className="disp text-[28px] md:text-[34px] font-extrabold leading-tight">${t.name}</h2>
           <div className="text-[13.5px] opacity-85">Fundado en ${info.founded.split(' ').pop()} · ${t.init}</div></div>
       </div>
-      <div className="grid grid-cols-3 gap-2 md:w-[380px]">${heroTile('Posición','#'+row.pos)}${heroTile('Puntos',row.pts)}${heroTile('Títulos',info.titlesTotal)}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:w-[460px]">${heroTile('Posición','#'+row.pos)}${heroTile('Puntos',row.pts)}${heroTile('Títulos',info.titlesTotal)}${heroTile('Hinchas',fmtN(fans.n))}</div>
     </section>
     <div className="grid gap-4 md:grid-cols-2 items-start">
       <div className="flex flex-col gap-4">
+        <section className="card p-4 flex flex-col gap-3"><h3 className="font-bold text-[18px]">Hinchada</h3>
+          <div className="grid grid-cols-3 gap-2"><${StatTile} label="Hinchas" value=${fmtN(fans.n)}/><${StatTile} label="Puesto" value=${'#'+fans.pos} tone="y"/><${StatTile} label="Nuevos 7 d" value=${'+'+fans.wk}/></div>
+          <div className="text-[12.5px] text-mute tnum">${fans.pct.toFixed(1).replace('.',',')} % de los hinchas de la liga · puesto ${fans.pos} de ${TEAMS.length}</div>
+          <div className="grid grid-cols-2 gap-2">${isFan?html`<${Btn} icon="check" disabled=${true}>Sos de esta hinchada<//>`:html`<${Btn} icon="heart" onClick=${joinClub}>Soy hincha<//>`}<${Btn} v="ghost" icon="users" onClick=${()=>go('clubs',{onboarding:false,clubTab:'rank'})}>Ver ranking<//></div>
+        </section>
         <section className="card p-4 flex flex-col gap-3"><h3 className="font-bold text-[18px]">Información del club</h3>
           <div className="grid grid-cols-2 gap-2 text-[14px]">
             <${Fact} label="Cancha" span=${true}>${v.name}<div className="font-medium text-[13px] text-mute">${v.address} · ${v.cap.toLocaleString('es-AR')} personas · ${v.surface}</div><//>
@@ -1912,11 +2103,157 @@ function TeamPage(){
     <p className="text-[12px] text-mute">Maqueta: los datos de fundación, DT, títulos, clásico y plantel son de ejemplo. Se pueden reemplazar en TEAM_OVERRIDES.</p>
   <//>`;
 }
+/* ============================================================
+   NUEVO · Bienvenida, elegir club + hinchadas, comparación de roles
+   ============================================================ */
+function Welcome(){
+  const {s,go}=useApp();
+  const rows=fanTable(s);const top=rows.slice(0,3);
+  const steps=[['Creá tu cuenta','Con tu email, en menos de un minuto.'],['Elegí tu club','Sumate a su hinchada y mirá cuántos son.'],['Seguí cada gol','Avisos en vivo, tabla y fixture de tu equipo.']];
+  return html`<main>
+    <div className="hero px-5 pt-9 pb-14" style=${{borderRadius:'0 0 30px 30px'}}>
+      <${Logo} size=${64}/>
+      <div className="mt-5 text-[12px] font-bold tracking-widest" style=${{color:'#E3A32B'}}>PRIMER INGRESO</div>
+      <h1 className="mt-2 text-[32px] font-extrabold leading-[1.05]">Bienvenido a Santa Fe GOL</h1>
+      <p className="mt-3 text-[15px] opacity-85">La liga local en tu bolsillo: goles en vivo, tabla, fixture y la hinchada de tu club.</p>
+    </div>
+    <div className="px-4 -mt-8 pb-6 flex flex-col gap-4">
+      <div className="card p-5 flex flex-col gap-4">
+        <ol className="flex flex-col gap-3">${steps.map(([t,sub],i)=>html`<li key=${t} className="flex items-start gap-3">
+          <span className="w-8 h-8 rounded-full bg-prisoft text-brand flex items-center justify-center font-extrabold flex-none tnum">${i+1}</span>
+          <span><span className="font-bold block leading-tight">${t}</span><span className="text-[13.5px] text-mute">${sub}</span></span></li>`)}</ol>
+        <${Btn} full icon="user" onClick=${()=>go('cu01')}>Crear mi cuenta<//>
+        <${Btn} v="ghost" full icon="lockopen" onClick=${()=>go('cu02')}>Ya tengo cuenta<//>
+      </div>
+      <section className="card p-4">
+        <div className="text-[12px] font-bold uppercase tracking-widest text-mute">Las hinchadas más grandes</div>
+        <div className="mt-2 divide-y divide-line">${top.map(r=>html`<div key=${r.id} className="flex items-center gap-3 py-2">
+          <span className="disp font-extrabold w-5 text-center tnum" style=${{color:r.pos===1?'var(--gold)':'var(--mute)'}}>${r.pos}</span>
+          <${Crest} id=${r.id} size=${36} plain/><span className="flex-1 font-bold text-[14.5px]">${T[r.id].name}</span>
+          <span className="font-extrabold tnum">${fmtN(r.n)}</span></div>`)}</div>
+        <p className="text-[12.5px] text-mute mt-2">¿Dónde está tu club? Lo vas a ver cuando elijas el tuyo.</p>
+      </section>
+    </div>
+  </main>`;
+}
+/* Elegir club + ranking de hinchas */
+function Clubs(){
+  const {s,dispatch,go,me}=useApp();
+  const onb=!!s.ui.onboarding;
+  const isAdmin=me.role==='Admin'&&!onb;
+  const [tab,setTab]=useState(onb?'pick':(s.ui.clubTab||'rank'));
+  const [sel,setSel]=useState(onb?null:(me.club||null));
+  const [q,setQ]=useState('');
+  const rows=fanTable(s);
+  const lead=rows[0];
+  const mine=me.club?rows.find(r=>r.id===me.club):null;
+  const wk=rows.reduce((a,r)=>a+r.wk,0);
+  const noClub=s.users.filter(u=>!u.club).length;
+  const confirm=()=>{
+    dispatch({type:'SET_CLUB',userId:me.id,club:sel});
+    dispatch({type:'TOAST',toast:{kind:'success',title:`¡Ya sos hincha de ${T[sel].name}!`,body:'Sumaste 1 hincha a tu club.'}});
+    if(onb)go(s.ui.afterClub||'home',{onboarding:false});else setTab('rank');
+  };
+  const skip=()=>go(s.ui.afterClub||'home',{onboarding:false});
+  const pickList=rows.filter(r=>T[r.id].name.toLowerCase().includes(q.trim().toLowerCase())).sort((a,b)=>T[a.id].name.localeCompare(T[b.id].name));
+  const pct=r=>r.pct.toFixed(1).replace('.',',')+' %';
+  return html`<${Page} title=${onb?'Elegí tu club':'Hinchadas'} sub=${onb?'Paso 2 de 2 · Casi listo':'Cuántos hinchas tiene cada club'} back=${!onb}>
+    ${onb?html`<div className="alert" style=${{background:'var(--prisoft)',color:'var(--brand)'}}><${Icon} n="heart" s=${20}/><span>Tu club define tus avisos de goles y suma un hincha a su ranking. Lo podés cambiar cuando quieras desde tu perfil.</span></div>`:null}
+    <${Seg} label="Sección" value=${tab} onChange=${setTab} options=${[{id:'pick',label:me.club&&!onb?'Cambiar mi club':'Elegir mi club'},{id:'rank',label:'Ranking de hinchas'}]}/>
+    ${tab==='pick'?html`
+      <div className="inp"><${Icon} n="search" s=${18} className="text-mute"/><input aria-label="Buscar club" placeholder="Buscar club" value=${q} onChange=${e=>setQ(e.target.value)}/>${q?html`<button aria-label="Borrar búsqueda" onClick=${()=>setQ('')} className="text-mute"><${Icon} n="x" s=${16}/></button>`:null}</div>
+      ${pickList.length===0?html`<${Empty} icon="search" title="Sin resultados">No encontramos un club con “${q}”.<//>`:html`<div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Clubes">${pickList.map(r=>{const on=sel===r.id;return html`<button key=${r.id} role="radio" aria-checked=${on?'true':'false'} onClick=${()=>setSel(r.id)}
+        className="card p-3 flex flex-col items-center gap-1.5 text-center relative" style=${{border:`2px solid ${on?'var(--pri)':'transparent'}`,background:on?'var(--prisoft)':undefined}}>
+        ${on?html`<span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-pri text-onpri flex items-center justify-center"><${Icon} n="check" s=${14} sw=${3}/></span>`:null}
+        <${Crest} id=${r.id} size=${52} plain/><span className="font-bold text-[14px] leading-tight">${T[r.id].name}</span>
+        <span className="text-[12px] text-mute tnum">${fmtN(r.n)} hinchas</span>${me.club===r.id?html`<span className="chip chip-pri">Tu club actual</span>`:null}</button>`})}</div>`}
+      <div style=${{position:'sticky',bottom:onb?12:92,zIndex:20}} className="flex flex-col gap-2">
+        <${Btn} full icon="heart" disabled=${!sel||sel===me.club} onClick=${confirm}>${sel?(sel===me.club?'Ya sos hincha de '+T[sel].name:'Soy hincha de '+T[sel].name):'Elegí un club para continuar'}<//>
+        ${onb?html`<button className="text-[13.5px] font-bold text-mute underline text-center py-1" onClick=${skip}>Omitir por ahora</button>`:null}
+      </div>`
+    :html`
+      <section className="hero p-5">
+        <div className="text-[12px] font-bold tracking-wider opacity-80">CLUB CON MÁS HINCHAS</div>
+        <div className="mt-3 flex items-center gap-4"><${Crest} id=${lead.id} size=${64}/>
+          <div className="min-w-0"><div className="disp text-[24px] font-extrabold leading-tight">${T[lead.id].name}</div>
+            <div className="text-[15px] opacity-90 tnum"><b>${fmtN(lead.n)}</b> hinchas · ${pct(lead)} de la liga</div></div></div>
+        <div className="mt-4 text-[12.5px] opacity-80 tnum">${fmtN(lead.total)} hinchas en total · ${TEAMS.length} clubes</div>
+      </section>
+      ${mine?html`<div className="card p-3 flex items-center gap-3"><${Crest} id=${mine.id} size=${40} plain/><div className="flex-1 min-w-0"><div className="text-[12px] font-bold uppercase tracking-wider text-mute">Tu club</div><div className="font-bold leading-tight">${T[mine.id].name}</div></div>
+        <div className="text-right"><div className="disp text-[22px] font-extrabold tnum leading-none">#${mine.pos}</div><div className="text-[12px] text-mute tnum">${fmtN(mine.n)} hinchas</div></div></div>`
+        :html`<div className="card p-4 flex items-center gap-3"><span className="flex-1 text-[14px]">Todavía no elegiste club.</span><${Btn} sm onClick=${()=>setTab('pick')}>Elegir club<//></div>`}
+      ${isAdmin?html`<section aria-label="Resumen para administradores" className="flex flex-col gap-2">
+        <div className="flex items-center gap-2"><span className="chip chip-gold"><${Icon} n="shield" s=${13}/>Vista Admin</span><span className="text-[12.5px] text-mute">Solo los administradores ven el crecimiento.</span></div>
+        <div className="grid grid-cols-3 gap-2"><${StatTile} label="Hinchas" value=${fmtN(lead.total)}/><${StatTile} label="Nuevos 7 días" value=${'+'+fmtN(wk)} tone="y"/><${StatTile} label="Sin club" value=${noClub} tone="r"/></div>
+      </section>`:null}
+      <div className="flex flex-col gap-2">${rows.map(r=>html`<button key=${r.id} onClick=${()=>go('team',{teamId:r.id})} className="card p-3 flex items-center gap-3 w-full text-left" style=${{border:`2px solid ${r.id===me.club?'var(--pri)':'transparent'}`}}>
+        <span className="w-7 text-center disp font-extrabold text-[16px] tnum" style=${{color:r.pos===1?'var(--gold)':'var(--mute)'}}>${r.pos}</span>
+        <${Crest} id=${r.id} size=${40} plain/>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2"><span className="font-bold text-[15px] leading-tight truncate">${T[r.id].name}</span>${r.id===me.club?html`<span className="chip chip-pri">Tu club</span>`:null}</div>
+          <div className="mt-1.5 h-2 rounded-full bg-surface2 overflow-hidden"><div style=${{width:(r.n/lead.n*100)+'%',height:'100%',borderRadius:999,background:r.pos===1?'var(--goldfill)':'var(--pri)'}}></div></div>
+        </div>
+        <div className="text-right flex-none"><div className="font-extrabold tnum text-[15px]">${fmtN(r.n)}</div><div className="text-[11.5px] text-mute tnum">${pct(r)}</div>${isAdmin?html`<div className="text-[11.5px] font-bold text-ok tnum">+${r.wk} sem.</div>`:null}</div>
+      </button>`)}</div>
+      <p className="text-[12px] text-mute">Maqueta: las cifras base son de ejemplo. Cada usuario que elige su club suma 1 hincha en tiempo real.</p>`}
+  <//>`;
+}
+/* Tarjetas de Inicio que cambian según el rol */
+function HomeExtras(){
+  const {s,go,me}=useApp();
+  const rows=fanTable(s);
+  const mine=me.club?rows.find(r=>r.id===me.club):null;
+  const isAdmin=me.role==='Admin';
+  const wk=rows.reduce((a,r)=>a+r.wk,0);
+  return html`<div className="flex flex-col gap-3">
+    ${mine?html`<button className="card p-4 flex items-center gap-3 text-left w-full" onClick=${()=>go('clubs',{onboarding:false,clubTab:'rank'})}>
+      <${Crest} id=${mine.id} size=${48} plain/>
+      <div className="min-w-0 flex-1"><div className="text-[12px] font-bold uppercase tracking-wider text-mute">Tu hinchada</div><div className="font-bold text-[16px] leading-tight">${T[mine.id].name}</div>
+        <div className="text-[13px] text-mute tnum">${fmtN(mine.n)} hinchas · puesto #${mine.pos} de ${TEAMS.length}</div></div><${Icon} n="right" s=${18} className="text-mute"/></button>`
+      :html`<div className="card p-4 flex items-center gap-3"><span className="flex-1 text-[14px]"><b>Elegí tu club</b> y sumate a su hinchada.</span><${Btn} sm onClick=${()=>go('clubs',{onboarding:false,clubTab:'pick'})}>Elegir<//></div>`}
+    ${isAdmin?html`<section className="card p-4 flex flex-col gap-3" style=${{borderColor:'var(--goldfill)'}} aria-label="Panel de administración">
+      <div className="flex items-center justify-between"><h3 className="text-[16px] font-bold flex items-center gap-2"><${Icon} n="shield" s=${18}/>Panel de administración</h3><span className="chip chip-gold">Solo Admin</span></div>
+      <div className="grid grid-cols-3 gap-2"><${StatTile} label="Hinchas" value=${fmtN(rows[0].total)}/><${StatTile} label="Nuevos 7 d" value=${'+'+fmtN(wk)} tone="y"/><${StatTile} label="Usuarios" value=${s.users.length}/></div>
+      <div className="grid grid-cols-3 gap-2"><${Btn} v="ghost" sm onClick=${()=>go('cu06')}>Roles<//><${Btn} v="ghost" sm onClick=${()=>go('cu13')}>Suspensiones<//><${Btn} v="ghost" sm onClick=${()=>go('clubs',{onboarding:false,clubTab:'rank'})}>Hinchadas<//></div>
+    </section>`
+    :html`<div className="card-soft p-4 flex items-start gap-3"><span className="w-9 h-9 rounded-xl bg-goldbg text-gold flex items-center justify-center flex-none"><${Icon} n="lock" s=${18}/></span>
+      <div className="flex-1 text-[13.5px]"><b className="block text-[14.5px]">Funciones de administrador bloqueadas</b><span className="text-mute">Tu rol es ${me.role}. Gestionar roles y reprogramar partidos es solo para Admin.</span>
+        <button className="block mt-1 font-bold text-brand underline" onClick=${()=>go('diff')}>Ver qué cambia con cada rol</button></div></div>`}
+  </div>`;
+}
+/* Comparación Hincha vs Admin */
+const CAPS=[
+  ['Ver resultados en vivo, tabla y fixture',1,1],
+  ['Elegir club y ver el ranking de hinchas',1,1],
+  ['Recibir avisos de goles de sus equipos',1,1],
+  ['Publicarse como jugador libre',1,1],
+  ['Contactar jugadores libres (también Club)',0,1],
+  ['Confirmar fecha de partidos suspendidos',0,1],
+  ['Ver el crecimiento semanal de cada hinchada',0,1],
+  ['Gestionar roles y permisos',0,1],
+  ['Panel de administración en Inicio',0,1],
+];
+function Diff(){
+  const {s,dispatch,me}=useApp();
+  const persona=me.role==='Admin'?'admin':'user';
+  const cols=[['user','Hincha','Julián Herrera','chip-pri','user'],['admin','Admin','Valentina Ríos','chip-gold','shield']];
+  const mark=ok=>ok?html`<span className="inline-flex w-6 h-6 rounded-full bg-okbg text-ok items-center justify-center"><${Icon} n="check" s=${14} sw=${3}/></span>`:html`<span className="inline-flex w-6 h-6 rounded-full bg-badbg text-bad items-center justify-center"><${Icon} n="x" s=${14} sw=${3}/></span>`;
+  return html`<${Page} title="Normal vs Admin" sub="Qué cambia según el rol">
+    <div className="grid grid-cols-2 gap-2">${cols.map(([k,l,nm,chip,ic])=>html`<button key=${k} onClick=${()=>dispatch({type:'PERSONA',who:k})} className="card p-3 flex flex-col items-center gap-1.5 text-center" style=${{border:`2px solid ${persona===k&&s.authed?'var(--pri)':'transparent'}`}}>
+      <${Avatar} name=${nm} size=${48}/><span className=${cx('chip',chip)}><${Icon} n=${ic} s=${12}/>${l}</span><span className="text-[12.5px] text-mute leading-tight">${nm}</span>
+      <span className="text-[12.5px] font-bold text-brand">${persona===k&&s.authed?'Estás viendo este perfil':'Ver la app así'}</span></button>`)}</div>
+    <section className="card overflow-hidden" aria-label="Comparación de permisos">
+      <div className="grid grid-cols-[1fr_64px_64px] items-center px-4 py-2 bg-surface2 text-[11.5px] font-bold uppercase tracking-wider text-mute"><span>Función</span><span className="text-center">Hincha</span><span className="text-center">Admin</span></div>
+      <div className="divide-y divide-line">${CAPS.map(([l,a,b])=>html`<div key=${l} className="grid grid-cols-[1fr_64px_64px] items-center px-4 py-3 gap-1"><span className="text-[14px] font-semibold leading-snug pr-2">${l}</span><span className="text-center">${mark(a)}</span><span className="text-center">${mark(b)}</span></div>`)}</div>
+    </section>
+    <button className="card-soft p-4 text-left flex items-center gap-3" onClick=${()=>dispatch({type:'PERSONA',who:'first'})}><span className="w-9 h-9 rounded-xl bg-prisoft text-brand flex items-center justify-center flex-none"><${Icon} n="star" s=${18}/></span><span className="flex-1 text-[13.5px]"><b className="block text-[14.5px]">Ver el primer ingreso</b><span className="text-mute">Bienvenida, registro y elección de club desde cero.</span></span><${Icon} n="right" s=${18} className="text-mute"/></button>
+  <//>`;
+}
 const SCREENS={
   home:Home,profile:Profile,
   cu01:Register,cu02:Login,cu03:Recover,cu04:EditProfile,cu05:Favorites,cu06:Roles,
   matchDetail:MatchDetail,leagueStats:LeagueStats,cu07:Live,cu08:Standings,cu09:Fixture,cu10:History,cu11:H2H,cu12:GoalPush,cu13:Suspension,
-  team:TeamPage,cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
+  welcome:Welcome,pending:Pending,clubs:Clubs,diff:Diff,team:TeamPage,cu14:Venues,cu15:Directions,cu16:PlayerStats,cu17:Scorers,cu18:PlayerCards,cu19:PublishFree,cu20:SearchFree,cu21:Chat,
 };
 function App(){
   const [s,dispatch]=useReducer(reducer,undefined,initState);
@@ -1927,7 +2264,7 @@ function App(){
   const me=s.users.find(u=>u.id===s.userId)||s.users[0];
   const ctx={s,dispatch,go,back,d,me};
   const Screen=SCREENS[s.screen]||Home;
-  const showNav=!AUTH_SCREENS.includes(s.screen);
+  const showNav=!AUTH_SCREENS.includes(s.screen)&&!(s.screen==='clubs'&&s.ui.onboarding);
   return html`<${Ctx.Provider} value=${ctx}>
     <div className="app">
       <${DemoBar}/>
